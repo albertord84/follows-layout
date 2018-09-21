@@ -6,7 +6,6 @@ ini_set('xdebug.var_display_max_data', 1024);
 
 class Welcome extends CI_Controller {
 
-    private $security_purchase_code; //random number in [100000;999999] interval and coded by md5 crypted to antihacker control    
     public $language = NULL;
 
     public function index() {
@@ -29,7 +28,6 @@ class Welcome extends CI_Controller {
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
         $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-        //$this->load->library('recaptcha');
         $this->load->view('user_view', $param);
     }
 
@@ -42,8 +40,7 @@ class Welcome extends CI_Controller {
             $this->load->model('class/client_model');
             $client = $this->client_model->get_client_by_access_token($datas['ticket_access_token'])[0];
             if (!is_array($client)) {
-                header("Location: " . base_url());
-                die();
+                header("Location: " . base_url()); die();
             } else {
                 $this->user_model->update_user($client['user_id'], array(
                     'status_id' => user_status::BLOCKED_BY_INSTA));
@@ -105,7 +102,6 @@ class Welcome extends CI_Controller {
                 $datas1['my_img_profile'] = $my_profile_datas->profile_pic_url;
             else
                 $datas1['my_img_profile'] = "Blocked";
-
             $sql = "SELECT * FROM clients WHERE clients.user_id='" . $this->session->userdata('id') . "'";
             $init_client_datas = $this->user_model->execute_sql_query($sql);
             $sql = "SELECT * FROM reference_profile WHERE client_id='" . $this->session->userdata('id') . "' AND type='0'";
@@ -129,23 +125,19 @@ class Welcome extends CI_Controller {
             $amount_followers_by_hashtag = $this->user_model->execute_sql_query($sql);
             $amount_followers_by_hashtag = (string) $amount_followers_by_hashtag[0]["followeds"];
             $datas1['amount_followers_by_hashtag'] = $amount_followers_by_hashtag;
-
             if (isset($my_profile_datas->follower_count))
                 $datas1['my_actual_followers'] = $my_profile_datas->follower_count;
             else
                 $datas1['my_actual_followers'] = "Blocked";
-
             if (isset($my_profile_datas->following))
                 $datas1['my_actual_followings'] = $my_profile_datas->following;
             else
                 $datas1['my_actual_followings'] = "Blocked";
-
             $datas1['my_sigin_date'] = $this->session->userdata('init_date');
             date_default_timezone_set('Etc/UTC');
             $datas1['today'] = date('d-m-Y', time());
             $datas1['my_initial_followers'] = $init_client_datas[0]['insta_followers_ini'];
             $datas1['my_initial_followings'] = $init_client_datas[0]['insta_following'];
-
             $datas1['my_login_profile'] = $this->session->userdata('login');
             $datas1['unfollow_total'] = $this->session->userdata('unfollow_total');
             $datas1['autolike'] = $this->session->userdata('autolike');
@@ -158,9 +150,7 @@ class Welcome extends CI_Controller {
             $daily_report = $this->get_daily_report($this->session->userdata('id'));
             $datas1['followings'] = $daily_report['followings'];
             $datas1['followers'] = $daily_report['followers'];
-
             $datas_get = $this->input->get();
-
             if (($this->session->userdata('status_id') == user_status::VERIFY_ACCOUNT || $this->session->userdata('status_id') == user_status::BLOCKED_BY_INSTA)) {
                 $insta_login = $this->is_insta_user($this->session->userdata('login'), $this->session->userdata('pass'), 'false');
                 if ($insta_login['status'] === 'ok') {
@@ -202,9 +192,7 @@ class Welcome extends CI_Controller {
                         }
                     }
                 } else
-                if ($insta_login['status'] === 'fail') {
-                    ;
-                }
+                if ($insta_login['status'] === 'fail') {;}
             }
             $datas1['status'] = array('status_id' => $this->session->userdata('status_id'), 'status_name' => $status_description[$this->session->userdata('status_id')]);
             $datas1['profiles'] = $this->create_profiles_datas_to_display();
@@ -237,7 +225,6 @@ class Welcome extends CI_Controller {
             $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
         $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
         $GLOBALS['language'] = $param['language'];
-
         $query = "SELECT * FROM users WHERE "
                 . "login= '" . $datas['user_login'] . "' and pass = '" . $datas['user_pass'] . "' and role_id = '" . user_role::CLIENT . "'";
         $real_status = $this->get_real_status_of_user($query, $user, $index);
@@ -425,9 +412,6 @@ class Welcome extends CI_Controller {
             //$GLOBALS['sistem_config'] = new \follows\cls\system_config();
             $this->load->model('class/system_config');
             $GLOBALS['sistem_config'] = $this->system_config->load();
-            $this->load->library('Gmail');
-            $this->gmail->send_mail("josergm86@gmail.com", "ATENÇÂO", 'Ativar por curl o cliente ' . $datas['user_login'], 'Ativar por curl o cliente ' . $datas['user_login']);
-            $this->gmail->send_mail("uppercut96@gmail.com", "ATENÇÂO", 'Ativar por curl o cliente ' . $datas['user_login'], 'Ativar por curl o cliente ' . $datas['user_login']);
             $result['resource'] = 'index#lnk_sign_in_now';
             $result['message'] = $this->T('Houve um erro inesperado. Seu problema será solucionado em breve. Tente mais tarde', array(), $GLOBALS['language']);
             $result['cause'] = 'curl_required';
@@ -672,7 +656,6 @@ class Welcome extends CI_Controller {
         echo json_encode($result);
     }
 
-    //Sign-in functions
     //Passo 1. Chequeando usuario em IG y enviando email al usuario con código para entrar al paso 2
     public function check_user_for_sing_in($datas = NULL) { //sign in with passive instagram profile verification
         $this->is_ip_hacker();
@@ -681,8 +664,7 @@ class Welcome extends CI_Controller {
         $this->load->model('class/client_model');
         $this->load->model('class/user_model');
         $this->load->model('class/user_status');
-        $this->load->model('class/user_role');
-        $this->load->library('Gmail');
+        $this->load->model('class/user_role');        
         $origin_datas = $datas;
         if (!$datas) {
             $datas = $this->input->post();
@@ -705,7 +687,6 @@ class Welcome extends CI_Controller {
                     $real_status = 0; //cancelado o inactivo
                     $early_client_canceled = true;
                     $index = $i;
-                    //break;
                 } else
                 if ($client[$i]['status_id'] == user_status::BEGINNER) {
                     $real_status = 1; //Beginner
@@ -766,21 +747,12 @@ class Welcome extends CI_Controller {
             }
             if ($response['success'] == true) {
                 $response['need_delete'] = ($GLOBALS['sistem_config']->INSTA_MAX_FOLLOWING - $data_insta->following);
-                //TODO: guardar esta cantidad en las cookies para trabajar con lo que este en la cookie
                 $response['MIN_MARGIN_TO_INIT'] = $GLOBALS['sistem_config']->MIN_MARGIN_TO_INIT;
-                // Enviar email al usuario con link para entrar al paso 2
-                //$GLOBALS['sistem_config'] = new \follows\cls\system_config();                
-                //$this->load->library('Gmail'); 
-                //$str = $response['pk'].''.$data_insta->pk.''.time();
-                //$purchase_access_token = md5($str);
+                // Enviar email al usuario con codigo de verificacion para pasar al paso 2
                 $purchase_access_token = mt_rand(1000, 9999);
                 $this->client_model->update_client($response['pk'], array('purchase_access_token' => $purchase_access_token));
-                //$this->load->model('class/Crypt');
-//                $second_step_link = base_url().'index.php'
-//                    .'?client_id='.urlencode($this->Crypt->codify_level1($response['pk']))
-//                    .'&purchase_access_token='.$purchase_access_token
-//                    .'#lnk_sign_in_now';
-                $result = $this->gmail->send_user_to_purchase_step($datas['client_email'], $data_insta->full_name, $datas['client_login'], $purchase_access_token);
+                $this->load->library('external_services');
+                $result = $this->external_services->send_user_to_purchase_step($datas['client_email'], $data_insta->full_name, $datas['client_login'], $purchase_access_token);
                 if ($result['success']) {
                     $response['cause'] = 'email_send';
                     $response['message'] = $this->T('Para continuar o cadastro deve inserir o código enviado ao email fornecido!', array(), $GLOBALS['language']);
@@ -802,21 +774,18 @@ class Welcome extends CI_Controller {
 
     //Passo 2.1 Pagamento por boleto bancario
     public function check_client_ticket_bank($datas = NULL) {
+        //OBS: o cliente ainda continua em BEGINNER, quem ativa é a notificação da mindipagg de boleto pago
         $this->is_ip_hacker();
         //0. Carregar librarias e datas vindo do navegador        
         $this->load->model('class/client_model');
         $this->load->model('class/Crypt');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->library('Gmail');
-
         $origin_datas = $datas;
         $datas = $this->input->post();
         $datas['plane_id'] = intval($datas['plane_type']);
         $datas['ticket_bank_option'] = intval($datas['ticket_bank_option']);
-        //$datas['pk']=$this->Crypt->decodify_level1(urldecode($datas['pk']));
         $client_datas = $this->client_model->get_all_data_of_client($datas['pk'])[0];
-
         //1. analisar se é possivel gerar boleto para esse cliente
         $purchase_counter = (int) $client_datas['purchase_counter'];
         $elapsed_time = strtotime('-2 days', time());
@@ -829,14 +798,12 @@ class Welcome extends CI_Controller {
             $result['success'] = false;
             $result['message'] = 'Número de tentativas esgotadas. Contate nosso atendimento';
         } else
-
         //2. analisar o código de verificação recebido no passo 1 da assinatura
         if ($datas['purchase_access_token'] != $client_datas['purchase_access_token']) {
             $this->client_model->decrement_purchase_retry($datas['pk'], 0);
             $result['success'] = false;
             $result['message'] = 'Sorry!! Not possible violate our security protections.';
         } else
-
         //3. conferir los datos recebidos
         if (!$this->validaCPF($datas['cpf'])) {
             $value['purchase_counter'] = $purchase_counter - 1;
@@ -856,7 +823,6 @@ class Welcome extends CI_Controller {
             $result['success'] = false;
             $result['message'] = 'Selecione um periodo de tempo válido pra ganhar desconto';
         } else {
-
             //4. gerar boleto bancario
             $this->load->model('class/user_model');
             $query = 'SELECT * FROM plane WHERE id=' . $datas['plane_id'];
@@ -888,7 +854,6 @@ class Welcome extends CI_Controller {
                 $result['exception'] = $exc->getTraceAsString();
                 $result['message'] = 'Erro gerando o boleto bancário';
             }
-
             //5. salvar dados
             if (!$response['success']) {
                 $result['success'] = false;
@@ -927,7 +892,6 @@ class Welcome extends CI_Controller {
                         . '&ticket_access_token=' . md5($datas['pk'] . '-abc-' . $insta_id . '-cba-' . '8053');
                 $username = $client_datas['login'];
                 $useremail = $client_datas['email'];
-
                 //6.1 salvar access token y atualizar pay_day
                 $this->client_model->update_client($client_datas['user_id'], array(
                     'credit_card_number' => 'PAYMENT_BY_TICKET_BANK',
@@ -935,9 +899,8 @@ class Welcome extends CI_Controller {
                     'pay_day' => strtotime("+7 days", time()),
                     'ticket_access_token' => md5($datas['pk'] . '-abc-' . $insta_id . '-cba-' . '8053')
                 ));
-
-                $email = $this->gmail->send_link_ticket_bank_and_access_link(
-                        $username, $useremail, $access_link, $ticket_url);
+                $this->load->library('external_services');
+                $email = $this->external_services->send_link_ticket_bank_and_access_link($username, $useremail, $access_link, $ticket_url);
                 //7. retornar response e tomar decisão no cliente
                 if ($email['success']) {
                     $result['success'] = true;
@@ -946,8 +909,7 @@ class Welcome extends CI_Controller {
                     $result['message'] = 'Contate nosso atendimento e aguarde as instruções. Houve problema ao enviar email com as instruções';
                 }
             }
-        }
-        //OBS: o cliente ainda continua em BEGINNER, quem ativa é a notificação da mindipagg de boleto pago
+        }        
         echo json_encode($result);
     }
 
@@ -1066,7 +1028,6 @@ class Welcome extends CI_Controller {
                                     $this->user_model->set_sesion($datas['pk'], $this->session);
                                 }
                                 //Email com compra satisfactoria a atendimento y al cliente
-                                //$this->email_success_buy_to_atendiment($datas['user_login'], $datas['user_email']);
                                 if ($data_insta['status'] === 'ok' && $data_insta['authenticated'])
                                     $this->email_success_buy_to_client($datas['user_email'], $data_insta['insta_name'], $datas['user_login'], $datas['user_pass']);
                                 else
@@ -1108,625 +1069,6 @@ class Welcome extends CI_Controller {
             return $result;
     }
 
-    /* public function check_client_data_bank_old($datas = NULL) {
-      $this->is_ip_hacker();
-      $this->load->model('class/system_config');
-      $GLOBALS['sistem_config'] = $this->system_config->load();
-      $this->load->model('class/client_model');
-      $this->load->model('class/Crypt');
-      $origin_datas = $datas;
-      if($datas == NULL)
-      $datas = $this->input->post();
-      $query = $this->client_model->get_all_data_of_client($datas['pk']);
-      $datas['user_login'] = $query[0]['login'];
-      $datas['user_pass'] = $query[0]['pass'];
-      $datas['user_email'] = $query[0]['email'];
-      $datas['insta_id'] = $query[0]['insta_id'];
-      if($query[0]['purchase_access_token'] === $datas['purchase_access_token']) {
-      $query = 'SELECT status_id FROM users WHERE id=' . $datas['pk'];
-      $aaa = $this->client_model->execute_sql_query($query);
-      $aaa = $aaa[0]['status_id'];
-      if($aaa === '8' || $aaa === '4') {
-      $query = 'SELECT purchase_counter FROM clients WHERE user_id=' . $datas['pk'];
-      $purchase_counter = ($this->client_model->execute_sql_query($query));
-      $purchase_counter = (int) $purchase_counter[0]['purchase_counter'];
-      if ($purchase_counter > 0) {
-      $this->load->model('class/user_model');
-      $this->load->model('class/user_status');
-      $this->load->model('class/credit_card_status');
-      if ($this->validate_post_credit_card_datas($datas)) {
-      //0. salvar datos del carton de credito
-      try {
-      $this->client_model->update_client($datas['pk'], array(
-      'credit_card_number' => $this->Crypt->codify_level1($datas['credit_card_number']),
-      'credit_card_cvc' => $this->Crypt->codify_level1($datas['credit_card_cvc']),
-      'credit_card_name' => $datas['credit_card_name'],
-      'credit_card_exp_month' => $datas['credit_card_exp_month'],
-      'credit_card_exp_year' => $datas['credit_card_exp_year']
-      ));
-
-      $this->client_model->update_client($datas['pk'], array(
-      'plane_id' => $datas['plane_type']));
-
-      if (isset($datas['ticket_peixe_urbano'])) {
-      $ticket = trim($datas['ticket_peixe_urbano']);
-      $this->client_model->update_client($datas['pk'], array(
-      'ticket_peixe_urbano' => $ticket
-      ));
-      }
-
-
-
-      //2. hacel el pagamento segun el plano
-      // TODO: Hacer clase Plane
-      if ($datas['plane_type'] === '2' || $datas['plane_type'] === '3' || $datas['plane_type'] === '4' || $datas['plane_type'] === '5' || $datas['plane_type'] === '1') {
-      $sql = 'SELECT * FROM plane WHERE id=' . $datas['plane_type'];
-      $plane_datas = $this->user_model->execute_sql_query($sql)[0];
-      if ($card_type == 0)
-      $response = $this->do_payment_by_plane($datas, $plane_datas['initial_val'], $plane_datas['normal_val']);
-      } else
-      $response['flag_initial_payment'] = false;
-
-      //3. si pagamento correcto: logar cliente, establecer sesion, actualizar status, emails, initdate
-      if ($response['flag_initial_payment']) {
-      $this->client_model->update_client($datas['pk'], array('purchase_access_token' => '0'));
-      $this->load->model('class/user_model');
-      $data_insta = $this->is_insta_user($datas['user_login'], $datas['user_pass'], $datas['force_login']);
-      //$this->user_model->insert_washdog($datas['pk'],'SUCCESSFUL PURCHASE');
-      if ($data_insta['status'] === 'ok' && $data_insta['authenticated']) {
-      $datas['status_id'] = user_status::ACTIVE;
-      $this->user_model->update_user($datas['pk'], array(
-      'init_date' => time(),
-      'status_id' => $datas['status_id']));
-      if ($data_insta['insta_login_response']) {
-      //                                $this->client_model->update_client($datas['pk'], array(
-      //                                    'cookies' => json_encode($data_insta['insta_login_response'])));
-      }
-      $this->user_model->set_sesion($datas['pk'], $this->session, $data_insta['insta_login_response']);
-      } else
-      if ($data_insta['status'] === 'ok' && !$data_insta['authenticated']) {
-      $this->user_model->update_user($datas['pk'], array(
-      'init_date' => time(),
-      'status_id' => user_status::BLOCKED_BY_INSTA));
-      $this->user_model->set_sesion($datas['pk'], $this->session);
-      } else
-      if ($data_insta['status'] === 'fail' && $data_insta['message'] == 'checkpoint_required') {
-      $this->user_model->update_user($datas['pk'], array(
-      'init_date' => time(),
-      'status_id' => user_status::VERIFY_ACCOUNT));
-      $result['resource'] = 'client';
-      $result['verify_link'] = $data_insta['verify_account_url'];
-      $result['return_link'] = 'client';
-      $result['message'] = 'Sua conta precisa ser verificada no Instagram';
-      $result['cause'] = 'checkpoint_required';
-      $this->user_model->set_sesion($datas['pk'], $this->session);
-      } else
-      if ($data_insta['status'] === 'fail' && $data_insta['message'] == '') {
-      $this->user_model->update_user($datas['pk'], array(
-      'init_date' => time(),
-      'status_id' => user_status::VERIFY_ACCOUNT));
-      $result['resource'] = 'client';
-      $result['verify_link'] = '';
-      $result['return_link'] = 'client';
-      $this->user_model->set_sesion($datas['pk'], $this->session);
-      } else {
-      $this->user_model->update_user($datas['pk'], array(
-      'init_date' => time(),
-      'status_id' => user_status::BLOCKED_BY_INSTA));
-      $this->user_model->set_sesion($datas['pk'], $this->session);
-      }
-      //Email com compra satisfactoria a atendimento y al cliente
-      //$this->email_success_buy_to_atendiment($datas['user_login'], $datas['user_email']);
-      if ($data_insta['status'] === 'ok' && $data_insta['authenticated'])
-      $this->email_success_buy_to_client($datas['user_email'], $data_insta['insta_name'], $datas['user_login'], $datas['user_pass']);
-      else
-      $this->email_success_buy_to_client($datas['user_email'], $datas['user_login'], $datas['user_login'], $datas['user_pass']);
-      $result['success'] = true;
-      $result['flag_initial_payment'] = $response['flag_initial_payment'];
-      $result['flag_recurrency_payment'] = $response['flag_recurrency_payment'];
-      $result['message'] = $this->T('Usuário cadastrado com sucesso', array(), $GLOBALS['language']);
-      $this->client_model->update_client($datas['pk'], array('purchase_access_token' => '0'));
-      } else {
-      $value['purchase_counter'] = $purchase_counter - 1;
-      $this->client_model->decrement_purchase_retry($datas['pk'], $value);
-      $result['success'] = false;
-      $result['message'] = $response['message'];
-      }
-      } catch (Exception $exc) {
-      $result['success'] = false;
-      $result['exception'] = $exc->getTraceAsString();
-      $result['message'] = $this->T('Error actualizando en base de datos', array(), $GLOBALS['language'], $GLOBALS['language']);
-      }
-      } else {
-      $result['success'] = false;
-      $result['message'] = $this->T('Acesso não permitido', array(), $GLOBALS['language']);
-      }
-      } else {
-      $result['success'] = false;
-      $result['message'] = $this->T('Alcançõu a quantidade máxima de retentativa de compra, por favor, entre en contato con o atendimento', array(), $GLOBALS['language']);
-      }
-      } else {
-      $result['success'] = false;
-      $result['message'] = $this->T('Acesso não permitido', array(), $GLOBALS['language']);
-      }
-      } else {
-      $this->client_model->update_client($datas['pk'], array('retry_payment_counter' => '0'));
-      $result['success'] = false;
-      $result['message'] = $this->T('Acesso não permitido', array(), $GLOBALS['language']);
-      }
-      if (!$origin_datas)
-      echo json_encode($result);
-      else
-      return $result;
-      } */
-
-    /* public function do_payment_by_plane($datas, $initial_value, $recurrency_value) {
-      $this->is_ip_hacker();
-      $this->load->model('class/client_model');
-      $this->load->model('class/system_config');
-      $GLOBALS['sistem_config'] = $this->system_config->load();
-
-      //Amigos de Pedro
-      if (isset($datas['ticket_peixe_urbano']) && strtoupper($datas['ticket_peixe_urbano']) === 'AMIGOSDOPEDRO') {
-      //1. recurrencia para un mes mas alante
-      $datas['amount_in_cents'] = $recurrency_value;
-      if ($datas['early_client_canceled'] === 'true') {
-      $resp = $this->check_mundipagg_credit_card($datas);
-      if (!(is_object($resp) && $resp->isSuccess() && $resp->getData()->CreditCardTransactionResultCollection[0]->CapturedAmountInCents > 0)) {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      return $response;
-      }
-      }
-      $datas['pay_day'] = strtotime("+1 month", time());
-      $resp = $this->check_recurrency_mundipagg_credit_card($datas, 0);
-      if (is_object($resp) && $resp->isSuccess()) {
-      $this->client_model->update_client($datas['pk'], array(
-      'order_key' => $resp->getData()->OrderResult->OrderKey,
-      'pay_day' => $datas['pay_day']));
-      $response['flag_initial_payment'] = true;
-      $response['flag_recurrency_payment'] = true;
-      } else {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      $response['message'] = $this->T('Compra não sucedida. Problemas com o pagamento', array(), $GLOBALS['language']);
-      }
-      } else
-      //OLX
-      if (isset($datas['ticket_peixe_urbano']) && ($datas['ticket_peixe_urbano'] === 'OLX' || $datas['ticket_peixe_urbano'] === 'INSTA50P')) {
-      $resp = 1;
-      if ($datas['early_client_canceled'] === 'true') {
-      $datas['amount_in_cents'] = $recurrency_value / 2;
-      $datas['pay_day'] = time();
-      $resp = $this->check_mundipagg_credit_card($datas);
-      if (!(is_object($resp) && $resp->isSuccess() && $resp->getData()->CreditCardTransactionResultCollection[0]->CapturedAmountInCents > 0)) {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      return $response;
-      }
-      } else {
-      $kk = $GLOBALS['sistem_config']->PROMOTION_N_FREE_DAYS;
-      $t = time();
-      $datas['pay_day'] = strtotime("+" . $GLOBALS['sistem_config']->PROMOTION_N_FREE_DAYS . " days", $t);
-      $t2 = $datas['pay_day'];
-      $datas['amount_in_cents'] = $recurrency_value / 2;
-      $resp = $this->check_recurrency_mundipagg_credit_card($datas, 1);
-      }
-
-      //guardo el initial order key
-      if (is_object($resp) && $resp->isSuccess()) {
-      $this->client_model->update_client($datas['pk'], array('initial_order_key' => $resp->getData()->OrderResult->OrderKey));
-      $response['flag_initial_payment'] = true;
-
-      //genero una recurrencia un mes mas alante
-      $datas['amount_in_cents'] = $recurrency_value;
-      $datas['pay_day'] = strtotime("+1 month", $datas['pay_day']);
-      $resp = $this->check_recurrency_mundipagg_credit_card($datas, 0);
-      if (is_object($resp) && $resp->isSuccess()) {
-      $this->client_model->update_client($datas['pk'], array(
-      'order_key' => $resp->getData()->OrderResult->OrderKey,
-      'pay_day' => $datas['pay_day']));
-      $response['flag_recurrency_payment'] = true;
-      } else {
-      $response['flag_recurrency_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      if (is_object($resp) && isset($resp->getData()->OrderResult->OrderKey)) {
-      $this->client_model->update_client($datas['pk'], array('order_key' => $resp->getData()->OrderResult->OrderKey));
-      }
-      }
-      } else {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      if (is_object($resp) && isset($resp->getData()->OrderResult->OrderKey)) {
-      $this->client_model->update_client($datas['pk'], array('initial_order_key' => $resp->getData()->OrderResult->OrderKey));
-      }
-      }
-      } else
-      //DUMBUDF20
-      if (isset($datas['ticket_peixe_urbano']) && $datas['ticket_peixe_urbano'] === 'DUMBUDF20') {
-      $datas['amount_in_cents'] = round(($recurrency_value * 8) / 10);
-      if ($datas['early_client_canceled'] === 'true') {
-      $resp = $this->check_mundipagg_credit_card($datas);
-      if (!(is_object($resp) && $resp->isSuccess() && $resp->getData()->CreditCardTransactionResultCollection[0]->CapturedAmountInCents > 0)) {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      return $response;
-      } else {
-      $datas['pay_day'] = strtotime("+1 month", time());
-      $resp = $this->check_recurrency_mundipagg_credit_card($datas, 0);
-      }
-      } else {
-      $datas['pay_day'] = strtotime("+" . $GLOBALS['sistem_config']->PROMOTION_N_FREE_DAYS . " days", time());
-      $resp = $this->check_recurrency_mundipagg_credit_card($datas, 0);
-      }
-      if (is_object($resp) && $resp->isSuccess()) {
-      $this->client_model->update_client($datas['pk'], array(
-      'order_key' => $resp->getData()->OrderResult->OrderKey,
-      'pay_day' => $datas['pay_day']));
-      $this->client_model->update_client($datas['pk'], array(
-      'actual_payment_value' => $datas['amount_in_cents']));
-      $response['flag_recurrency_payment'] = true;
-      $response['flag_initial_payment'] = true;
-      } else {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      if (is_object($resp) && isset($resp->getData()->OrderResult->OrderKey)) {
-      $this->client_model->update_client($datas['pk'], array('order_key' => $resp->getData()->OrderResult->OrderKey));
-      }
-      }
-      } else
-      //INSTA-DIRECT
-      if (isset($datas['ticket_peixe_urbano']) && ($datas['ticket_peixe_urbano'] === 'INSTA-DIRECT' || $datas['ticket_peixe_urbano'] === 'MALADIRETA')) {
-      $datas['amount_in_cents'] = $recurrency_value;
-      if ($datas['early_client_canceled'] === 'true') {
-      $resp = $this->check_mundipagg_credit_card($datas);
-      if (!(is_object($resp) && $resp->isSuccess() && $resp->getData()->CreditCardTransactionResultCollection[0]->CapturedAmountInCents > 0)) {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      return $response;
-      } else {
-      $datas['pay_day'] = strtotime("+1 month", time());
-      }
-      } else {
-      $datas['pay_day'] = strtotime("+" . '7' . " days", time());
-      }
-      $resp = $this->check_recurrency_mundipagg_credit_card($datas, 0);
-      if (is_object($resp) && $resp->isSuccess()) {
-      $this->client_model->update_client($datas['pk'], array(
-      'order_key' => $resp->getData()->OrderResult->OrderKey,
-      'pay_day' => $datas['pay_day']));
-      $response['flag_recurrency_payment'] = true;
-      $response['flag_initial_payment'] = true;
-      } else {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      if (is_object($resp) && isset($resp->getData()->OrderResult->OrderKey)) {
-      $this->client_model->update_client($datas['pk'], array('order_key' => $resp->getData()->OrderResult->OrderKey));
-      }
-      }
-      } else
-      //INSTA15D
-      if (isset($datas['ticket_peixe_urbano']) && $datas['ticket_peixe_urbano'] === 'INSTA15D') {
-      $datas['amount_in_cents'] = $recurrency_value;
-      if ($datas['early_client_canceled'] === 'true') {
-      $resp = $this->check_mundipagg_credit_card($datas);
-      if (!(is_object($resp) && $resp->isSuccess() && $resp->getData()->CreditCardTransactionResultCollection[0]->CapturedAmountInCents > 0)) {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      return $response;
-      } else {
-      $datas['pay_day'] = strtotime("+1 month", time());
-      }
-      } else {
-      $datas['pay_day'] = strtotime("+" . '15' . " days", time());
-      }
-      $resp = $this->check_recurrency_mundipagg_credit_card($datas, 0);
-      if (is_object($resp) && $resp->isSuccess()) {
-      $this->client_model->update_client($datas['pk'], array(
-      'order_key' => $resp->getData()->OrderResult->OrderKey,
-      'pay_day' => $datas['pay_day']));
-      $response['flag_recurrency_payment'] = true;
-      $response['flag_initial_payment'] = true;
-      } else {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      if (is_object($resp) && isset($resp->getData()->OrderResult->OrderKey)) {
-      $this->client_model->update_client($datas['pk'], array('order_key' => $resp->getData()->OrderResult->OrderKey));
-      }
-      }
-      } else
-      //SIBITE30D
-      if (isset($datas['ticket_peixe_urbano']) && $datas['ticket_peixe_urbano'] === 'SIBITE30D') { //30 dias de graça
-      $datas['amount_in_cents'] = $recurrency_value;
-      if ($datas['early_client_canceled'] === 'true') {
-      $resp = $this->check_mundipagg_credit_card($datas);
-      if (!(is_object($resp) && $resp->isSuccess() && $resp->getData()->CreditCardTransactionResultCollection[0]->CapturedAmountInCents > 0)) {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      return $response;
-      } else {
-      $datas['pay_day'] = strtotime("+1 month", time());
-      }
-      } else {
-      $datas['pay_day'] = strtotime("+" . '30' . " days", time());
-      }
-      $resp = $this->check_recurrency_mundipagg_credit_card($datas, 0);
-      if (is_object($resp) && $resp->isSuccess()) {
-      $this->client_model->update_client($datas['pk'], array(
-      'order_key' => $resp->getData()->OrderResult->OrderKey,
-      'pay_day' => $datas['pay_day']));
-      $response['flag_recurrency_payment'] = true;
-      $response['flag_initial_payment'] = true;
-      } else {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      if (is_object($resp) && isset($resp->getData()->OrderResult->OrderKey)) {
-      $this->client_model->update_client($datas['pk'], array('order_key' => $resp->getData()->OrderResult->OrderKey));
-      }
-      }
-      } else
-      //FREE5
-      if (isset($datas['ticket_peixe_urbano']) && $datas['ticket_peixe_urbano'] === 'FREE5') { //30 dias de graça
-      $datas['amount_in_cents'] = $recurrency_value;
-      if ($datas['early_client_canceled'] === 'true') {
-      $resp = $this->check_mundipagg_credit_card($datas);
-      if (!(is_object($resp) && $resp->isSuccess() && $resp->getData()->CreditCardTransactionResultCollection[0]->CapturedAmountInCents > 0)) {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      return $response;
-      } else {
-      $datas['pay_day'] = strtotime("+1 month", time());
-      }
-      } else {
-      $datas['pay_day'] = strtotime("+" . '5' . " days", time());
-      }
-      $resp = $this->check_recurrency_mundipagg_credit_card($datas, 0);
-      if (is_object($resp) && $resp->isSuccess()) {
-      $this->client_model->update_client($datas['pk'], array(
-      'order_key' => $resp->getData()->OrderResult->OrderKey,
-      'pay_day' => $datas['pay_day']));
-      $response['flag_recurrency_payment'] = true;
-      $response['flag_initial_payment'] = true;
-      } else {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      if (is_object($resp) && isset($resp->getData()->OrderResult->OrderKey)) {
-      $this->client_model->update_client($datas['pk'], array('order_key' => $resp->getData()->OrderResult->OrderKey));
-      }
-      }
-      } else
-      //FREE7DAYS
-      if (isset($datas['ticket_peixe_urbano']) && $datas['ticket_peixe_urbano'] === 'FREE7DAYS') { //30 dias de graça
-      $datas['amount_in_cents'] = $recurrency_value;
-      if ($datas['early_client_canceled'] === 'true') {
-      $resp = $this->check_mundipagg_credit_card($datas);
-      if (!(is_object($resp) && $resp->isSuccess() && $resp->getData()->CreditCardTransactionResultCollection[0]->CapturedAmountInCents > 0)) {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      return $response;
-      } else {
-      $datas['pay_day'] = strtotime("+1 month", time());
-      }
-      } else {
-      $datas['pay_day'] = strtotime("+" . '7' . " days", time());
-      }
-      $resp = $this->check_recurrency_mundipagg_credit_card($datas, 0);
-      if (is_object($resp) && $resp->isSuccess()) {
-      $this->client_model->update_client($datas['pk'], array(
-      'order_key' => $resp->getData()->OrderResult->OrderKey,
-      'pay_day' => $datas['pay_day']));
-      $response['flag_recurrency_payment'] = true;
-      $response['flag_initial_payment'] = true;
-      } else {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      if (is_object($resp) && isset($resp->getData()->OrderResult->OrderKey)) {
-      $this->client_model->update_client($datas['pk'], array('order_key' => $resp->getData()->OrderResult->OrderKey));
-      }
-      }
-      } else
-      //BACKTODUMBU
-      if (isset($datas['ticket_peixe_urbano']) && (strtoupper($datas['ticket_peixe_urbano']) === 'BACKTODUMBU' || strtoupper($datas['ticket_peixe_urbano']) === 'BACKTODUMBU-DNLO' || strtoupper($datas['ticket_peixe_urbano']) === 'BACKTODUMBU-EGBTO') && ($datas['early_client_canceled'] === 'true' || $datas['early_client_canceled'] === true)) {
-      //cobro la mitad en la hora
-      $datas['pay_day'] = time();
-      $datas['amount_in_cents'] = $recurrency_value / 2;
-      $resp = $this->check_mundipagg_credit_card($datas);
-      if (is_object($resp) && $resp->isSuccess() && $resp->getData()->CreditCardTransactionResultCollection[0]->CapturedAmountInCents > 0) {
-      $this->client_model->update_client(
-      $datas['pk'], array('initial_order_key' => $resp->getData()->OrderResult->OrderKey));
-      $response['flag_initial_payment'] = true;
-      //genero una recurrencia un mes mas alante
-      $datas['amount_in_cents'] = $recurrency_value;
-      $datas['pay_day'] = strtotime("+1 month", $datas['pay_day']);
-      $resp = $this->check_recurrency_mundipagg_credit_card($datas, 0);
-      if (is_object($resp) && $resp->isSuccess()) {
-      $this->client_model->update_client($datas['pk'], array(
-      'order_key' => $resp->getData()->OrderResult->OrderKey,
-      'pay_day' => $datas['pay_day']));
-      $response['flag_recurrency_payment'] = true;
-      } else {
-      $response['flag_recurrency_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      if (is_object($resp) && isset($resp->getData()->OrderResult->OrderKey)) {
-      $this->client_model->update_client($datas['pk'], array('order_key' => $resp->getData()->OrderResult->OrderKey));
-      }
-      }
-      } else {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      if (is_object($resp) && isset($resp->getData()->OrderResult->OrderKey)) {
-      $this->client_model->update_client($datas['pk'], array('initial_order_key' => $resp->getData()->OrderResult->OrderKey));
-      }
-      }
-      } else { //si es un cliente sin codigo promocional
-      $datas['amount_in_cents'] = $recurrency_value;
-      if ($datas['early_client_canceled'] === 'true') {
-      $resp = $this->check_mundipagg_credit_card($datas);
-      if (!(is_object($resp) && $resp->isSuccess() && $resp->getData()->CreditCardTransactionResultCollection[0]->CapturedAmountInCents > 0)) {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      return $response;
-      } else {
-      $datas['pay_day'] = strtotime("+1 month", time());
-      }
-      } else {
-      $datas['pay_day'] = strtotime("+" . $GLOBALS['sistem_config']->PROMOTION_N_FREE_DAYS . " days", time());
-      }
-
-      $resp = $this->check_recurrency_mundipagg_credit_card($datas, 0);
-      if (is_object($resp) && $resp->isSuccess()) {
-      $this->client_model->update_client($datas['pk'], array(
-      'order_key' => $resp->getData()->OrderResult->OrderKey,
-      'pay_day' => $datas['pay_day']));
-      $response['flag_recurrency_payment'] = true;
-      $response['flag_initial_payment'] = true;
-      } else {
-      $response['flag_recurrency_payment'] = false;
-      $response['flag_initial_payment'] = false;
-      if (is_array($resp))
-      $response['message'] = 'Error: ' . $resp["message"];
-      else
-      $response['message'] = 'Incorrect credit card datas!!';
-      if (is_object($resp) && isset($resp->getData()->OrderResult->OrderKey)) {
-      $this->client_model->update_client($datas['pk'], array('order_key' => $resp->getData()->OrderResult->OrderKey));
-      }
-      }
-      }
-      return $response;
-      } */
-
-    /* public function check_mundipagg_credit_card($datas) {
-      $this->is_ip_hacker();
-      $this->load->model('class/system_config');
-      $GLOBALS['sistem_config'] = $this->system_config->load();
-      $this->load->library('Payment');
-      $payment_data['credit_card_number'] = $datas['credit_card_number'];
-      $payment_data['credit_card_name'] = $datas['credit_card_name'];
-      $payment_data['credit_card_exp_month'] = $datas['credit_card_exp_month'];
-      $payment_data['credit_card_exp_year'] = $datas['credit_card_exp_year'];
-      $payment_data['credit_card_cvc'] = $datas['credit_card_cvc'];
-      $payment_data['amount_in_cents'] = $datas['amount_in_cents'];
-      $payment_data['pay_day'] = time();
-      $bandeira = $this->detectCardType($payment_data['credit_card_number']);
-      if ($bandeira)
-      $response = $this->payment->create_payment($payment_data);
-      else
-      $response = array("message" => $this->T("Confira seu número de cartão e se está certo entre em contato com o atendimento.", array(), $GLOBALS['language']));
-
-      return $response;
-      }
-
-      public function check_recurrency_mundipagg_credit_card($datas, $cnt) {
-      $this->is_ip_hacker();
-      $this->load->model('class/system_config');
-      $GLOBALS['sistem_config'] = $this->system_config->load();
-      $this->load->library('Payment');
-      $payment_data['credit_card_number'] = $datas['credit_card_number'];
-      $payment_data['credit_card_name'] = $datas['credit_card_name'];
-      $payment_data['credit_card_exp_month'] = $datas['credit_card_exp_month'];
-      $payment_data['credit_card_exp_year'] = $datas['credit_card_exp_year'];
-      $payment_data['credit_card_cvc'] = $datas['credit_card_cvc'];
-      $payment_data['amount_in_cents'] = $datas['amount_in_cents'];
-      $payment_data['pay_day'] = $datas['pay_day'];
-      $bandeira = $this->detectCardType($payment_data['credit_card_number']);
-
-      if ($bandeira) {
-      if ($bandeira == "Visa" || $bandeira == "Mastercard") {
-      //5 Cielo -> 1.5 | 32 -> eRede | 20 -> Stone | 42 -> Cielo 3.0 | 0 -> Auto;
-      $response = $this->payment->create_recurrency_payment($payment_data, $cnt, 20);
-
-      if (is_object($response) && $response->isSuccess()) {
-      return $response;
-      } else {
-      $response = $this->payment->create_recurrency_payment($payment_data, $cnt, 42);
-      }
-      } else if ($bandeira == "Hipercard") {
-      $response = $this->payment->create_recurrency_payment($payment_data, $cnt, 20);
-      } else {
-      $response = $this->payment->create_recurrency_payment($payment_data, $cnt, 42);
-      }
-      } else {
-      $response = array("message" => $this->T("Confira seu número de cartão e se está certo entre em contato com o atendimento.", array(), $GLOBALS['language']));
-      }
-
-      return $response;
-      }
-     */
-
     public function update_client_datas() {
         $this->is_ip_hacker();
         $this->load->model('class/Crypt');
@@ -1738,7 +1080,6 @@ class Welcome extends CI_Controller {
         $GLOBALS['sistem_config'] = $this->system_config->load();
         require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
         $this->Vindi = new \follows\cls\Payment\Vindi();
-
         $language = $this->input->get();
         $datas = $this->input->post();
         if ($this->session->userdata('id')) {
@@ -1756,7 +1097,6 @@ class Welcome extends CI_Controller {
                     'credit_card_exp_year' => $datas['credit_card_exp_year'],
                     'pay_day' => $datas['pay_day']
                 ));
-
                 ///1. verificar si el cliente existe o no en la vindi
                 $is_vindi_client = $this->client_model->is_vindi_client($this->session->userdata('id'));
                 if (!$is_vindi_client) {
@@ -1771,7 +1111,6 @@ class Welcome extends CI_Controller {
                 if ($is_vindi_client || $gateway_client_id) {
                     //2. crear el nuevo carton en la vindi
                     $resp = $this->Vindi->addClientPayment($client_data['user_id'], $datas);
-
                     //3. cobrar segun status y upgrade
                     if ($datas['client_update_plane'] == 1)
                         $datas['client_update_plane'] = 4;
@@ -1808,8 +1147,6 @@ class Welcome extends CI_Controller {
                     //4. hacer un pagamento ahora si necesitara 
                     if ($pay_now_value) {
                         $this->client_model->update_client($this->session->userdata('id'), array('pay_day' => $recurrency_date));
-                        // JODA UMA OLHADA NESSE $pay_values['initial_value'] que nem existe, criar linha nova para resolver por enquanto
-                        //$amount = (int) ($pay_values['initial_value'] / 100);
                         $amount = (int) ($pay_now_value / 100);
                         $resp = $this->Vindi->create_payment($this->session->userdata('id'), \follows\cls\Payment\Vindi::prod_1real_id, $amount);
                         if ($resp->success && $resp->status == 'active')
@@ -1846,7 +1183,6 @@ class Welcome extends CI_Controller {
                         $result['message'] = $this->T('Dados bancários atualizados corretamente', array(), $GLOBALS['language']);
                         $result['response_delete_early_payment'] = $response_delete_early_payment;
                     }
-
                     if (($payments_days['pay_now'] && !$flag_pay_now) || (!$payments_days['pay_now'] && !$flag_pay_day)) {
                         //restablecer en la base de datos los datos anteriores
                         $this->client_model->update_client($this->session->userdata('id'), array(
@@ -1887,240 +1223,6 @@ class Welcome extends CI_Controller {
             }
             echo json_encode($result);
         }
-    }
-
-    /* public function update_client_datas() {
-      $this->is_ip_hacker();
-      $this->load->model('class/Crypt');
-      $this->load->model('class/system_config');
-      $GLOBALS['sistem_config'] = $this->system_config->load();
-      $language = $this->input->get();
-      if (isset($language['language']))
-      $param['language'] = $language['language'];
-      else
-      $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-      $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
-      $GLOBALS['language'] = $param['language'];
-
-      if ($this->session->userdata('id')) {
-      $this->load->model('class/client_model');
-      $this->load->model('class/user_model');
-      $this->load->model('class/user_status');
-      $this->load->model('class/credit_card_status');
-      $datas = $this->input->post();
-      $now = time();
-      if ($this->validate_post_credit_card_datas($datas)) {
-      $client_data = $this->client_model->get_client_by_id($this->session->userdata('id'))[0];
-      if ($now < $client_data['pay_day'] &&
-      ( $client_data['ticket_peixe_urbano'] === 'AGENCIALUUK' || $client_data['ticket_peixe_urbano'] === 'DUMBUDF20' || $client_data['ticket_peixe_urbano'] === 'AMIGOSDOPEDRO' || $client_data['ticket_peixe_urbano'] === 'BACKTODUMBU'
-      )) {
-      $result['success'] = false;
-      $result['message'] = 'Você não pode atualizar no primeiro mês, entre em contato com nosso atendimento';
-      } else {
-      if ($this->session->userdata('status_id') == user_status::BLOCKED_BY_PAYMENT) {
-      if ($now < $client_data['pay_day']) {
-      $payments_days['pay_day'] = strtotime("+30 days", $now);
-      $payments_days['pay_now'] = true;
-      $datas['pay_day'] = $payments_days['pay_day'];
-      } else {
-      $payments_days['pay_day'] = time();
-      $payments_days['pay_now'] = false;
-      $datas['pay_day'] = $payments_days['pay_day'];
-      }
-      } else {
-      $payments_days = $this->get_pay_day($client_data['pay_day']);
-      $datas['pay_day'] = $payments_days['pay_day'];
-      }
-      if ($payments_days['pay_day'] != null) { //dia de actualizacion diferente de dia de pagamento
-      try {
-      $this->user_model->update_user($this->session->userdata('id'), array(
-      'email' => $datas['client_email']));
-      $this->client_model->update_client($this->session->userdata('id'), array(
-      'credit_card_number' => $this->Crypt->codify_level1($datas['credit_card_number']),
-      'credit_card_cvc' => $this->Crypt->codify_level1($datas['credit_card_cvc']),
-      'credit_card_name' => $datas['credit_card_name'],
-      'credit_card_exp_month' => $datas['credit_card_exp_month'],
-      'credit_card_exp_year' => $datas['credit_card_exp_year'],
-      'pay_day' => $datas['pay_day']
-      ));
-      } catch (Exception $exc) {
-      $result['success'] = false;
-      $result['exception'] = $exc->getTraceAsString();
-      $result['message'] = $this->T('Erro actualizando em banco de dados', array(), $GLOBALS['language']);
-      } finally {
-      $flag_pay_now = false;
-      $flag_pay_day = false;
-
-      //Determinar valor inicial del pagamento
-      if ($datas['client_update_plane'] == 1)
-      $datas['client_update_plane'] = 4;
-      if ($now < $client_data['pay_day'] && ($datas['client_update_plane'] <= $this->session->userdata('plane_id'))) {
-      $pay_values['initial_value'] = $this->client_model->get_promotional_pay_value($datas['client_update_plane']);
-      $pay_values['normal_value'] = $this->client_model->get_normal_pay_value($datas['client_update_plane']);
-      } else
-      if ($now < $client_data['pay_day'] && ($datas['client_update_plane'] > $this->session->userdata('plane_id'))) {
-      $pay_values['initial_value'] = $this->client_model->get_promotional_pay_value($datas['client_update_plane']) - $this->client_model->get_promotional_pay_value($this->session->userdata('plane_id'));
-      $pay_values['normal_value'] = $this->client_model->get_normal_pay_value($datas['client_update_plane']);
-      } else
-      if ($datas['client_update_plane'] > $this->session->userdata('plane_id')) {
-      $promotional_time_range = $this->user_model->get_signin_date($this->session->userdata('id'));
-      $promotional_time_range = strtotime("+" . $GLOBALS['sistem_config']->PROMOTION_N_FREE_DAYS . " days", $promotional_time_range);
-      $promotional_time_range = strtotime("+1 month", $promotional_time_range);
-      if (time() < $promotional_time_range) {//mes promocional
-      $pay_values['initial_value'] = $this->client_model->get_promotional_pay_value($datas['client_update_plane']) - $this->client_model->get_promotional_pay_value($this->session->userdata('plane_id'));
-      } else {
-      $pay_values['initial_value'] = $this->client_model->get_normal_pay_value($datas['client_update_plane']) - $this->client_model->get_normal_pay_value($this->session->userdata('plane_id'));
-      }
-      $pay_values['normal_value'] = $this->client_model->get_normal_pay_value($datas['client_update_plane']);
-      $payments_days['pay_now'] = true;
-      } else
-      if ($datas['client_update_plane'] < $this->session->userdata('plane_id')) {
-      $pay_values['initial_value'] = $this->client_model->get_normal_pay_value($datas['client_update_plane']);
-      $pay_values['normal_value'] = $this->client_model->get_normal_pay_value($datas['client_update_plane']);
-      } else {
-      $pay_values['initial_value'] = $this->client_model->get_normal_pay_value($this->session->userdata('plane_id'));
-
-      if ($client_data['actual_payment_value'] != null)
-      $pay_values['normal_value'] = $client_data['actual_payment_value'];
-      else
-      $pay_values['normal_value'] = $this->client_model->get_normal_pay_value($this->session->userdata('plane_id'));
-      }
-
-      //si necesitara hacer un pagamento ahora
-      if ($payments_days['pay_now']) {
-      $datas['pay_day'] = time();
-      /* if($client_data['ticket_peixe_urbano']==='AGENCIALUUK' || $client_data['ticket_peixe_urbano']==='DUMBUDF20')
-      $datas['amount_in_cents'] = round(($pay_values['initial_value']*8)/10);
-      else
-      if($client_data['ticket_peixe_urbano']==='OLX')
-      //$datas['amount_in_cents'] = round(($pay_values['initial_value']*5)/10);
-      if($now < $client_data['pay_day'])
-      $datas['amount_in_cents'] = $pay_values['normal_value']/2;
-      else
-      $datas['amount_in_cents'] = $pay_values['normal_value'];
-      $datas['amount_in_cents'] = $pay_values['initial_value'];
-      else */
-    /* $datas['amount_in_cents'] = $pay_values['normal_value'];
-      $resp_pay_now = $this->check_mundipagg_credit_card($datas);
-      if (is_object($resp_pay_now) && $resp_pay_now->isSuccess() && $resp_pay_now->getData()->CreditCardTransactionResultCollection[0]->CapturedAmountInCents > 0) {
-      $this->client_model->update_client($this->session->userdata('id'), array(
-      'pending_order_key' => $resp_pay_now->getData()->OrderResult->OrderKey));
-      $flag_pay_now = true;
-      }
-      }
-
-      if (($payments_days['pay_now'] && $flag_pay_now) || !$payments_days['pay_now']) {
-      $response_delete_early_payment = '';
-      $datas['pay_day'] = $payments_days['pay_day'];
-      if ($client_data['ticket_peixe_urbano'] === 'AGENCIALUUK' || $client_data['ticket_peixe_urbano'] === 'DUMBUDF20')
-      $datas['amount_in_cents'] = round(($pay_values['normal_value'] * 8) / 10);
-      else
-      $datas['amount_in_cents'] = $pay_values['normal_value'];
-
-      $resp_pay_day = $this->check_recurrency_mundipagg_credit_card($datas, 0);
-      if (is_object($resp_pay_day) && $resp_pay_day->isSuccess()) {
-      $flag_pay_day = true;
-      try {
-      $this->client_model->update_client($this->session->userdata('id'), array(
-      'plane_id' => $datas['client_update_plane'],
-      'pay_day' => $datas['pay_day'],
-      'order_key' => $resp_pay_day->getData()->OrderResult->OrderKey));
-      if ($client_data['order_key'])
-      $response_delete_early_payment = $this->delete_recurrency_payment($client_data['order_key']);
-      if ($this->session->userdata('status_id') == user_status::BLOCKED_BY_PAYMENT || $this->session->userdata('status_id') == user_status::PENDING) {
-      $datas['status_id'] = user_status::ACTIVE;
-      } else
-      $datas['status_id'] = $this->session->userdata('status_id');
-      $this->user_model->update_user($this->session->userdata('id'), array(
-      'status_id' => $datas['status_id']));
-
-      //aqui hay que insertar trabajo, si hay que hacerlo
-      //                                        if ($this->session->userdata('status_id') == user_status::BLOCKED_BY_PAYMENT) {
-      //                                            $active_profiles = $this->client_model->get_client_workable_profiles($this->session->userdata('id'));
-      //                                            $N = count($active_profiles);
-      //                                            for ($i = 0; $i < $N; $i++) {
-      //                                                if(!$active_profiles[$i]['end_date'])
-      //                                                $this->client_model->insert_profile_in_daily_work($active_profiles[$i]['id'], $this->session->userdata('cookies'), $i, $active_profiles, $this->session->userdata('to_follow'));
-      //                                            }
-      //                                        }
-      $this->session->set_userdata('plane_id', $datas['client_update_plane']);
-      } catch (Exception $exc) {
-      $this->user_model->update_user($datas['pk'], array(
-      'status_id' => $this->session->userdata('status_id'))); //the previous
-      $this->client_model->update_client($datas['pk'], array(
-      'pay_day' => $client_data['pay_day'], //the previous
-      'order_key' => $client_data['order_key'])); //the previous
-      $result['success'] = false;
-      $result['exception'] = $exc->getTraceAsString();
-      $result['message'] = $this->T('Erro actualizando em banco de dados', array(), $GLOBALS['language']);
-      } finally {
-      $result['success'] = true;
-      $result['resource'] = 'client';
-      $result['message'] = $this->T('Dados bancários atualizados corretamente', array(), $GLOBALS['language']);
-      $result['response_delete_early_payment'] = $response_delete_early_payment;
-      }
-      }
-      }
-
-      if (($payments_days['pay_now'] && !$flag_pay_now) || (!$payments_days['pay_now'] && !$flag_pay_day)) {
-      //restablecer en la base de datos los datos anteriores
-      $this->client_model->update_client($this->session->userdata('id'), array(
-      'credit_card_number' => $this->Crypt->codify_level1($client_data['credit_card_number']),
-      'credit_card_cvc' => $this->Crypt->codify_level1($client_data['credit_card_cvc']),
-      'credit_card_name' => $client_data['credit_card_name'],
-      'credit_card_exp_month' => $client_data['credit_card_exp_month'],
-      'credit_card_exp_year' => $client_data['credit_card_exp_year'],
-      'pay_day' => $client_data['pay_day'],
-      'order_key' => $client_data['order_key']
-      ));
-      $result['success'] = false;
-      $result['resource'] = 'client';
-      if ($payments_days['pay_now'] && !$flag_pay_now)
-      $result['message'] = is_array($resp_pay_now) ? $resp_pay_now["message"] : $this->T("Erro inesperado! Provávelmente Cartão inválido, entre em contato com o atendimento.", array(), $GLOBALS['language']);
-      else
-      $result['message'] = is_array($resp_pay_day) ? $resp_pay_day["message"] : $this->T("Erro inesperado! Provávelmente Cartão inválido, entre em contato com o atendimento.", array(), $GLOBALS['language']);
-      } else
-      if (($payments_days['pay_now'] && $flag_pay_now && !$flag_pay_day)) {
-      //se hiso el primer pagamento bien, pero la recurrencia mal
-      $result['success'] = true;
-      $result['resource'] = 'client';
-      $result['message'] = $this->T('Actualização bem sucedida, mas deve atualizar novamente até a data de pagamento ( @1 )', array(0 => $payments_days['pay_now']));
-      }
-      }
-      } else {
-      $result['success'] = false;
-      $result['message'] = $this->T('Você não pode atualizar seu cartão no dia do pagamento', array(), $GLOBALS['language']);
-      }
-      }
-      } else {
-      $result['success'] = false;
-      $result['message'] = $this->T('Acesso não permitido', array(), $GLOBALS['language']);
-      }
-
-      if ($this->session->userdata('id') && $result['success'] == true) {
-      $this->load->model('class/user_model');
-      $this->user_model->insert_washdog($this->session->userdata('id'), 'CORRECT CARD UPDATE');
-      } else {
-      if ($this->session->userdata('id')) {
-      $this->load->model('class/user_model');
-      $this->user_model->insert_washdog($this->session->userdata('id'), 'INCORRECT CARD UPDATE');
-      }
-      }
-
-      echo json_encode($result);
-      }
-      } */
-
-    public function get_next_pay_day($pay_day) {
-        $now = time();
-        $m_today = date("m", $now);
-        $y_today = date("Y", $now);
-        $d_pay_day = date("d", $pay_day);
-        $m_pay_day = date("m", $pay_day);
-        $y_pay_day = date("Y", $pay_day);
-        $recorrency_date = strtotime($d_pay_day . '-' . $m_today . '-' . $y_today); //mes actual com el dia de pagamento
-        $d = strtotime("+1 month", $recorrency_date); //proximo mes
-        return $d;
     }
 
     public function get_pay_day($pay_day) {
@@ -2273,8 +1375,7 @@ class Welcome extends CI_Controller {
                     $this->client_model->delete_work_of_profile($active_profiles[$i]['id']);
                 }
             } else {
-                $ut = 'REACTIVATED';
-                //no hacer nada, el robot le pone trabajo al cliente al siguiente dia
+                $ut = 'REACTIVATED';  //no hacer nada, el robot le pone trabajo al cliente al siguiente dia
             }
             $this->load->model('class/user_model');
             $this->user_model->insert_washdog($this->session->userdata('id'), 'TOOL ' . $ut);
@@ -2284,7 +1385,6 @@ class Welcome extends CI_Controller {
         echo json_encode($response);
     }
 
-    //functions for geolocalizations
     public function client_insert_geolocalization() {
         $this->is_ip_hacker();
         if ($this->session->userdata('id')) {
@@ -2319,11 +1419,8 @@ class Welcome extends CI_Controller {
             }
             if (/* !$is_active_profile && */!$is_active_geolocalization) {
                 if ($N_geolocalization < $GLOBALS['sistem_config']->REFERENCE_PROFILE_AMOUNT) {
-                    //$profile_datas = $this->check_insta_profile($profile['geolocalization']);
                     $profile_datas = $this->check_insta_geolocalization($profile['geolocalization']);
-
                     if ($profile_datas && $profile_datas->location->pk) {
-                        //if(!$profile_datas->is_private) {
                         $p = $this->client_model->insert_insta_profile($this->session->userdata('id'), $profile_datas->slug, $profile_datas->location->pk, '1');
                         $result = $this->verify_profile($p, $active_profiles, $N);
                         $result['img_url'] = base_url() . 'assets/images/avatar_geolocalization_present.jpg';
@@ -2345,10 +1442,8 @@ class Welcome extends CI_Controller {
                 else
                     $result['message'] = $this->T('A geolocalizaçao informada ja está ativa', array(), $GLOBALS['language']);
             }
-
             if ($result['success'] == true) {
                 $this->load->model('class/user_model');
-                // $this->user_model->insert_washdog($this->session->userdata('id'),'GEOCALIZATION INSERTED '.$profile['geolocalization']);
                 $this->user_model->insert_washdog($this->session->userdata('id'), 'GEOCALIZATION INSERTED');
             }
             echo json_encode($result);
@@ -2376,10 +1471,8 @@ class Welcome extends CI_Controller {
                 $result['success'] = false;
                 $result['message'] = $this->T('Erro no sistema, tente novamente', array(), $GLOBALS['language']);
             }
-
             if ($result['success'] == true) {
                 $this->load->model('class/user_model');
-                //$this->user_model->insert_washdog($this->session->userdata('id'),'GEOCALIZATION ELIMINATED '.$profile['geolocalization']);
                 $this->user_model->insert_washdog($this->session->userdata('id'), 'GEOCALIZATION ELIMINATED');
             }
             echo json_encode($result);
@@ -2389,16 +1482,9 @@ class Welcome extends CI_Controller {
     public function check_insta_geolocalization($profile) {
         $this->is_ip_hacker();
         if ($this->session->userdata('id')) {
-            //antes
-            //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/Robot.php';
-            //$this->Robot = new \follows\cls\Robot();
-            //ahora
             $this->load->model('class/system_config');
             $GLOBALS['sistem_config'] = $this->system_config->load();
             $this->load->library('external_services');
-            //antes
-            //$datas_of_profile = $this->Robot->get_insta_geolocalization_data_from_client(json_decode($this->session->userdata('cookies')),$profile);
-            //ahora
             $datas_of_profile = $this->external_services->get_insta_geolocalization_data_from_client(json_decode($this->session->userdata('cookies')), $profile);
             if (is_object($datas_of_profile)) {
                 return $datas_of_profile;
@@ -2408,7 +1494,6 @@ class Welcome extends CI_Controller {
         }
     }
 
-    //functions for reference profiles
     public function client_insert_profile() {
         $this->is_ip_hacker();
         $id = $this->session->userdata('id');
@@ -2429,7 +1514,6 @@ class Welcome extends CI_Controller {
             $N = count($active_profiles);
             $N_profiles = 0;
             $is_active_profile = false;
-
             for ($i = 0; $i < $N; $i++) {
                 if ($active_profiles[$i]['type'] === '0' && $active_profiles[$i]['deleted'] === '0')
                     $N_profiles = $N_profiles + 1;
@@ -2469,10 +1553,8 @@ class Welcome extends CI_Controller {
                 else
                     $result['message'] = $this->T('O perfil informado é uma geolocalização ativa', array(), $GLOBALS['language']);
             }
-
             if ($result['success'] == true) {
                 $this->load->model('class/user_model');
-                //$this->user_model->insert_washdog($this->session->userdata('id'),'REFERENCE PROFILE INSERTED '.$profile['profile']);
                 $this->user_model->insert_washdog($this->session->userdata('id'), 'REFERENCE PROFILE INSERTED');
             }
             echo json_encode($result);
@@ -2491,7 +1573,6 @@ class Welcome extends CI_Controller {
                 $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
             $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
             $GLOBALS['language'] = $param['language'];
-
             $this->load->model('class/client_model');
             $profile = $this->input->post();
             if ($this->client_model->desactive_profiles($this->session->userdata('id'), $profile['profile'])) {
@@ -2501,13 +1582,10 @@ class Welcome extends CI_Controller {
                 $result['success'] = false;
                 $result['message'] = $this->T('Erro no sistema, tente novamente', array(), $GLOBALS['language']);
             }
-
             if ($result['success'] == true) {
                 $this->load->model('class/user_model');
-                //$this->user_model->insert_washdog($this->session->userdata('id'),'REFERENCE PROFILE ELIMINATED '.$profile['profile']);
                 $this->user_model->insert_washdog($this->session->userdata('id'), 'REFERENCE PROFILE ELIMINATED');
             }
-
             echo json_encode($result);
         }
     }
@@ -2516,9 +1594,6 @@ class Welcome extends CI_Controller {
         $this->is_ip_hacker();
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-//        require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/Robot.php';
-//        $this->Robot = new \follows\cls\Robot();        
-//        $data = $this->Robot->get_insta_ref_prof_data($profile);
         $this->load->library('external_services');
         $data = $this->external_services->get_insta_ref_prof_data($profile);
         if (is_object($data)) {
@@ -2530,18 +1605,9 @@ class Welcome extends CI_Controller {
 
     public function check_insta_profile_from_client($profile) {
         $this->is_ip_hacker();
-
-        //antes
-        //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/Robot.php';
-        //$this->Robot = new \follows\cls\Robot();
-        //ahora
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
         $this->load->library('external_services');
-
-        //antes
-        //$data = $this->Robot->get_insta_ref_prof_data_from_client(json_decode($this->session->userdata('cookies')),$profile);
-        //ahora
         $data = $this->external_services->get_insta_ref_prof_data_from_client(json_decode($this->session->userdata('cookies')), $profile);
         if (is_object($data)) {
             return $data;
@@ -2557,7 +1623,6 @@ class Welcome extends CI_Controller {
         $this->is_ip_hacker();
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->library('Gmail');
         $language = $this->input->get();
         if (isset($language['language']))
             $param['language'] = $language['language'];
@@ -2566,7 +1631,8 @@ class Welcome extends CI_Controller {
         $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
         $GLOBALS['language'] = $param['language'];
         $datas = $this->input->post();
-        $result = $this->gmail->send_client_contact_form($datas['name'], $datas['email'], $datas['message'], $datas['company'], $datas['telf']);
+        $this->load->library('external_services');
+        $result = $this->external_services->send_client_contact_form($datas['name'], $datas['email'], $datas['message'], $datas['company'], $datas['telf']);
         if ($result['success']) {
             $result['message'] = $this->T('Mensagem enviada, agradecemos seu contato', array(), $GLOBALS['language']);
         }
@@ -2577,8 +1643,8 @@ class Welcome extends CI_Controller {
         $this->is_ip_hacker();
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->library('Gmail');
-        $result = $this->gmail->send_new_client_payment_done($username, $useremail);
+        $this->load->library('external_services');
+        $result = $this->external_services->send_new_client_payment_done($username, $useremail);
         if ($result['success'])
             return TRUE;
         return false;
@@ -2588,11 +1654,10 @@ class Welcome extends CI_Controller {
         $this->is_ip_hacker();
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->library('Gmail');
-        $result = $this->gmail->send_client_payment_success($useremail, $username, $userlogin, $userpass);
+        $this->load->library('external_services');
+        $result = $this->external_services->send_client_payment_success($useremail, $username, $userlogin, $userpass);
     }
 
-    //auxiliar function
     public function validate_post_credit_card_datas($datas) {
         $this->is_ip_hacker();
         //TODO: validate emial and datas of credit card using regular expresions
@@ -2615,7 +1680,6 @@ class Welcome extends CI_Controller {
         $GLOBALS['sistem_config'] = $this->system_config->load();
         $this->load->library('external_services');
         $login_data = $this->external_services->bot_login($client_login, $client_pass, $force_login);
-
         if (isset($login_data->json_response->status) && $login_data->json_response->status === "ok") {
             $data_insta['status'] = $login_data->json_response->status;
             if ($login_data->json_response->authenticated) {
@@ -2675,32 +1739,6 @@ class Welcome extends CI_Controller {
         return $data_insta;
     }
 
-    //functions for load ad dispay the diferent funtionalities views 
-    public function sign_client_update() {
-        $this->is_ip_hacker();
-        // Jose R: yo creo que este codigo mas nunca se iba usar, en caso de usar, encriptar level1 los datos sensibles
-//        $this->load->model('class/user_role');
-//        if ($this->session->userdata('role_id') == user_role::CLIENT) {
-//            $data['user_active'] = true;
-//            $this->load->model('class/user_model');
-//            $this->load->model('class/client_model');
-//            $user_data = $this->user_model->get_user_by_id($this->session->userdata('id'))[0];
-//            $client_data = $this->client_model->get_client_by_id($this->session->userdata('id'))[0];
-//            $datas['upgradable_datas'] = array('email' => $user_data['email'],
-//                'credit_card_number' => $client_data['credit_card_number'],
-//                'credit_card_cvc' => $client_data['credit_card_cvc'],
-//                'credit_card_name' => $client_data['credit_card_name'],
-//                'credit_card_exp_month' => $client_data['credit_card_exp_month'],
-//                'credit_card_exp_year' => $client_data['credit_card_exp_year']);
-//            //$data['content_header'] = $this->load->view('my_views/users_header', '', true);
-//            $data['content'] = $this->load->view('my_views/client_update_painel', $datas, true);
-//            $data['content_footer'] = $this->load->view('my_views/general_footer', '', true);
-//            $this->load->view('welcome_message', $data);
-//        } else {
-//            $this->display_access_error();
-//        }
-    }
-
     public function log_out() {
         $this->is_ip_hacker();
         $data['user_active'] = false;
@@ -2713,14 +1751,9 @@ class Welcome extends CI_Controller {
     public function create_profiles_datas_to_display() {
         $this->is_ip_hacker();
         if ($this->session->userdata('id')) {
-            //antes
-            require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/Robot.php';
-            $this->Robot = new \follows\cls\Robot();
-            //ahora
             $this->load->model('class/system_config');
             $GLOBALS['sistem_config'] = $this->system_config->load();
             $this->load->library('external_services');
-
             $this->load->model('class/client_model');
             $array_profiles = array();
             $array_geolocalization = array();
@@ -2731,16 +1764,11 @@ class Welcome extends CI_Controller {
             $cnt_geolocalization = 0;
             $cnt_hashtag = 0;
             if ($N > 0) {
-//                $array_profiles = array(0);   
                 for ($i = 0; $i < $N; $i++) {
                     $name_profile = $client_active_profiles[$i]['insta_name'];
                     $id_profile = $client_active_profiles[$i]['id'];
                     if ($client_active_profiles[$i]['type'] === '0') { //es un perfil de referencia
-                        //antes    
-                        //$datas_of_profile = $this->Robot->get_insta_ref_prof_data_from_client(json_decode($this->session->userdata('cookies')),$name_profile, $id_profile);
-                        //ahora
                         $datas_of_profile = $this->external_services->get_insta_ref_prof_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile);
-
                         if ($datas_of_profile != NULL) {
                             $array_profiles[$cnt_ref_prof]['login_profile'] = $name_profile;
                             $array_profiles[$cnt_ref_prof]['follows_from_profile'] = $datas_of_profile->follows;
@@ -2768,11 +1796,7 @@ class Welcome extends CI_Controller {
                             $cnt_ref_prof = $cnt_ref_prof + 1;
                         }
                     } else if ($client_active_profiles[$i]['type'] === '1') { //es una geolocalizacion      
-                        //antes
-                        //$datas_of_profile = $this->Robot->get_insta_geolocalization_data_from_client(json_decode($this->session->userdata('cookies')),$name_profile, $id_profile);
-                        //ahora
                         $datas_of_profile = $this->external_services->get_insta_geolocalization_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile);
-
                         $array_geolocalization[$cnt_geolocalization]['login_geolocalization'] = $name_profile;
                         $array_geolocalization[$cnt_geolocalization]['geolocalization_pk'] = $client_active_profiles[$i]['insta_id'];
                         if ($datas_of_profile)
@@ -2788,10 +1812,7 @@ class Welcome extends CI_Controller {
                             $array_geolocalization[$cnt_geolocalization]['status_geolocalization'] = 'active';
                         }
                         $cnt_geolocalization = $cnt_geolocalization + 1;
-                    } else { //es un hashtag      
-                        //antes
-                        //$datas_of_profile = $this->Robot->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')),$name_profile, $id_profile);
-                        //ahora
+                    } else { //es un hashtag    
                         $datas_of_profile = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile);
 
                         $array_hashtag[$cnt_hashtag]['login_hashtag'] = $name_profile;
@@ -2811,7 +1832,6 @@ class Welcome extends CI_Controller {
                         $cnt_hashtag = $cnt_hashtag + 1;
                     }
                 }
-
                 if ($cnt_ref_prof)
                     $response['array_profiles'] = $array_profiles;
                 else
@@ -2902,66 +1922,11 @@ class Welcome extends CI_Controller {
         $value = $values['normal_val'];
         $sql = "SELECT * FROM clients WHERE clients.user_id='" . $this->session->userdata('id') . "'";
         $client = $this->user_model->execute_sql_query($sql);
-
         $recurrency_order_key = $client[0]['order_key'];
-
-
         $result['success'] = true;
         echo json_encode($result);
     }
-
-    public function get_names_by_chars() {
-        $this->is_ip_hacker();
-        if ($this->session->userdata('id')) {
-            $cookies = json_decode($this->session->userdata('cookies'));
-            //$datas = $this->input->post();
-            $datas = $this->input->get();
-            $str = $datas['str'];
-            $profile_type = $datas['profile_type'];
-            $mid = $cookies->mid;
-            $csrftoken = $cookies->csrftoken;
-            $ds_user_id = $cookies->ds_user_id;
-            $sessionid = $cookies->sessionid;
-            $headers = array();
-            $headers[] = 'Host: www.instagram.com';
-            $headers[] = 'User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:52.0) Gecko/20100101 Firefox/52.0';
-            $headers[] = 'Accept: */*';
-            $headers[] = 'Accept-Language: es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3'; //--compressed 
-            $headers[] = 'Referer: https://www.instagram.com/';
-            $headers[] = 'X-Requested-With: XMLHttpRequest';
-            $headers[] = 'Cookie: mid=' . $mid . '; csrftoken=' . $csrftoken . '; ds_user_id=' . $ds_user_id . '; sessionid=' . $sessionid . ';';
-            $headers[] = "Connection: keep-alive";
-            $url = 'https://www.instagram.com/web/search/topsearch/?context=blended&query=' . $str . '/';
-            $ch = curl_init("https://www.instagram.com/");
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_HEADER, FALSE);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-            $output = curl_exec($ch);
-            $info = curl_error($ch);
-            $output = json_decode($output);
-            if ($profile_type === 'places')
-                $output = $output->places;
-            else
-            if ($profile_type === 'users')
-                $output = $output->users;
-
-            $result = array();
-            $N = count($output);
-            for ($i = 0; $i < $N; $i++) {
-                if ($profile_type === 'places') {
-                    $result[$i] = $output[$i]->place->slug;
-                } else
-                if ($profile_type === 'users') {
-                    $result[$i] = $output[$i]->user->username;
-                }
-            }
-            echo json_encode($result);
-        }
-    }
-
+    
     public function admin_making_client_login() {
         $this->is_ip_hacker();
         $datas = $this->input->get();
@@ -3222,497 +2187,15 @@ class Welcome extends CI_Controller {
         }
     }
 
-    public function paypal() {
-        $this->is_ip_hacker();
-        $this->load->view('test_view');
-    }
-
-    public function update_client_after_retry_payment_success($user_id) {
-        $this->is_ip_hacker();
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->model('class/client_model');
-        $this->load->model('class/user_model');
-        $this->load->model('class/user_status');
-        $this->load->model('class/Crypt');
-        //1. recuperar el cliente y su plano
-        $client = $this->client_model->get_all_data_of_client($user_id)[0];
-        $plane = $this->client_model->get_plane($client['plane_id'])[0];
-        //3. crear nueva recurrencia en la Mundipagg para el proximo mes   
-        date_default_timezone_set('Etc/UTC');
-        $payment_data['credit_card_number'] = $this->Crypt->decodify_level1($client['credit_card_number']);
-        $payment_data['credit_card_name'] = $client['credit_card_name'];
-        $payment_data['credit_card_exp_month'] = $client['credit_card_exp_month'];
-        $payment_data['credit_card_exp_year'] = $client['credit_card_exp_year'];
-        $payment_data['credit_card_cvc'] = $this->Crypt->decodify_level1($client['credit_card_cvc']);
-        if ($client['actual_payment_value'] != '' && $client['actual_payment_value'] != null)
-            $payment_data['amount_in_cents'] = $client['actual_payment_value'];
-        else
-            $payment_data['amount_in_cents'] = $plane['normal_val'];
-        $payment_data['pay_day'] = strtotime("+1 month", time());
-        $resp = $this->check_recurrency_mundipagg_credit_card($payment_data, 0);
-        //4. salvar nuevos pay_day e order_key
-        if (is_object($resp) && $resp->isSuccess()) {
-            //2. eliminar recurrencia actual en la Mundipagg
-            $this->delete_recurrency_payment($client['order_key']);
-            $this->client_model->update_client($user_id, array(
-                'initial_order_key' => '',
-                'order_key' => $resp->getData()->OrderResult->OrderKey,
-                'pay_day' => $payment_data['pay_day']));
-            echo '<br>Client ' . $user_id . ' updated correctly. New order key is:  ' . $resp->getData()->OrderResult->OrderKey;
-            //5. actualizar status del cliente
-            $data_insta = $this->is_insta_user($client['login'], $client['pass']);
-            if ($data_insta['status'] === 'ok' && $data_insta['authenticated']) {
-                $this->user_model->update_user($user_id, array(
-                    'status_date' => time(),
-                    'status_id' => user_status::ACTIVE
-                ));
-                echo ' STATUS = ' . user_status::ACTIVE;
-            } else
-            if ($data_insta['status'] === 'ok' && !$data_insta['authenticated']) {
-                $this->user_model->update_user($user_id, array(
-                    'status_date' => time(),
-                    'status_id' => user_status::BLOCKED_BY_INSTA
-                ));
-                echo ' STATUS = ' . user_status::BLOCKED_BY_INSTA;
-            } else {
-                $this->user_model->update_user($user_id, array(
-                    'status_date' => time(),
-                    'status_id' => user_status::BLOCKED_BY_INSTA
-                ));
-                echo ' STATUS = ' . user_status::VERIFY_ACCOUNT;
-            }
-        } else {
-            $this->user_model->update_user($user_id, array(
-                'status_date' => time(),
-                'status_id' => 1));
-            $this->delete_recurrency_payment($client['order_key']);
-            $this->client_model->update_client($user_id, array(
-                'initial_order_key' => '',
-                'order_key' => '',
-                'observation' => 'NÃO CONSEGUIDO DURANTE RETENTATIVA - TENTAR CRIAR ANTES DE DATA DE PAGAMENTO',
-                'pay_day' => $payment_data['pay_day']));
-            //TO-DO:Ruslan: inserta una pendencia automatica aqui
-
-            if (is_object($resp))
-                echo '<br>Client ' . $user_id . ' DONT updated. Wrong order key is:  ' . $resp->getData()->OrderResult->OrderKey;
-            else
-                echo '<br>Client ' . $user_id . ' DONT updated. Missing order key';
-        }
-
-        $this->client_model->update_client($user_id, array(
-            'initial_order_key' => ''));
-    }
-
-    public function buy_retry_for_clients_with_puchase_counter_in_zero() {
-        $this->is_ip_hacker();
-        $this->load->model('class/client_model');
-        $this->load->model('class/Crypt');
-        $cl = $this->client_model->beginners_with_purchase_counter_less_value(9);
-        for ($i = 1; $i < count($cl); $i++) {
-            $clients = $cl[$i];
-            $datas = array('client_login' => $clients['login'],
-                'client_pass' => $clients['pass'],
-                'client_email' => $clients['email']);
-            $resp = $this->check_user_for_sing_in($datas);
-
-            if ($resp['success']) {
-                $datas = array(
-                    'pk' => $clients['user_id'],
-                    'credit_card_number' => $this->Crypt->decodify_level1($clients['credit_card_number']),
-                    'credit_card_cvc' => $this->Crypt->decodify_level1($clients['credit_card_cvc']),
-                    'credit_card_name' => $clients['credit_card_name'],
-                    'credit_card_exp_month' => $clients['credit_card_exp_month'],
-                    'credit_card_exp_year' => $clients['credit_card_exp_year'],
-                    'plane_type' => $clients['plane_id'],
-                    'ticket_peixe_urbano' => $clients['ticket_peixe_urbano'],
-                    'user_email' => $clients['email'],
-                    'insta_name' => $clients['name'],
-                    'user_login' => $clients['login'],
-                    'user_pass' => $clients['pass'],
-                );
-                $resp = $this->check_client_data_bank($datas);
-                if ($resp['success']) {
-                    echo 'Cliente (' . $clients['login'] . ')   ' . $clients['login'] . 'comprou satisfatoriamente\n<br>';
-                } else {
-                    $this->client_model->update_client($clients['user_id'], array(
-                        'purchase_counter' => -100));
-                    echo 'Cliente ' . $clients['login'] . ' ERRADO\n<br>';
-                }
-            } else {
-                $this->client_model->update_client($clients['user_id'], array(
-                    'purchase_counter' => -100));
-                echo 'Cliente (' . $clients['login'] . ') ' . $clients['login'] . 'não passou passo 1\n<br>';
-            }
-        }
-    }
-
-    public function Pedro() {
-        $this->is_ip_hacker();
-        $this->load->model('class/user_model');
-        $users = $this->user_model->get_all_users();
-        $L = count($users);
-        echo 'Num clientes ' . $L . "<br>";
-        $file = fopen("media_pro.txt", "w");
-        for ($i = 0; $i < $L; $i++) {
-            $result = $this->user_model->get_daily_report($users[$i]['id']);
-            $Ndaily_R = count($result);
-            //echo $i.'----'.$users[$i]['id'].'-----'.count($users).'<br>';
-            $N = 0;
-            $sum = 0;
-            if ($Ndaily_R > 5) {
-                for ($j = 1; $j < $Ndaily_R; $j++) {
-                    $diferencia = $result[$j]['date'] - $result[$j - 1]['date'];
-                    $horas = (int) ($diferencia / (60 * 60));
-                    if ($horas > 20 && $horas <= 30) {
-                        $N++;
-                        $sum = $sum + ($result[$j]['followers'] - $result[$j - 1]['followers']);
-                    }
-                }
-                //fwrite($file, ($users[$i]['id'].'---'.$users[$i]['status_id'].'---'.$users[$i]['plane_id'].'---'.((int)($sum/$N)).'<br>'));
-                echo $users[$i]['id'] . '---' . $users[$i]['status_id'] . '---' . $users[$i]['plane_id'] . '---' . ((int) ($sum / $N)) . '<br>';
-            }
-        }
-        echo 'fin';
-        fclose($file);
-    }
-
-    public function update_ds_user_id() {
-        $this->is_ip_hacker();
-        $this->load->model('class/client_model');
-        $resul = $this->client_model->select_white_list_model();
-        foreach ($resul as $key => $value) {
-            $data_insta = $this->check_insta_profile($value['profile']);
-            $this->client_model->update_ds_user_id_white_list_model($value['id'], $data_insta->pk);
-        }
-    }
-
-    public function login_all_clients() {
-        $this->is_ip_hacker();
-        $this->load->model('class/user_model');
-        $a = $this->user_model->get_all_dummbu_clients();
-        $N = count($a);
-        for ($i = 0; $i < $N; $i++) {
-            $st = $a[$i]['status_id'];
-            if ($st !== '4' && $st !== '8' && $st !== '11' && $a[$i]['role_id'] === '2') {
-                echo $i;
-                $login = $a[$i]['login'];
-                $pass = $a[$i]['pass'];
-                $datas['user_login'] = $login;
-                $datas['user_pass'] = $pass;
-                $result = $this->user_do_login($datas);
-            }
-        }
-    }
-
-    public function time_of_live() {
-        $this->is_ip_hacker();
-        $this->load->model('class/user_model');
-        $result = $this->user_model->time_of_live_model(4);
-        $response = array(
-            '0-2-dias' => array(0, 0, 0, 0, 0),
-            '2-30-dias' => array(0, 0, 0, 0, 0),
-            '30-60-dias' => array(0, 0, 0, 0, 0),
-            '60-90-dias' => array(0, 0, 0, 0, 0),
-            '90-120-dias' => array(0, 0, 0, 0, 0),
-            '120-150-dias' => array(0, 0, 0, 0, 0),
-            '150-180-dias' => array(0, 0, 0, 0, 0),
-            '180-210-dias' => array(0, 0, 0, 0, 0),
-            '210-240-dias' => array(0, 0, 0, 0, 0),
-            '240-270-dias' => array(0, 0, 0, 0, 0),
-            'mais-270' => array(0, 0, 0, 0, 0));
-
-        foreach ($result as $user) {
-            $difference = $user['end_date'] - $user['init_date'];
-            $second = 1;
-            $minute = 60 * $second;
-            $hour = 60 * $minute;
-            $day = 24 * $hour;
-
-            $plane = $user['plane_id'];
-
-            $num_days = floor($difference / $day);
-            if ($num_days <= 2)
-                $response['0-2-dias'][$plane] = $response['0-2-dias'][$plane] + 1;
-            else
-            if ($num_days > 2 && $num_days <= 30)
-                $response['2-30-dias'][$plane] = $response['2-30-dias'][$plane] + 1;
-            else
-            if ($num_days > 30 && $num_days <= 60)
-                $response['30-60-dias'][$plane] = $response['30-60-dias'][$plane] + 1;
-            else
-            if ($num_days > 60 && $num_days <= 90)
-                $response['60-90-dias'][$plane] = $response['60-90-dias'][$plane] + 1;
-            else
-            if ($num_days > 90 && $num_days <= 120)
-                $response['90-120-dias'][$plane] = $response['90-120-dias'][$plane] + 1;
-            else
-            if ($num_days > 120 && $num_days <= 150)
-                $response['120-150-dias'][$plane] = $response['120-150-dias'][$plane] + 1;
-            else
-            if ($num_days > 150 && $num_days <= 180)
-                $response['150-180-dias'][$plane] = $response['150-180-dias'][$plane] + 1;
-            else
-            if ($num_days > 180 && $num_days <= 210)
-                $response['180-210-dias'][$plane] = $response['180-210-dias'][$plane] + 1;
-            else
-            if ($num_days > 210 && $num_days <= 240)
-                $response['210-240-dias'][$plane] = $response['210-240-dias'][$plane] + 1;
-            else
-            if ($num_days > 240 && $num_days <= 270)
-                $response['240-270-dias'][$plane] = $response['240-270-dias'][$plane] + 1;
-            else
-                $response['mais-270'][$plane] = $response['mais-270'][$plane] + 1;
-        }
-        var_dump($response);
-    }
-
-    public function users_by_month_and_plane() {
-        $this->is_ip_hacker();
-        $status = $this->input->get()['status'];
-        $this->load->model('class/user_model');
-        $result = $this->user_model->time_of_live_model($status);
-
-        foreach ($result as $user) {
-            $month = date("n", $user['init_date']);
-            $year = date("Y", $user['init_date']);
-            $cad = $month . '-' . $year . '<br>';
-            $plane_id = $user['plane_id'];
-            if (!isset($r[$cad][$plane_id]))
-                $r[$cad][$plane_id] = 0;
-            else
-                $r[$cad][$plane_id] = $r[$cad][$plane_id] + 1;
-        }
-        var_dump($r);
-    }
-
-    /* public function cancel_blocked_by_payment_by_max_retry_payment(){
-      $this->load->model('class/system_config');
-      $GLOBALS['sistem_config'] = $this->system_config->load();
-      $this->load->model('class/user_model');
-      $this->load->model('class/client_model');
-      $result=$this->client_model->get_all_clients_by_status_id(2);
-      foreach ($result as $client) {
-      if($client['retry_payment_counter']>9){
-      try{
-      $this->delete_recurrency_payment($client['initial_order_key']);
-      $this->delete_recurrency_payment($client['order_key']);
-      $this->user_model->update_user($client['user_id'], array(
-      'end_date' => time(),
-      'status_date' => time(),
-      'status_id' => 4));
-      $this->client_model->update_client($client['user_id'], array(
-      'observation' => 'Cancelado automaticamente por mais de 10 retentativas de pagamento sem sucessso'));
-      echo 'Client '.$client['user_id'].' cancelado por maxima de retentativas';
-      } catch (Exception $e){
-      echo 'Error deleting cliente '.$client['user_id'].' in database';
-      }
-      }
-      }
-      }
-
-      public function buy_tester(){
-
-      }
-
-      public function update_all_retry_clients(){
-      $array_ids=array(176, 192, 419, 1290, 1921, 3046, 3179, 3218, 3590, 12707, 564, 3486, 671, 2300, 4123, 4466, 12356, 12373, 12896, 13786, 23410,25073, 15746, 23636, 24426, 15745);
-      $N=count($array_ids);
-      for($i=0;$i<$N;$i++){
-      $this->update_client_after_retry_payment_success($array_ids[$i]);
-      }
-      } */
-
-    public function capturer_and_recurrency_for_blocked_by_payment() {
-        $this->is_ip_hacker();
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->model('class/user_model');
-        $this->load->model('class/client_model');
-        $this->load->model('class/Crypt');
-        $params = $this->input->get();
-        $result = $this->client_model->get_all_clients_by_status_id(2);
-        foreach ($result as $client) {
-            $aa = $client['login'];
-            echo "<br><br>Client " . $aa . " in turn and has " . $client['retry_payment_counter'] . " paymnets retry<br><br>";
-            $status_id = $client['status_id'];
-            if ($client['retry_payment_counter'] <= 7) {
-                if ($client['credit_card_number'] != null && $client['credit_card_number'] != null &&
-                        $client['credit_card_name'] != null && $client['credit_card_name'] != '' &&
-                        $client['credit_card_exp_month'] != null && $client['credit_card_exp_month'] != '' &&
-                        $client['credit_card_exp_year'] != null && $client['credit_card_exp_year'] != '' &&
-                        $client['credit_card_cvc'] != null && $client['credit_card_cvc'] != '') {
-
-                    $pay_day = time();
-                    $payment_data['credit_card_number'] = $this->Crypt->decodify_level1($client['credit_card_number']);
-                    $payment_data['credit_card_name'] = $client['credit_card_name'];
-                    $payment_data['credit_card_exp_month'] = $client['credit_card_exp_month'];
-                    $payment_data['credit_card_exp_year'] = $client['credit_card_exp_year'];
-                    $payment_data['credit_card_cvc'] = $this->Crypt->decodify_level1($client['credit_card_cvc']);
-
-
-                    $difference = $pay_day - $client['init_date'];
-                    $second = 1;
-                    $minute = 60 * $second;
-                    $hour = 60 * $minute;
-                    $day = 24 * $hour;
-                    $num_days = floor($difference / $day);
-
-                    $payment_data['amount_in_cents'] = 0;
-                    if ($client['ticket_peixe_urbano'] === 'AMIGOSDOPEDRO' || $client['ticket_peixe_urbano'] === 'INSTA15D') {
-                        $payment_data['amount_in_cents'] = $this->client_model->get_normal_pay_value($client['plane_id']);
-                    } else
-                    if (($client['ticket_peixe_urbano'] === 'INSTA50P' ||
-                            $client['ticket_peixe_urbano'] === 'BACKTODUMBU' ||
-                            $client['ticket_peixe_urbano'] === 'BACKTODUMBU-DNLO' ||
-                            $client['ticket_peixe_urbano'] === 'BACKTODUMBU-EGBTO')) {
-                        $payment_data['amount_in_cents'] = $this->client_model->get_normal_pay_value($client['plane_id']);
-                        if ($num_days <= 33)
-                            $payment_data['amount_in_cents'] = $payment_data['amount_in_cents'] / 2;
-                    } else
-                    if ($client['ticket_peixe_urbano'] === 'DUMBUDF20') {
-                        $payment_data['amount_in_cents'] = $this->client_model->get_normal_pay_value($client['plane_id']);
-                        $payment_data['amount_in_cents'] = ($payment_data['amount_in_cents'] * 8) / 10;
-                    } else
-                    if ($client['ticket_peixe_urbano'] === 'INSTA-DIRECT' || $client['ticket_peixe_urbano'] === 'MALADIRETA') {
-                        $payment_data['amount_in_cents'] = $this->client_model->get_normal_pay_value($client['plane_id']);
-                    } else
-                    if ($client['actual_payment_value'] != null &&
-                            $client['actual_payment_value'] != 'null' &&
-                            $client['actual_payment_value'] != '' &&
-                            $client['actual_payment_value'] != NULL && $payment_data['amount_in_cents'] == 0
-                    )
-                        $payment_data['amount_in_cents'] = $client['actual_payment_value'];
-                    else
-                        $payment_data['amount_in_cents'] = $this->client_model->get_normal_pay_value($client['plane_id']);
-
-                    $resp = $this->check_mundipagg_credit_card($payment_data);
-                    if ((is_object($resp) && $resp->isSuccess() && $resp->getData()->CreditCardTransactionResultCollection[0]->CapturedAmountInCents > 0)) {
-                        $this->update_client_after_retry_payment_success($client['user_id']);
-                        $this->client_model->update_client($client['user_id'], array(
-                            'retry_payment_counter' => 0));
-                        echo "<br><br>Client " . $aa . " retried correctly<br><br>";
-                    } else {
-                        $this->client_model->update_client($client['user_id'], array(
-                            'retry_payment_counter' => $client['retry_payment_counter'] + 1));
-                    }
-                }
-            } else {
-                try {
-                    $this->delete_recurrency_payment($client['initial_order_key']);
-                    $this->delete_recurrency_payment($client['order_key']);
-                    $this->user_model->update_user($client['user_id'], array(
-                        'end_date' => time(),
-                        'status_date' => time(),
-                        'status_id' => 4));
-                    $this->client_model->update_client($client['user_id'], array(
-                        'observation' => 'Cancelado automaticamente por mais te 10 retentativas de pagamento sem sucessso'));
-                    echo '<br>------->Client ' . $client['user_id'] . ' cancelado por maxima de retentativas';
-                } catch (Exception $e) {
-                    echo 'Error deleting cliente ' . $client['user_id'] . ' in database';
-                }
-            }
-        }
-    }
-
-    public function cancel_blocked_by_payment_by_max_retry_payment() {
-        $this->is_ip_hacker();
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->model('class/user_model');
-        $this->load->model('class/client_model');
-        $result = $this->client_model->get_all_clients_by_status_id(2);
-        foreach ($result as $client) {
-            if ($client['retry_payment_counter'] > 9) {
-                try {
-                    $this->delete_recurrency_payment($client['initial_order_key']);
-                    $this->delete_recurrency_payment($client['order_key']);
-                    $this->user_model->update_user($client['user_id'], array(
-                        'end_date' => time(),
-                        'status_date' => time(),
-                        'status_id' => 4));
-                    $this->client_model->update_client($client['user_id'], array(
-                        'observation' => 'Cancelado automaticamente por mais de 10 retentativas de pagamento sem sucessso'));
-                    echo 'Client ' . $client['user_id'] . ' cancelado por maxima de retentativas';
-                } catch (Exception $e) {
-                    echo 'Error deleting cliente ' . $client['user_id'] . ' in database';
-                }
-            }
-        }
-    }
-
-    public function ranking() { //10 clientes activos que mas han ganado con follows               
-        //Funcion que deve estimar el ranking general, segun el ranking diario.
-        //retorna un array con el ranking, sendo que o clliente na pocisão 0 é o mais ranquado
-    }
-
-    public function daily_ranking() {
-        $this->is_ip_hacker();
-        $this->load->model('class/user_model');
-        $this->load->model('class/ranking_model');
-        $result = $this->user_model->get_ranking();
-        $N = count($result);
-        for ($i = 0; $i < $N; $i++) {
-            $actual_followers = $this->user_model->get_last_daily_report($result[$i]['user_id']);
-            if ($actual_followers) {
-                $ndays = time() - $result[$i]['init_date'];
-                $ndays = $ndays / (24 * 60 * 60);
-                $result[$i]['ranking_score'] = ($actual_followers['followers'] - $result[$i]['insta_followers_ini']) / $ndays;
-            } else
-                $result[$i]['ranking_score'] = 0;
-        }
-
-        foreach ($result as $key => $row) {
-            $aux[$key] = $row['ranking_score'];
-        }
-        array_multisort($aux, SORT_DESC, $result);
-
-        $i = 0;
-        foreach ($result as $key => $row) {
-            $datas = array(
-                'client_id' => $result[$i]['user_id'],
-                'position' => ($i + 1),
-                'date' => time()
-            );
-            $this->ranking_model->insert_into_ranking($datas);
-            $i++;
-            if ($i == 10)
-                break;
-        }
-    }
-
-    public function buy_tester() {
-        
-    }
-
-    public function update_all_retry_clients() {
-        $this->is_ip_hacker();
-        $array_ids = array();
-        $N = count($array_ids);
-        for ($i = 0; $i < $N; $i++) {
-            $this->update_client_after_retry_payment_success($array_ids[$i]);
-        }
-    }
-
     public function security_code_request() {
         $this->is_ip_hacker();
-        //antes
-        //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/Robot.php';
-        //$this->Robot = new \follows\cls\Robot();
-        //ahora
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
         $this->load->library('external_services');
-
         $this->load->model('class/user_role');
         $this->load->model('class/user_model');
-        $xxx = $this->session->userdata('role_id');
-        $yyy = user_role::CLIENT;
         if ($this->session->userdata('role_id') == user_role::CLIENT) {
             try {
-                //antes
-                //$checkpoint_data = $this->Robot->checkpoint_requested($this->session->userdata('login'), $this->session->userdata('pass'));
-                //ahora
                 $checkpoint_data = $this->external_services->checkpoint_requested($this->session->userdata('login'), $this->session->userdata('pass'));
             } catch (Exception $ex) {
                 $result['success'] = false;
@@ -3723,7 +2206,6 @@ class Welcome extends CI_Controller {
                 echo json_encode($result);
                 return;
             }
-
             if ($checkpoint_data && $checkpoint_data->status == "ok") {
                 if ($checkpoint_data->type == "CHALLENGE") {
                     $result['success'] = true;
@@ -3743,7 +2225,6 @@ class Welcome extends CI_Controller {
                 $result['message'] = $this->T('Erro ao solicitar código de segurança', array(), $this->session->userdata('language'));
                 $this->user_model->insert_washdog($this->session->userdata('id'), 'ERROR #3 IN SECURITY CODE REQUEST');
             }
-
             echo json_encode($result);
         } else {
             $this->display_access_error();
@@ -3752,22 +2233,14 @@ class Welcome extends CI_Controller {
 
     public function security_code_confirmation() {
         $this->is_ip_hacker();
-        //antes
-        //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/Robot.php';
-        //$this->Robot = new \follows\cls\Robot();
-        //ahora
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
         $this->load->library('external_services');
         $this->load->model('class/user_role');
         if ($this->session->userdata('role_id') == user_role::CLIENT) {
             $security_code = $this->input->post()['security_code'];
-            //antes
-            //$checkpoint_data = $this->Robot->make_checkpoint($this->session->userdata('login'), $security_code);
-            //ahora
             $checkpoint_data = $this->external_services->make_checkpoint($this->session->userdata('login'), $security_code);
             $this->load->model('class/user_model');
-
             if ($checkpoint_data && $checkpoint_data->json_response->status === 'ok' && $checkpoint_data->sessionid !== null && $checkpoint_data->ds_user_id !== null) {
                 $result['success'] = true;
                 $result['message'] = 'Código de segurança confirmado corretamente';
@@ -3803,7 +2276,6 @@ class Welcome extends CI_Controller {
             $N = count($active_profiles);
             $N_profiles = 0;
             $is_active_tag = false;
-
             for ($i = 0; $i < $N; $i++) {
                 if ($active_profiles[$i]['type'] === '2' && $active_profiles[$i]['deleted'] === '0')
                     $N_profiles = $N_profiles + 1;
@@ -3838,13 +2310,10 @@ class Welcome extends CI_Controller {
                 else
                     $result['message'] = $this->T('O perfil informado é uma hashtag ativo', array(), $GLOBALS['language']);
             }
-
             if ($result['success'] == true) {
                 $this->load->model('class/user_model');
-                //$this->user_model->insert_washdog($this->session->userdata('id'),'HASHTAG INSERTED '.$profile['profile']);
                 $this->user_model->insert_washdog($this->session->userdata('id'), 'HASHTAG INSERTED');
             }
-
             echo json_encode($result);
         }
     }
@@ -3870,10 +2339,8 @@ class Welcome extends CI_Controller {
                 $result['success'] = false;
                 $result['message'] = $this->T('Erro no sistema, tente novamente', array(), $GLOBALS['language']);
             }
-
             if ($result['success'] == true) {
                 $this->load->model('class/user_model');
-                //$this->user_model->insert_washdog($this->session->userdata('id'),'HASHTAG ELIMINATED '.$profile['hashtag']);
                 $this->user_model->insert_washdog($this->session->userdata('id'), 'HASHTAG ELIMINATED');
             }
             echo json_encode($result);
@@ -3882,17 +2349,9 @@ class Welcome extends CI_Controller {
 
     public function check_insta_tag_from_client($profile) {
         $this->is_ip_hacker();
-        //antes
-        //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/Robot.php';
-        //$this->Robot = new \follows\cls\Robot();
-        //ahora
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
         $this->load->library('external_services');
-
-        //antes
-        //$data = $this->Robot->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')),$profile);
-        //ahora
         $data = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $profile);
         if (is_object($data)) {
             return $data;
@@ -4015,12 +2474,6 @@ class Welcome extends CI_Controller {
         echo json_encode($result);
     }
 
-    public function execute_query() {
-        $query = file_get_contents('php://input');
-        $result = $this->user_model->execute_sql_query($query);
-        var_dump($result);
-    }
-
     public function get_cep_datas() {
         $cep = $this->input->post()['cep'];
         $datas = file_get_contents('https://viacep.com.br/ws/' . $cep . '/json/');
@@ -4032,6 +2485,14 @@ class Welcome extends CI_Controller {
         $response['datas'] = json_decode($datas);
         echo json_encode($response);
     }
+    
+    //DEVELOPERS, ADD NEW FUNCTION OS SYSTEM HERE ...
+    
+    
+    
+    
+    //Axiliar functions VINDI
+    //-----------------------------------------------------------------------------------------------
 
     public function login_all_blocked_by_pass() {
         $this->load->model('class/client_model');
@@ -4048,29 +2509,6 @@ class Welcome extends CI_Controller {
         }
     }
 
-    public function purchase_only_one() {
-        $this->load->model('class/client_model');
-        $this->load->model('class/user_model');
-        $this->load->model('class/user_status');
-        $this->load->model('class/Crypt');
-        require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
-        $this->Vindi = new \follows\cls\Payment\Vindi();
-        //$emails = array('tiendavirtual.angora@gmail.com', 'nsoto@123lavado.cl', 'green_boy221@yahoo.com', 'zakblack00@gmail.com', 'ronal.pollero.lopez@gmail.com', 'rohit4rayat@gmail.com', 'brown7brown@gmail.com', 'redzoneluxury@gmail.com', 'info@drjeanpaul.com', 'abdallah.ashraf5501@gmail.com', 'latsypanam@gmail.com', 'like.to.andrey@gmail.com', 'nature.magazin11@gmail.com', 'cherrygelortiz@yahoo.com', 'dasomindumentaria@hotmail.com', 'gardenscreators@gmail.com', 'splex1@inbox.lv', 'gipssysuhail@hotmail.com', 'TWOCHERRIESONTOP.GT@gmail.com', 'masterfoodsng@gmail.com', 'eyichukwuchizaram@gmail.com', 'penaivan92@gmail.com', 'highbrean@hotmail.com', 'faten.samara@outlook.sa', 'onishenkojeka@gmail.com', 'mor440@hotmail.com', 'andreafdezsan@gmail.com', 'ashleyyfiola@gmail.com', 'styles.richard@yahoo.com', 'shikhss@gmail.com', 'oladavid148@gmail.com', 'fuad.4awad@gmail.com', '59d1e748e7@nicemail.pro', 'h.f.alsharqawi@gmail.com', 'leslypanini2000@hotmail.com', 'elmonacoltd@gmail.com', 'ibrahemrashid97@gmail.com', 'anassanasszakaria@outlook.fr', 'Shahar20052005@gmail.com', 'kr3eedz@aol.com', 'naomiabraham007@gmail.com', 'service@winebox.jp', 'colourkind01@gmail.com', 'nosviste@gmail.com', 'hamzamoha2002@gmail.com', 'asksprinkle@gmail.com', 'gerencia@sombrerosyponchosdecolombia.com', 'containerfoodplacepereira@gmail.com', 'josergm86@gmail.com');
-        foreach ($emails as $email) {
-            $client = $this->client_model->get_client_by_email($email)[0];
-            //2.3. crear recurrencia segun plano-producto
-            $resp2 = $this->Vindi->create_recurrency_payment($client['user_id'], strtotime("+2 days", time()), $client["dumbu_plane_id"]);
-            if ($resp2->success) {
-                //2.4 salvar payment_key (order_key)
-                $this->client_model->update_client_payment($client['user_id'], array('payment_key' => $resp2->payment_key));
-                $this->user_model->update_user($client['user_id'], array(
-                    'status_id' => user_status::ACTIVE));
-                echo $client['email'].",".$client['language'].",recurrencia: ".$resp2->payment_key."</br>";                
-            } else
-                echo $client['email'].",recurrencia error by: ".$resp2->message."</br>";
-        }
-    }
-
     public function tio_patinhas_vindi() {
         $this->load->model('class/client_model');
         $this->load->model('class/user_model');
@@ -4078,13 +2516,10 @@ class Welcome extends CI_Controller {
         $this->load->model('class/Crypt');
         require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
         $this->Vindi = new \follows\cls\Payment\Vindi();
-
         $clients = $this->client_model->get_all_clients_by_status_id(2);
-
         foreach ($clients as $client) {
             if ($client['plane_id'] == 1)
                 $client['plane_id'] = '4';
-                        
             //1. cobrar en la hora
             $recurrency_value = $this->client_model->get_normal_pay_value($client['plane_id']);
             $amount = (int) ($recurrency_value / 100);
@@ -4097,12 +2532,10 @@ class Welcome extends CI_Controller {
                 if ($resp->status == "paid") {
                     echo 'Cliente ' . $client['user_id'] . ' cobrado na hora satisfatórimente<br><br>';                    
                     $this->client_model->update_client(
-                            $client['user_id'], array('mundi_to_vindi' => 3));
-                    
+                        $client['user_id'], array('mundi_to_vindi' => 3));
                 }
             } else
                 echo 'Cliente ' . $client['user_id'] . ' não foi cobrado na hora <br><br>';
-            
         }
     }
 
@@ -4110,6 +2543,7 @@ class Welcome extends CI_Controller {
         $this->load->model('class/client_model');
         var_dump($this->client_model->is_vindi_client( 40206 ));
     }
+    
     public function mundi_to_vindi() {
         $this->load->model('class/client_model');
         $this->load->model('class/Crypt');
@@ -4161,33 +2595,27 @@ class Welcome extends CI_Controller {
                                 echo "Cliente " . $client['user_id'] . " no pudo ser creada la recurrencia por: " . $resp2->message . "<br><br>";
                             else {
                                 //5. salvar order_key (payment_key)
-                                
                                 $this->client_model->update_client_payment(
-                                        $client['user_id'],
-                                        array(
-                                            'payment_key' => $resp2->payment_key,                                            
-                                        ));
+                                    $client['user_id'],
+                                    array(
+                                        'payment_key' => $resp2->payment_key,                                            
+                                    ));
                                 echo "Cliente: " . $client['user_id'] . " creada recurrencia bien. <br><br>";
                                 
                                 if (date('d/m/Y', $datas['pay_day']) == date('d/m/Y', time()))
                                     echo "analisar si fue cobrado en la mundi y en la Vindi hoje <br><br>";
-                                
-                                
-                                
-                                
                                 $this->delete_recurrency_payment($client['order_key']);
-                                
                                 if($client['pay_day'])
                                     $pay_day = $this->get_pay_day($client['pay_day'])['pay_day'];
                                 else
                                     $pay_day = $this->get_pay_day(strtotime("+2 days",$client['init_date']))['pay_day'];
                                 //6. actualizar mundi_to_vindi en la base de datos
                                 $this->client_model->update_client(
-                                        $client['user_id'], 
-                                        array(
-                                            'mundi_to_vindi' => 1,
-                                            'pay_day' => $pay_day
-                                       ));
+                                    $client['user_id'], 
+                                    array(
+                                        'mundi_to_vindi' => 1,
+                                        'pay_day' => $pay_day
+                                   ));
                             }
                         }
                     }
@@ -4197,7 +2625,384 @@ class Welcome extends CI_Controller {
             die();
         }
     }
-
     
+    
+    //Axiliar functions MUNDI
+    //-----------------------------------------------------------------------------------------------
+    
+    public function buy_retry_for_clients_with_puchase_counter_in_zero() {
+        $this->is_ip_hacker();
+        $this->load->model('class/client_model');
+        $this->load->model('class/Crypt');
+        $cl = $this->client_model->beginners_with_purchase_counter_less_value(9);
+        for ($i = 1; $i < count($cl); $i++) {
+            $clients = $cl[$i];
+            $datas = array('client_login' => $clients['login'],
+                'client_pass' => $clients['pass'],
+                'client_email' => $clients['email']);
+            $resp = $this->check_user_for_sing_in($datas);
+            if ($resp['success']) {
+                $datas = array(
+                    'pk' => $clients['user_id'],
+                    'credit_card_number' => $this->Crypt->decodify_level1($clients['credit_card_number']),
+                    'credit_card_cvc' => $this->Crypt->decodify_level1($clients['credit_card_cvc']),
+                    'credit_card_name' => $clients['credit_card_name'],
+                    'credit_card_exp_month' => $clients['credit_card_exp_month'],
+                    'credit_card_exp_year' => $clients['credit_card_exp_year'],
+                    'plane_type' => $clients['plane_id'],
+                    'ticket_peixe_urbano' => $clients['ticket_peixe_urbano'],
+                    'user_email' => $clients['email'],
+                    'insta_name' => $clients['name'],
+                    'user_login' => $clients['login'],
+                    'user_pass' => $clients['pass'],
+                );
+                $resp = $this->check_client_data_bank($datas);
+                if ($resp['success']) {
+                    echo 'Cliente (' . $clients['login'] . ')   ' . $clients['login'] . 'comprou satisfatoriamente\n<br>';
+                } else {
+                    $this->client_model->update_client($clients['user_id'], array(
+                        'purchase_counter' => -100));
+                    echo 'Cliente ' . $clients['login'] . ' ERRADO\n<br>';
+                }
+            } else {
+                $this->client_model->update_client($clients['user_id'], array(
+                    'purchase_counter' => -100));
+                echo 'Cliente (' . $clients['login'] . ') ' . $clients['login'] . 'não passou passo 1\n<br>';
+            }
+        }
+    }
+
+    public function update_client_after_retry_payment_success($user_id) {
+        $this->is_ip_hacker();
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $this->load->model('class/client_model');
+        $this->load->model('class/user_model');
+        $this->load->model('class/user_status');
+        $this->load->model('class/Crypt');
+        //1. recuperar el cliente y su plano
+        $client = $this->client_model->get_all_data_of_client($user_id)[0];
+        $plane = $this->client_model->get_plane($client['plane_id'])[0];
+        //3. crear nueva recurrencia en la Mundipagg para el proximo mes   
+        date_default_timezone_set('Etc/UTC');
+        $payment_data['credit_card_number'] = $this->Crypt->decodify_level1($client['credit_card_number']);
+        $payment_data['credit_card_name'] = $client['credit_card_name'];
+        $payment_data['credit_card_exp_month'] = $client['credit_card_exp_month'];
+        $payment_data['credit_card_exp_year'] = $client['credit_card_exp_year'];
+        $payment_data['credit_card_cvc'] = $this->Crypt->decodify_level1($client['credit_card_cvc']);
+        if ($client['actual_payment_value'] != '' && $client['actual_payment_value'] != null)
+            $payment_data['amount_in_cents'] = $client['actual_payment_value'];
+        else
+            $payment_data['amount_in_cents'] = $plane['normal_val'];
+        $payment_data['pay_day'] = strtotime("+1 month", time());
+        $resp = $this->check_recurrency_mundipagg_credit_card($payment_data, 0);
+        //4. salvar nuevos pay_day e order_key
+        if (is_object($resp) && $resp->isSuccess()) {
+            //2. eliminar recurrencia actual en la Mundipagg
+            $this->delete_recurrency_payment($client['order_key']);
+            $this->client_model->update_client($user_id, array(
+                'initial_order_key' => '',
+                'order_key' => $resp->getData()->OrderResult->OrderKey,
+                'pay_day' => $payment_data['pay_day']));
+            echo '<br>Client ' . $user_id . ' updated correctly. New order key is:  ' . $resp->getData()->OrderResult->OrderKey;
+            //5. actualizar status del cliente
+            $data_insta = $this->is_insta_user($client['login'], $client['pass']);
+            if ($data_insta['status'] === 'ok' && $data_insta['authenticated']) {
+                $this->user_model->update_user($user_id, array(
+                    'status_date' => time(),
+                    'status_id' => user_status::ACTIVE
+                ));
+                echo ' STATUS = ' . user_status::ACTIVE;
+            } else
+            if ($data_insta['status'] === 'ok' && !$data_insta['authenticated']) {
+                $this->user_model->update_user($user_id, array(
+                    'status_date' => time(),
+                    'status_id' => user_status::BLOCKED_BY_INSTA
+                ));
+                echo ' STATUS = ' . user_status::BLOCKED_BY_INSTA;
+            } else {
+                $this->user_model->update_user($user_id, array(
+                    'status_date' => time(),
+                    'status_id' => user_status::BLOCKED_BY_INSTA
+                ));
+                echo ' STATUS = ' . user_status::VERIFY_ACCOUNT;
+            }
+        } else {
+            $this->user_model->update_user($user_id, array(
+                'status_date' => time(),
+                'status_id' => 1));
+            $this->delete_recurrency_payment($client['order_key']);
+            $this->client_model->update_client($user_id, array(
+                'initial_order_key' => '',
+                'order_key' => '',
+                'observation' => 'NÃO CONSEGUIDO DURANTE RETENTATIVA - TENTAR CRIAR ANTES DE DATA DE PAGAMENTO',
+                'pay_day' => $payment_data['pay_day']));
+            //TO-DO:Ruslan: inserta una pendencia automatica aqui
+
+            if (is_object($resp))
+                echo '<br>Client ' . $user_id . ' DONT updated. Wrong order key is:  ' . $resp->getData()->OrderResult->OrderKey;
+            else
+                echo '<br>Client ' . $user_id . ' DONT updated. Missing order key';
+        }
+
+        $this->client_model->update_client($user_id, array(
+            'initial_order_key' => ''));
+    }
+    
+    public function Pedro() {
+        $this->is_ip_hacker();
+        $this->load->model('class/user_model');
+        $users = $this->user_model->get_all_users();
+        $L = count($users);
+        echo 'Num clientes ' . $L . "<br>";
+        $file = fopen("media_pro.txt", "w");
+        for ($i = 0; $i < $L; $i++) {
+            $result = $this->user_model->get_daily_report($users[$i]['id']);
+            $Ndaily_R = count($result);
+            $N = 0;
+            $sum = 0;
+            if ($Ndaily_R > 5) {
+                for ($j = 1; $j < $Ndaily_R; $j++) {
+                    $diferencia = $result[$j]['date'] - $result[$j - 1]['date'];
+                    $horas = (int) ($diferencia / (60 * 60));
+                    if ($horas > 20 && $horas <= 30) {
+                        $N++;
+                        $sum = $sum + ($result[$j]['followers'] - $result[$j - 1]['followers']);
+                    }
+                }
+                echo $users[$i]['id'] . '---' . $users[$i]['status_id'] . '---' . $users[$i]['plane_id'] . '---' . ((int) ($sum / $N)) . '<br>';
+            }
+        }
+        echo 'fin';
+        fclose($file);
+    }
+    
+    public function capturer_and_recurrency_for_blocked_by_payment() {
+        $this->is_ip_hacker();
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $this->load->model('class/user_model');
+        $this->load->model('class/client_model');
+        $this->load->model('class/Crypt');
+        $params = $this->input->get();
+        $result = $this->client_model->get_all_clients_by_status_id(2);
+        foreach ($result as $client) {
+            $aa = $client['login'];
+            echo "<br><br>Client " . $aa . " in turn and has " . $client['retry_payment_counter'] . " paymnets retry<br><br>";
+            $status_id = $client['status_id'];
+            if ($client['retry_payment_counter'] <= 7) {
+                if ($client['credit_card_number'] != null && $client['credit_card_number'] != null &&
+                        $client['credit_card_name'] != null && $client['credit_card_name'] != '' &&
+                        $client['credit_card_exp_month'] != null && $client['credit_card_exp_month'] != '' &&
+                        $client['credit_card_exp_year'] != null && $client['credit_card_exp_year'] != '' &&
+                        $client['credit_card_cvc'] != null && $client['credit_card_cvc'] != '') {
+
+                    $pay_day = time();
+                    $payment_data['credit_card_number'] = $this->Crypt->decodify_level1($client['credit_card_number']);
+                    $payment_data['credit_card_name'] = $client['credit_card_name'];
+                    $payment_data['credit_card_exp_month'] = $client['credit_card_exp_month'];
+                    $payment_data['credit_card_exp_year'] = $client['credit_card_exp_year'];
+                    $payment_data['credit_card_cvc'] = $this->Crypt->decodify_level1($client['credit_card_cvc']);
+
+
+                    $difference = $pay_day - $client['init_date'];
+                    $second = 1;
+                    $minute = 60 * $second;
+                    $hour = 60 * $minute;
+                    $day = 24 * $hour;
+                    $num_days = floor($difference / $day);
+
+                    $payment_data['amount_in_cents'] = 0;
+                    if ($client['ticket_peixe_urbano'] === 'AMIGOSDOPEDRO' || $client['ticket_peixe_urbano'] === 'INSTA15D') {
+                        $payment_data['amount_in_cents'] = $this->client_model->get_normal_pay_value($client['plane_id']);
+                    } else
+                    if (($client['ticket_peixe_urbano'] === 'INSTA50P' ||
+                            $client['ticket_peixe_urbano'] === 'BACKTODUMBU' ||
+                            $client['ticket_peixe_urbano'] === 'BACKTODUMBU-DNLO' ||
+                            $client['ticket_peixe_urbano'] === 'BACKTODUMBU-EGBTO')) {
+                        $payment_data['amount_in_cents'] = $this->client_model->get_normal_pay_value($client['plane_id']);
+                        if ($num_days <= 33)
+                            $payment_data['amount_in_cents'] = $payment_data['amount_in_cents'] / 2;
+                    } else
+                    if ($client['ticket_peixe_urbano'] === 'DUMBUDF20') {
+                        $payment_data['amount_in_cents'] = $this->client_model->get_normal_pay_value($client['plane_id']);
+                        $payment_data['amount_in_cents'] = ($payment_data['amount_in_cents'] * 8) / 10;
+                    } else
+                    if ($client['ticket_peixe_urbano'] === 'INSTA-DIRECT' || $client['ticket_peixe_urbano'] === 'MALADIRETA') {
+                        $payment_data['amount_in_cents'] = $this->client_model->get_normal_pay_value($client['plane_id']);
+                    } else
+                    if ($client['actual_payment_value'] != null &&
+                            $client['actual_payment_value'] != 'null' &&
+                            $client['actual_payment_value'] != '' &&
+                            $client['actual_payment_value'] != NULL && $payment_data['amount_in_cents'] == 0
+                    )
+                        $payment_data['amount_in_cents'] = $client['actual_payment_value'];
+                    else
+                        $payment_data['amount_in_cents'] = $this->client_model->get_normal_pay_value($client['plane_id']);
+
+                    $resp = $this->check_mundipagg_credit_card($payment_data);
+                    if ((is_object($resp) && $resp->isSuccess() && $resp->getData()->CreditCardTransactionResultCollection[0]->CapturedAmountInCents > 0)) {
+                        $this->update_client_after_retry_payment_success($client['user_id']);
+                        $this->client_model->update_client($client['user_id'], array(
+                            'retry_payment_counter' => 0));
+                        echo "<br><br>Client " . $aa . " retried correctly<br><br>";
+                    } else {
+                        $this->client_model->update_client($client['user_id'], array(
+                            'retry_payment_counter' => $client['retry_payment_counter'] + 1));
+                    }
+                }
+            } else {
+                try {
+                    $this->delete_recurrency_payment($client['initial_order_key']);
+                    $this->delete_recurrency_payment($client['order_key']);
+                    $this->user_model->update_user($client['user_id'], array(
+                        'end_date' => time(),
+                        'status_date' => time(),
+                        'status_id' => 4));
+                    $this->client_model->update_client($client['user_id'], array(
+                        'observation' => 'Cancelado automaticamente por mais te 10 retentativas de pagamento sem sucessso'));
+                    echo '<br>------->Client ' . $client['user_id'] . ' cancelado por maxima de retentativas';
+                } catch (Exception $e) {
+                    echo 'Error deleting cliente ' . $client['user_id'] . ' in database';
+                }
+            }
+        }
+    }
+
+    public function cancel_blocked_by_payment_by_max_retry_payment() {
+        $this->is_ip_hacker();
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $this->load->model('class/user_model');
+        $this->load->model('class/client_model');
+        $result = $this->client_model->get_all_clients_by_status_id(2);
+        foreach ($result as $client) {
+            if ($client['retry_payment_counter'] > 9) {
+                try {
+                    $this->delete_recurrency_payment($client['initial_order_key']);
+                    $this->delete_recurrency_payment($client['order_key']);
+                    $this->user_model->update_user($client['user_id'], array(
+                        'end_date' => time(),
+                        'status_date' => time(),
+                        'status_id' => 4));
+                    $this->client_model->update_client($client['user_id'], array(
+                        'observation' => 'Cancelado automaticamente por mais de 10 retentativas de pagamento sem sucessso'));
+                    echo 'Client ' . $client['user_id'] . ' cancelado por maxima de retentativas';
+                } catch (Exception $e) {
+                    echo 'Error deleting cliente ' . $client['user_id'] . ' in database';
+                }
+            }
+        }
+    }
+    
+    public function update_all_retry_clients() {
+        $this->is_ip_hacker();
+        $array_ids = array();
+        $N = count($array_ids);
+        for ($i = 0; $i < $N; $i++) {
+            $this->update_client_after_retry_payment_success($array_ids[$i]);
+        }
+    }
+    
+    //Statistical functions
+    //-----------------------------------------------------------------------------------------------
+    public function login_all_clients() {
+        $this->is_ip_hacker();
+        $this->load->model('class/user_model');
+        $a = $this->user_model->get_all_dummbu_clients();
+        $N = count($a);
+        for ($i = 0; $i < $N; $i++) {
+            $st = $a[$i]['status_id'];
+            if ($st !== '4' && $st !== '8' && $st !== '11' && $a[$i]['role_id'] === '2') {
+                echo $i;
+                $login = $a[$i]['login'];
+                $pass = $a[$i]['pass'];
+                $datas['user_login'] = $login;
+                $datas['user_pass'] = $pass;
+                $result = $this->user_do_login($datas);
+            }
+        }
+    }
+
+    public function time_of_live() {
+        $this->is_ip_hacker();
+        $this->load->model('class/user_model');
+        $result = $this->user_model->time_of_live_model(4);
+        $response = array(
+            '0-2-dias' => array(0, 0, 0, 0, 0),
+            '2-30-dias' => array(0, 0, 0, 0, 0),
+            '30-60-dias' => array(0, 0, 0, 0, 0),
+            '60-90-dias' => array(0, 0, 0, 0, 0),
+            '90-120-dias' => array(0, 0, 0, 0, 0),
+            '120-150-dias' => array(0, 0, 0, 0, 0),
+            '150-180-dias' => array(0, 0, 0, 0, 0),
+            '180-210-dias' => array(0, 0, 0, 0, 0),
+            '210-240-dias' => array(0, 0, 0, 0, 0),
+            '240-270-dias' => array(0, 0, 0, 0, 0),
+            'mais-270' => array(0, 0, 0, 0, 0));
+
+        foreach ($result as $user) {
+            $difference = $user['end_date'] - $user['init_date'];
+            $second = 1;
+            $minute = 60 * $second;
+            $hour = 60 * $minute;
+            $day = 24 * $hour;
+
+            $plane = $user['plane_id'];
+
+            $num_days = floor($difference / $day);
+            if ($num_days <= 2)
+                $response['0-2-dias'][$plane] = $response['0-2-dias'][$plane] + 1;
+            else
+            if ($num_days > 2 && $num_days <= 30)
+                $response['2-30-dias'][$plane] = $response['2-30-dias'][$plane] + 1;
+            else
+            if ($num_days > 30 && $num_days <= 60)
+                $response['30-60-dias'][$plane] = $response['30-60-dias'][$plane] + 1;
+            else
+            if ($num_days > 60 && $num_days <= 90)
+                $response['60-90-dias'][$plane] = $response['60-90-dias'][$plane] + 1;
+            else
+            if ($num_days > 90 && $num_days <= 120)
+                $response['90-120-dias'][$plane] = $response['90-120-dias'][$plane] + 1;
+            else
+            if ($num_days > 120 && $num_days <= 150)
+                $response['120-150-dias'][$plane] = $response['120-150-dias'][$plane] + 1;
+            else
+            if ($num_days > 150 && $num_days <= 180)
+                $response['150-180-dias'][$plane] = $response['150-180-dias'][$plane] + 1;
+            else
+            if ($num_days > 180 && $num_days <= 210)
+                $response['180-210-dias'][$plane] = $response['180-210-dias'][$plane] + 1;
+            else
+            if ($num_days > 210 && $num_days <= 240)
+                $response['210-240-dias'][$plane] = $response['210-240-dias'][$plane] + 1;
+            else
+            if ($num_days > 240 && $num_days <= 270)
+                $response['240-270-dias'][$plane] = $response['240-270-dias'][$plane] + 1;
+            else
+                $response['mais-270'][$plane] = $response['mais-270'][$plane] + 1;
+        }
+        var_dump($response);
+    }
+
+    public function users_by_month_and_plane() {
+        $this->is_ip_hacker();
+        $status = $this->input->get()['status'];
+        $this->load->model('class/user_model');
+        $result = $this->user_model->time_of_live_model($status);
+
+        foreach ($result as $user) {
+            $month = date("n", $user['init_date']);
+            $year = date("Y", $user['init_date']);
+            $cad = $month . '-' . $year . '<br>';
+            $plane_id = $user['plane_id'];
+            if (!isset($r[$cad][$plane_id]))
+                $r[$cad][$plane_id] = 0;
+            else
+                $r[$cad][$plane_id] = $r[$cad][$plane_id] + 1;
+        }
+        var_dump($r);
+    }
     
 }
