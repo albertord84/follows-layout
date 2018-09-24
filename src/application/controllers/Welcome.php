@@ -246,30 +246,7 @@ class Welcome extends CI_Controller {
         else
             return $result;
     }
-
-    public function get_real_status_of_user($query, &$user, &$index) {
-        $this->is_ip_hacker();
-        $this->load->model('class/user_status');
-        $this->load->model('class/user_model');
-        $user = $this->user_model->execute_sql_query($query);
-        $N = count($user);
-        $real_status = 0; //No existe, eliminado o inactivo
-        $index = 0;
-        for ($i = 0; $i < $N; $i++) {
-            if ($user[$i]['status_id'] == user_status::BEGINNER) {
-                $real_status = 1; //Beginner
-                $index = $i;
-                break;
-            } else
-            if ($user[$i]['status_id'] != user_status::DELETED && $user[$i]['status_id'] != user_status::INACTIVE && $user[$i]['status_id'] < user_status::DONT_DISTURB) {
-                $real_status = 2; //cualquier otro estado
-                $index = $i;
-                break;
-            }
-        }
-        return $real_status;
-    }
-
+    
     public function user_do_login_second_stage($datas, $language) {
         $this->is_ip_hacker();
         $this->load->model('class/system_config');
@@ -640,6 +617,29 @@ class Welcome extends CI_Controller {
         return $result;
     }
 
+    public function get_real_status_of_user($query, &$user, &$index) {
+        $this->is_ip_hacker();
+        $this->load->model('class/user_status');
+        $this->load->model('class/user_model');
+        $user = $this->user_model->execute_sql_query($query);
+        $N = count($user);
+        $real_status = 0; //No existe, eliminado o inactivo
+        $index = 0;
+        for ($i = 0; $i < $N; $i++) {
+            if ($user[$i]['status_id'] == user_status::BEGINNER) {
+                $real_status = 1; //Beginner
+                $index = $i;
+                break;
+            } else
+            if ($user[$i]['status_id'] != user_status::DELETED && $user[$i]['status_id'] != user_status::INACTIVE && $user[$i]['status_id'] < user_status::DONT_DISTURB) {
+                $real_status = 2; //cualquier otro estado
+                $index = $i;
+                break;
+            }
+        }
+        return $real_status;
+    }
+    
     public function check_ticket_peixe_urbano() {
         $this->is_ip_hacker();
         $this->load->model('class/client_model');
@@ -922,9 +922,8 @@ class Welcome extends CI_Controller {
         $this->load->model('class/user_model');
         $this->load->model('class/user_status');
         $this->load->model('class/credit_card_status');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
-        $this->Vindi = new \follows\cls\Payment\Vindi();
+        $this->load->library('external_services');
+        $GLOBALS['sistem_config'] = $this->system_config->load();        
         $origin_datas = $datas;
         if ($datas == NULL)
             $datas = $this->input->post();
@@ -959,7 +958,8 @@ class Welcome extends CI_Controller {
                             $response['success'] = false;
                             if ($datas['plane_type'] >= '1' && $datas['plane_type'] <= '5') {
                                 //2.1 crear cliente en la vindi
-                                $gateway_client_id = $this->Vindi->addClient($datas['credit_card_name'], $datas['user_email']);
+                                //$gateway_client_id = $this->Vindi->addClient($datas['credit_card_name'], $datas['user_email']);
+                                $gateway_client_id = $this->external_services->addClient($datas['credit_card_name'], $datas['user_email']);
                                 if ($gateway_client_id) {
                                     if ($datas['plane_type'] == '1')
                                         $datas['plane_type'] = 4;
@@ -970,10 +970,12 @@ class Welcome extends CI_Controller {
                                             $datas['pk'], array('pay_day' => $datas['pay_day'], 'plane_id' => $datas['plane_type']
                                     ));
                                     //2.2. crear carton en la vindi
-                                    $resp1 = $this->Vindi->addClientPayment($datas['pk'], $datas);
+                                    //$resp1 = $this->Vindi->addClientPayment($datas['pk'], $datas);
+                                    $resp1 = $this->external_services->addClientPayment($datas['pk'], $datas);
                                     if ($resp1->success) {
                                         //2.3. crear recurrencia segun plano-producto
-                                        $resp2 = $this->Vindi->create_recurrency_payment($datas['pk'], $datas['pay_day'], $datas["plane_type"]);
+                                        //$resp2 = $this->Vindi->create_recurrency_payment($datas['pk'], $datas['pay_day'], $datas["plane_type"]);
+                                        $resp2 = $this->external_services->create_recurrency_payment($datas['pk'], $datas['pay_day'], $datas["plane_type"]);
                                         if ($resp2->success) {
                                             //2.4 salvar payment_key (order_key)
                                             $this->client_model->update_client_payment($datas['pk'], array('payment_key' => $resp2->payment_key));
@@ -1076,10 +1078,11 @@ class Welcome extends CI_Controller {
         $this->load->model('class/user_model');
         $this->load->model('class/user_status');
         $this->load->model('class/credit_card_status');
+        $this->load->model('class/external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
-        $this->Vindi = new \follows\cls\Payment\Vindi();
+        //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
+        //$this->Vindi = new \follows\cls\Payment\Vindi();
         $language = $this->input->get();
         $datas = $this->input->post();
         if ($this->session->userdata('id')) {
@@ -1100,7 +1103,7 @@ class Welcome extends CI_Controller {
                 ///1. verificar si el cliente existe o no en la vindi
                 $is_vindi_client = $this->client_model->is_vindi_client($this->session->userdata('id'));
                 if (!$is_vindi_client) {
-                    $gateway_client_id = $this->Vindi->addClient($datas['credit_card_name'], $datas['client_email']);
+                    $gateway_client_id = $this->external_services->addClient($datas['credit_card_name'], $datas['client_email']);
                     if ($gateway_client_id) {
                         if ($datas['client_update_plane'] == '1')
                             $datas['client_update_plane'] = 4;
@@ -1110,7 +1113,7 @@ class Welcome extends CI_Controller {
                 }
                 if ($is_vindi_client || $gateway_client_id) {
                     //2. crear el nuevo carton en la vindi
-                    $resp = $this->Vindi->addClientPayment($client_data['user_id'], $datas);
+                    $resp = $this->external_services->addClientPayment($client_data['user_id'], $datas);
                     //3. cobrar segun status y upgrade
                     if ($datas['client_update_plane'] == 1)
                         $datas['client_update_plane'] = 4;
@@ -1148,17 +1151,19 @@ class Welcome extends CI_Controller {
                     if ($pay_now_value) {
                         $this->client_model->update_client($this->session->userdata('id'), array('pay_day' => $recurrency_date));
                         $amount = (int) ($pay_now_value / 100);
-                        $resp = $this->Vindi->create_payment($this->session->userdata('id'), \follows\cls\Payment\Vindi::prod_1real_id, $amount);
+                        //$resp = $this->Vindi->create_payment($this->session->userdata('id'), \follows\cls\Payment\Vindi::prod_1real_id, $amount);
+                        $resp = $this->external_services->create_payment($this->session->userdata('id'), $GLOBALS['sistem_config']->prod_1real_id, $amount);
                         if ($resp->success && $resp->status == 'active')
                             $flag_pay_now = true;
                     }
                     //5. recurrencia
-                    $resp_recurrency = $this->Vindi->create_recurrency_payment($this->session->userdata('id'), $recurrency_date, $datas['client_update_plane']);
+                    $resp_recurrency = $this->external_services->create_recurrency_payment($this->session->userdata('id'), $recurrency_date, $datas['client_update_plane']);
                     if ($resp_recurrency->success) {
                         $flag_pay_day = true;
                         //5.1 cancelar recurrencia antigua 
                         if (count($client_vindi_payment))
-                            $this->Vindi->cancel_recurrency_payment($client_vindi_payment['payment_key']);
+                            //$this->Vindi->cancel_recurrency_payment($client_vindi_payment['payment_key']);
+                            $this->external_services->cancel_recurrency_payment($client_vindi_payment['payment_key']);
                         //5.2 salvar nuevo order_key (payment_key)
                         $this->client_model->update_client_payment($this->session->userdata('id'), array('payment_key' => $resp_recurrency->payment_key,
                             'dumbu_plane_id' => $datas['client_update_plane']
@@ -1632,7 +1637,7 @@ class Welcome extends CI_Controller {
         $GLOBALS['language'] = $param['language'];
         $datas = $this->input->post();
         $this->load->library('external_services');
-        $result = $this->external_services->send_client_contact_form($datas['name'], $datas['email'], $datas['message'], $datas['company'], $datas['telf']);
+        $result = (array)$this->external_services->send_client_contact_form($datas['name'], $datas['email'], $datas['message'], $datas['company'], $datas['telf']);
         if ($result['success']) {
             $result['message'] = $this->T('Mensagem enviada, agradecemos seu contato', array(), $GLOBALS['language']);
         }
@@ -2514,8 +2519,11 @@ class Welcome extends CI_Controller {
         $this->load->model('class/user_model');
         $this->load->model('class/user_status');
         $this->load->model('class/Crypt');
-        require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
-        $this->Vindi = new \follows\cls\Payment\Vindi();
+        $this->load->model('class/external_services');
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
+        //$this->Vindi = new \follows\cls\Payment\Vindi();
         $clients = $this->client_model->get_all_clients_by_status_id(2);
         foreach ($clients as $client) {
             if ($client['plane_id'] == 1)
@@ -2524,7 +2532,7 @@ class Welcome extends CI_Controller {
             $recurrency_value = $this->client_model->get_normal_pay_value($client['plane_id']);
             $amount = (int) ($recurrency_value / 100);
             try {
-                $resp = $this->Vindi->create_payment($client['user_id'], \follows\cls\Payment\Vindi::prod_1real_id, $amount);
+                $resp = $this->external_services->create_payment($client['user_id'],$GLOBALS['sistem_config']->prod_1real_id, $amount);
             } catch (Exception $exc) {
                 echo 'Cliente ' . $client['user_id'] . ' não foi cobrado na hora por: ' . $exc->getMessage() . ' <br><br>';
             }
@@ -2547,8 +2555,11 @@ class Welcome extends CI_Controller {
     public function mundi_to_vindi() {
         $this->load->model('class/client_model');
         $this->load->model('class/Crypt');
-        require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
-        $this->Vindi = new \follows\cls\Payment\Vindi();
+        $this->load->model('class/external_services');
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
+        //$this->Vindi = new \follows\cls\Payment\Vindi();
         $sts = array(2,10,3,1); //6,5,9
         $clients = $this->client_model->get_all_clients_by_status_id(10);
         foreach ($clients as $client) {
@@ -2563,7 +2574,7 @@ class Welcome extends CI_Controller {
                 if ($datas['credit_card_name'] !== 'PAYMENT_BY_TICKET_BANK' && $datas['credit_card_name'] != '' && $datas['credit_card_number'] != '' && $datas['credit_card_cvc'] != '' && $datas['credit_card_exp_month'] != '' && $datas['credit_card_exp_year'] != '') {
                     //1. crear cliente en la vindi
                     try {
-                        $gateway_client_id = $this->Vindi->addClient($datas['credit_card_name'], $datas['user_email']);
+                        $gateway_client_id = $this->external_services->addClient($datas['credit_card_name'], $datas['user_email']);
                     } catch (Exception $exc) {
                         $gateway_client_id = FALSE;
                         echo "Cliente " . $client['user_id'] . "no pudo ser cadastrado en la Vindi por" . $exc->getMessage() . "<br><br>";
@@ -2576,7 +2587,7 @@ class Welcome extends CI_Controller {
                                 $client['user_id'], $gateway_client_id, $client['plane_id']);
                         //3. crear carton en la vindi
                         try {
-                            $resp1 = $this->Vindi->addClientPayment($client['user_id'], $datas);
+                            $resp1 = $this->external_services->addClientPayment($client['user_id'], $datas);
                         } catch (Exception $exc) {
                             $resp1 = false;
                             echo "Cliente " . $client['user_id'] . "no pudo ser creado o cartão de crédito por: " . $exc->getMessage() . "<br><br>";
@@ -2586,7 +2597,7 @@ class Welcome extends CI_Controller {
                         else {
                             //4. crear recurrencia segun plano-producto
                             try {
-                                $resp2 = $this->Vindi->create_recurrency_payment($client['user_id'], $datas['pay_day'], $client['plane_id']);
+                                $resp2 = $this->external_services->create_recurrency_payment($client['user_id'], $datas['pay_day'], $client['plane_id']);
                             } catch (Exception $exc) {
                                 $resp2 = FALSE;
                                 echo "Cliente " . $client['user_id'] . " no pudo ser creada la recurrencia por: " . $exc->getMessage() . "<br><br>";
@@ -2629,7 +2640,6 @@ class Welcome extends CI_Controller {
     
     //Axiliar functions MUNDI
     //-----------------------------------------------------------------------------------------------
-    
     public function buy_retry_for_clients_with_puchase_counter_in_zero() {
         $this->is_ip_hacker();
         $this->load->model('class/client_model');
@@ -2747,34 +2757,6 @@ class Welcome extends CI_Controller {
 
         $this->client_model->update_client($user_id, array(
             'initial_order_key' => ''));
-    }
-    
-    public function Pedro() {
-        $this->is_ip_hacker();
-        $this->load->model('class/user_model');
-        $users = $this->user_model->get_all_users();
-        $L = count($users);
-        echo 'Num clientes ' . $L . "<br>";
-        $file = fopen("media_pro.txt", "w");
-        for ($i = 0; $i < $L; $i++) {
-            $result = $this->user_model->get_daily_report($users[$i]['id']);
-            $Ndaily_R = count($result);
-            $N = 0;
-            $sum = 0;
-            if ($Ndaily_R > 5) {
-                for ($j = 1; $j < $Ndaily_R; $j++) {
-                    $diferencia = $result[$j]['date'] - $result[$j - 1]['date'];
-                    $horas = (int) ($diferencia / (60 * 60));
-                    if ($horas > 20 && $horas <= 30) {
-                        $N++;
-                        $sum = $sum + ($result[$j]['followers'] - $result[$j - 1]['followers']);
-                    }
-                }
-                echo $users[$i]['id'] . '---' . $users[$i]['status_id'] . '---' . $users[$i]['plane_id'] . '---' . ((int) ($sum / $N)) . '<br>';
-            }
-        }
-        echo 'fin';
-        fclose($file);
     }
     
     public function capturer_and_recurrency_for_blocked_by_payment() {

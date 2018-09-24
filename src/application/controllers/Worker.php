@@ -9,9 +9,9 @@ class Worker extends CI_Controller {
     }
 
     public function do_work_by_reference_id() {
-        require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/system_config.php';
+        require_once $_SERVER['DOCUMENT_ROOT'] . '/follows-worker/worker/class/system_config.php';
         $GLOBALS['sistem_config'] = new follows\cls\system_config();
-        require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/Worker.php';
+        require_once $_SERVER['DOCUMENT_ROOT'] . '/follows-worker/worker/class/Worker.php';
         $Worker = new \follows\cls\Worker();
 //        $daily_work = $Worker->get_work();
         $reference_id = $_GET['reference_id'];

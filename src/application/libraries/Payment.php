@@ -9,8 +9,7 @@
     ini_set('xdebug.var_display_max_data', 1024);
     
     
-    //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/libraries/mundipagg/init.php';
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/src/externals/mundipagg/init.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/follows-worker/src/externals/mundipagg/init.php';
     
     
     
@@ -20,7 +19,7 @@
         public $date;
         
 //        public function __construct(){
-//            require $_SERVER['DOCUMENT_ROOT'] . '/follows/src/applications/libraries/system_config';
+//            require $_SERVER['DOCUMENT_ROOT'] . '/follows-worker/src/applications/libraries/system_config';
 //            $system_config = new system_config();
 //            $GLOBALS['sistem_config'] = $system_config->system_config->load();
 //        }
@@ -134,7 +133,7 @@
         public function create_boleto_payment($payment_data) {
             try {
                 // Carrega dependências
-                require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/src/externals/MundiAPI-PHP/vendor/autoload.php';
+                require_once $_SERVER['DOCUMENT_ROOT'] . '/follows-worker/src/externals/MundiAPI-PHP/vendor/autoload.php';
                 // Define a url utilizada
                 \Gateway\ApiClient::setBaseUrl("https://transactionv2.mundipaggone.com/"); 
 
