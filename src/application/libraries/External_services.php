@@ -291,7 +291,7 @@ class External_services{
             'user_id'=>urlencode($user_id),
             'datas'=>urlencode(json_encode($datas)),
         );
-        $url = "http://$worker_server_name/follows-worker/src/index.php/payment/vindi_addClientPayment.php";
+        $url = "http://$worker_server_name/follows-worker/src/index.php/payment/vindi_addClientPayment";
         $handler = curl_init();
         curl_setopt($handler, CURLOPT_URL, $url);  
         curl_setopt($handler, CURLOPT_POST,true);

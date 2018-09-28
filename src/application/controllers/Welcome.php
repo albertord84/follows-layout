@@ -1078,7 +1078,7 @@ class Welcome extends CI_Controller {
         $this->load->model('class/user_model');
         $this->load->model('class/user_status');
         $this->load->model('class/credit_card_status');
-        $this->load->model('class/external_services');
+        $this->load->library('external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
         //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
@@ -2519,7 +2519,7 @@ class Welcome extends CI_Controller {
         $this->load->model('class/user_model');
         $this->load->model('class/user_status');
         $this->load->model('class/Crypt');
-        $this->load->model('class/external_services');
+        $this->load->library('external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
         //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
@@ -2555,7 +2555,7 @@ class Welcome extends CI_Controller {
     public function mundi_to_vindi() {
         $this->load->model('class/client_model');
         $this->load->model('class/Crypt');
-        $this->load->model('class/external_services');
+        $this->load->library('external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
         //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
