@@ -1117,13 +1117,14 @@ class Welcome extends CI_Controller {
                     //3. cobrar segun status y upgrade
                     if ($datas['client_update_plane'] == 1)
                         $datas['client_update_plane'] = 4;
+                    
                     $UPGRADE_PLANE = ($datas['client_update_plane'] > $this->session->userdata('plane_id'));
                     $BLOCKED_BY_PAYMENT = ($this->session->userdata('status_id') == user_status::BLOCKED_BY_PAYMENT);
                     $PENDING = ($this->session->userdata('status_id') == user_status::PENDING);
                     $recurrency_date = 0;
                     $recurrency_value = 0;
                     $pay_now_value = 0;
-                    if ($BLOCKED_BY_PAYMENT) {
+                    if($BLOCKED_BY_PAYMENT) {
                         if ($UPGRADE_PLANE) {
                             //crear recurrencia para ahora con valor de nuevo plano
                             $recurrency_date = time();

@@ -7,7 +7,7 @@
         public function load() {
             $vars = new stdClass();
             $this->db->select('*');
-            $this->db->from('dumbu_system_config');
+            $this->db->from('dumbudb.dumbu_system_config');
             $result = $this->db->get()->result_array();        
             if($result) {
                 foreach ($result as $var_info) {
