@@ -784,7 +784,7 @@ $(document).ready(function () {
             delete_geolocalization_click(icons_geolocalization[5]['login_geolocalization']);
     });
         
-    $("#btn_insert_geolocalization").click(function () {        
+    $("#btn_insert_geolocalization").click(function () {   
         if (validate_element('#login_geolocalization', '^[a-zA-Z0-9\.-]{1,300}$')) {
             if(num_geolocalization < MAX_NUM_GEOLOCALIZATION) {
                 if($('#login_geolocalization').val() != '') {                    
