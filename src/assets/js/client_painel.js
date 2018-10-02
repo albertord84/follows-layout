@@ -235,7 +235,6 @@ $(document).ready(function () {
                 l.start();
                 $.ajax({
                     url: base_url + 'index.php/welcome/user_do_login',
-                    //url : base_url+'index.php/welcome/client',
                     data: {
                         'user_login': $('#userLogin').val(),
                         'user_pass': $('#userPassword').val()

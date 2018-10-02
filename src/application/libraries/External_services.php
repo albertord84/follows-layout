@@ -170,7 +170,7 @@ class External_services{
         $info = curl_getinfo($handler);
         $string = curl_error($handler);
         curl_close($handler);
-        return json_decode($response); 
+        return (array)json_decode($response); 
     }
     
     function send_link_ticket_bank_and_access_link($username, $useremail, $access_link, $ticket_link){
