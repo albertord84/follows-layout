@@ -1,11 +1,13 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 class External_services{
+    //web services com curl
     
     //funções com o Instagram
     //---------------------------------------------------------------------------------------
     function bot_login($client_login, $client_pass,$force_login){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+        //bot_login com curl
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];        
         $postData = array(
             'login'=>urlencode($client_login),
@@ -26,13 +28,14 @@ class External_services{
         return $response;
     }
         
-    function get_insta_ref_prof_data_from_client($cookies,$profile_name, $dumbu_id_profile=NULL){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+    function get_insta_ref_prof_data_from_client($cookies,$profile_name, $dumbu_id_profile=NULL, $user_id){
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];        
         $postData = array(
             'cookies'=>urlencode(json_encode($cookies)),
             'profile_name'=>urlencode($profile_name),
-            'dumbu_id_profile'=>urlencode($dumbu_id_profile)
+            'dumbu_id_profile'=>urlencode($dumbu_id_profile),
+            'user_id'=>urlencode($user_id)
         );
         $url = "http://$worker_server_name/follows-worker/src/index.php/worker/get_insta_ref_prof_data_from_client";
         $handler = curl_init();
@@ -48,7 +51,7 @@ class External_services{
     }
     
     function get_insta_ref_prof_data($profile_name){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];        
         $postData = array(
             'profile_name'=>urlencode($profile_name)
@@ -66,13 +69,14 @@ class External_services{
         return json_decode($response); 
     }
     
-    function get_insta_geolocalization_data_from_client($cookies,$profile_name, $dumbu_id_profile=NULL){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+    function get_insta_geolocalization_data_from_client($cookies,$profile_name, $dumbu_id_profile=NULL, $user_id){
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];        
         $postData = array(
             'cookies'=>urlencode(json_encode($cookies)),
             'profile_name'=>urlencode($profile_name),
-            'dumbu_id_profile'=>urlencode($dumbu_id_profile)
+            'dumbu_id_profile'=>urlencode($dumbu_id_profile),
+            'user_id'=>urlencode($user_id)
         );
         $url = "http://$worker_server_name/follows-worker/src/index.php/worker/get_insta_geolocalization_data_from_client";
         $handler = curl_init();
@@ -87,13 +91,14 @@ class External_services{
         return json_decode($response); 
     }
     
-    function get_insta_tag_data_from_client($cookies,$profile_name, $dumbu_id_profile=NULL){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+    function get_insta_tag_data_from_client($cookies,$profile_name, $dumbu_id_profile=NULL, $user_id){
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];        
         $postData = array(
             'cookies'=>urlencode(json_encode($cookies)),
             'profile_name'=>urlencode($profile_name),
-            'dumbu_id_profile'=>urlencode($dumbu_id_profile)
+            'dumbu_id_profile'=>urlencode($dumbu_id_profile),
+            'user_id'=>urlencode($user_id)
         );
         $url = "http://$worker_server_name/follows-worker/src/index.php/worker/get_insta_tag_data_from_client";
         $handler = curl_init();
@@ -109,7 +114,7 @@ class External_services{
     }
     
     function checkpoint_requested($client_login, $client_pass){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];        
         $postData = array(
             'client_login'=>urlencode($client_login),
@@ -129,7 +134,7 @@ class External_services{
     }
         
     function make_checkpoint($user_login, $security_code){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
             'user_login'=>urlencode($user_login),
@@ -152,7 +157,7 @@ class External_services{
     
     //------EMAILS DESDE O SRC - GMAIL------------------------------------------------------
     function send_user_to_purchase_step($useremail, $username, $instaname, $purchase_access_token){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
             'useremail'=>urlencode($useremail),
@@ -174,7 +179,7 @@ class External_services{
     }
     
     function send_link_ticket_bank_and_access_link($username, $useremail, $access_link, $ticket_link){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
             'username'=>urlencode($username),
@@ -196,7 +201,7 @@ class External_services{
     }
     
     function send_client_contact_form($username, $useremail, $usermsg, $usercompany, $userphone){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
             'username'=>urlencode($username),
@@ -219,7 +224,7 @@ class External_services{
     }
         
     function send_new_client_payment_done($username, $useremail, $plane = 0){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
             'username'=>urlencode($username),
@@ -240,7 +245,7 @@ class External_services{
     }
     
     function send_client_payment_success($useremail, $username, $instaname, $instapass){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
             'useremail'=>urlencode($useremail),
@@ -265,7 +270,7 @@ class External_services{
     
     //------PAGAMENTO - VINDI------------------------------------------------------
     function addClient($credit_card_name, $user_email){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
             'credit_card_name'=>urlencode($credit_card_name),
@@ -285,7 +290,7 @@ class External_services{
     }
     
     function addClientPayment($user_id, $datas){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
             'user_id'=>urlencode($user_id),
@@ -305,7 +310,7 @@ class External_services{
     }
     
     function create_recurrency_payment($user_id, $pay_day, $plane_type){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
             'user_id'=>urlencode($user_id),
@@ -326,7 +331,7 @@ class External_services{
     }
     
     function create_payment($user_id, $prod_1real_id, $amount){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
             'user_id'=>urlencode($user_id),
@@ -347,7 +352,7 @@ class External_services{
     }
     
     function cancel_recurrency_payment($client_payment_key){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS-LAYOUT.INI", true);
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
             'client_payment_key'=>urlencode($client_payment_key)

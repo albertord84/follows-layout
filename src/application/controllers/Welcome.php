@@ -1774,7 +1774,7 @@ class Welcome extends CI_Controller {
                     $name_profile = $client_active_profiles[$i]['insta_name'];
                     $id_profile = $client_active_profiles[$i]['id'];
                     if ($client_active_profiles[$i]['type'] === '0') { //es un perfil de referencia
-                        $datas_of_profile = $this->external_services->get_insta_ref_prof_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile);
+                        $datas_of_profile = $this->external_services->get_insta_ref_prof_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
                         if ($datas_of_profile != NULL) {
                             $array_profiles[$cnt_ref_prof]['login_profile'] = $name_profile;
                             $array_profiles[$cnt_ref_prof]['follows_from_profile'] = $datas_of_profile->follows;
@@ -1802,7 +1802,7 @@ class Welcome extends CI_Controller {
                             $cnt_ref_prof = $cnt_ref_prof + 1;
                         }
                     } else if ($client_active_profiles[$i]['type'] === '1') { //es una geolocalizacion      
-                        $datas_of_profile = $this->external_services->get_insta_geolocalization_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile);
+                        $datas_of_profile = $this->external_services->get_insta_geolocalization_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
                         $array_geolocalization[$cnt_geolocalization]['login_geolocalization'] = $name_profile;
                         $array_geolocalization[$cnt_geolocalization]['geolocalization_pk'] = $client_active_profiles[$i]['insta_id'];
                         if ($datas_of_profile)
@@ -1819,7 +1819,7 @@ class Welcome extends CI_Controller {
                         }
                         $cnt_geolocalization = $cnt_geolocalization + 1;
                     } else { //es un hashtag    
-                        $datas_of_profile = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile);
+                        $datas_of_profile = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
 
                         $array_hashtag[$cnt_hashtag]['login_hashtag'] = $name_profile;
                         $array_hashtag[$cnt_hashtag]['hashtag_pk'] = $client_active_profiles[$i]['insta_id'];
