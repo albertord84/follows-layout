@@ -3,6 +3,26 @@
 class External_services{
     //web services com curl
     
+        
+    function vindi_notif_post($post_str){
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
+        $worker_server_name = $database_config['server']['worker_server_name'];        
+        $postData = array(
+            'post_str'=>urlencode($post_str)
+        );
+        $url = "http://$worker_server_name/follows-worker/src/index.php/payment/vindi_notif_post";
+        $handler = curl_init();
+        curl_setopt($handler, CURLOPT_URL, $url);  
+        curl_setopt($handler, CURLOPT_POST,true);
+        curl_setopt($handler, CURLOPT_RETURNTRANSFER,true);  
+        curl_setopt($handler, CURLOPT_POSTFIELDS, $postData);  
+        $response = curl_exec($handler);
+        $info = curl_getinfo($handler);
+        $string = curl_error($handler);
+        curl_close($handler);
+        return $response; 
+    }
+    
     //funções com o Instagram
     //---------------------------------------------------------------------------------------
     function bot_login($client_login, $client_pass,$force_login){
