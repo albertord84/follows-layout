@@ -2523,8 +2523,6 @@ class Welcome extends CI_Controller {
         $this->load->library('external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
-        //$this->Vindi = new \follows\cls\Payment\Vindi();
         $clients = $this->client_model->get_all_clients_by_status_id(2);
         foreach ($clients as $client) {
             if ($client['plane_id'] == 1)
@@ -2559,8 +2557,6 @@ class Welcome extends CI_Controller {
         $this->load->library('external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
-        //$this->Vindi = new \follows\cls\Payment\Vindi();
         $sts = array(2,10,3,1); //6,5,9
         $clients = $this->client_model->get_all_clients_by_status_id(10);
         foreach ($clients as $client) {
