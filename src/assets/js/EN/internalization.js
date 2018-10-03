@@ -79,7 +79,7 @@ var Translation={
     "Confirma ativar a opção UNFOLLOW TOTAL":
             "Do you confirm the activation of the TOTAL UNFOLLOW feature?",    
     " bloqueu você no Instagram":
-            " blocked you in Instagram",
+            " maybe blocked you in Instagram",
     "Seguidores: ":
             "Followers: ",
     "Seguindo: ":
