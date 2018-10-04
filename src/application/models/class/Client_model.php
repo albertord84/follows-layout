@@ -403,6 +403,7 @@
             $this->db->select('*');        
             $this->db->from('clients');
             $this->db->join('users', 'users.id = clients.user_id');   
+            $this->db->join('client_payment', 'users.id = client_payment.dumbu_client_id');   
             if($status_id!=4){
                 $this->db->where('status_id', $status_id);
             }
@@ -438,9 +439,11 @@
                 $this->db->where_not_in('credit_card_number', $cc_numbers);
                 echo 'Retentando los de estatus 20';
             }
-            //$this->db->where('order_key is NOT NULL', NULL, FALSE);
-            $this->db->where('mundi_to_vindi',0);
-            $this->db->order_by("user_id","asc");
+            $this->db->where('credit_card_name <>','PAYMENT_BY_TICKET_BANK');
+            $this->db->where('credit_card_number <>','');
+            $this->db->where('credit_card_cvc <>','');
+            $this->db->where('mundi_to_vindi',1);
+            $this->db->order_by("init_date","asc");
             $a = $this->db->get()->result_array();
             return $a;
         }
