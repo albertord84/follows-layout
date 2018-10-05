@@ -958,7 +958,6 @@ class Welcome extends CI_Controller {
                             $response['success'] = false;
                             if ($datas['plane_type'] >= '1' && $datas['plane_type'] <= '5') {
                                 //2.1 crear cliente en la vindi
-                                //$gateway_client_id = $this->Vindi->addClient($datas['credit_card_name'], $datas['user_email']);
                                 $gateway_client_id = $this->external_services->addClient($datas['credit_card_name'], $datas['user_email']);
                                 if ($gateway_client_id) {
                                     if ($datas['plane_type'] == '1')
@@ -970,11 +969,9 @@ class Welcome extends CI_Controller {
                                             $datas['pk'], array('pay_day' => $datas['pay_day'], 'plane_id' => $datas['plane_type']
                                     ));
                                     //2.2. crear carton en la vindi
-                                    //$resp1 = $this->Vindi->addClientPayment($datas['pk'], $datas);
                                     $resp1 = $this->external_services->addClientPayment($datas['pk'], $datas);
                                     if ($resp1->success) {
                                         //2.3. crear recurrencia segun plano-producto
-                                        //$resp2 = $this->Vindi->create_recurrency_payment($datas['pk'], $datas['pay_day'], $datas["plane_type"]);
                                         $resp2 = $this->external_services->create_recurrency_payment($datas['pk'], $datas['pay_day'], $datas["plane_type"]);
                                         if ($resp2->success) {
                                             //2.4 salvar payment_key (order_key)
@@ -988,7 +985,7 @@ class Welcome extends CI_Controller {
                             }
                             //3. si pagamento correcto: logar cliente, establecer sesion, actualizar status, emails, initdate
                             if ($response['success']) {
-                                $this->client_model->update_client($datas['pk'], array('purchase_access_token' => '0'));
+                                $this->client_model->update_client($datas['pk'], array('purchase_access_token' => '0','mundi_to_vindi'=>1));
                                 $this->load->model('class/user_model');
                                 $data_insta = $this->is_insta_user($datas['user_login'], $datas['user_pass'], $datas['force_login']);
                                 if ($data_insta['status'] === 'ok' && $data_insta['authenticated']) {
@@ -2523,28 +2520,73 @@ class Welcome extends CI_Controller {
         $this->load->library('external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
-        //$this->Vindi = new \follows\cls\Payment\Vindi();
         $clients = $this->client_model->get_all_clients_by_status_id(2);
+//        var_dump($clients);die();
         foreach ($clients as $client) {
-            if ($client['plane_id'] == 1)
-                $client['plane_id'] = '4';
-            //1. cobrar en la hora
-            $recurrency_value = $this->client_model->get_normal_pay_value($client['plane_id']);
-            $amount = (int) ($recurrency_value / 100);
-            try {
-                $resp = $this->external_services->create_payment($client['user_id'],$GLOBALS['sistem_config']->prod_1real_id, $amount);
-            } catch (Exception $exc) {
-                echo 'Cliente ' . $client['user_id'] . ' não foi cobrado na hora por: ' . $exc->getMessage() . ' <br><br>';
+            if($this->client_model->is_vindi_client($client['user_id'])){                
+                if($client['payment_key']!="")
+                    echo $client['user_id'].",".$client['credit_card_name'].",".$client['gateway_client_id'].",".$client['payment_key']."<br>";
+                
+            } else{
+                 echo $client['user_id']." NOT vindi<br>";
             }
-            if ($resp->success) {
-                if ($resp->status == "paid") {
-                    echo 'Cliente ' . $client['user_id'] . ' cobrado na hora satisfatórimente<br><br>';                    
-                    $this->client_model->update_client(
-                        $client['user_id'], array('mundi_to_vindi' => 3));
-                }
-            } else
-                echo 'Cliente ' . $client['user_id'] . ' não foi cobrado na hora <br><br>';
+            
+//            if($client['retry_payment_counter']<10){
+//                if ($client['plane_id'] == 1)
+//                    $client['plane_id'] = '4';
+//                //1. cobrar en la hora
+//                $recurrency_value = $this->client_model->get_normal_pay_value($client['plane_id']);
+//                $amount = (int) ($recurrency_value / 100);
+//                try {
+//                    $resp = $this->external_services->create_payment($client['user_id'],$GLOBALS['sistem_config']->prod_1real_id, $amount);
+//                } catch (Exception $exc) {
+//                    $resp->success =FALSE;
+//                    echo 'Cliente ' . $client['user_id'] . ' não foi cobrado na hora por: ' . $exc->getMessage() . ' <br><br>';
+//                }
+//                if ($resp->success) {
+//                    if ($resp->status == "paid") {
+//                        $this->user_model->update_user(
+//                            $client['user_id'], array(
+//                            'status_date' => time(),
+//                            'status_id' => 1
+//                        ));
+//                        $this->client_model->update_client(
+//                           $client['user_id'], array(
+//                               'mundi_to_vindi' => 1,
+//                               'pay_day' => $pay_day,
+//                           ));
+//                        $pay_day = strtotime("+30 days", time());   
+//                        try {
+//                            $resp2 = $this->external_services->create_recurrency_payment($client['user_id'], $pay_day, $client['plane_id']);
+//                        } catch (Exception $exc) {
+//                            $resp2 = FALSE;
+//                            echo "Cliente " . $client['user_id'] . " no pudo ser creada la recurrencia por: " . $exc->getMessage() . "<br><br>";
+//                        }
+//                        echo "Cliente " . $client['user_id'] . " cobrado na hora satisfatórimente. ";                                        
+//                        if (!$resp2->success)
+//                            echo "No pudo ser creada la recurrencia por: " . $resp2->message . "<br><br>";
+//                        else {                       
+//                            echo "Fue creada la recurrencia satisfatoriamente <br><br>";                        
+//                            $this->client_model->update_client_payment(
+//                                    $datas['pk'], array('payment_key' => $resp2->payment_key));
+//                        }
+//                    }
+//                } else{
+//                    $this->client_model->update_client($client['user_id'], array(
+//                        'retry_payment_counter' => $client['retry_payment_counter'] + 1));
+//                    echo 'Cliente ' . $client['user_id'] . ' não foi cobrado na hora <br><br>';                
+//                }
+//            }else{
+//                $this->user_model->update_user(
+//                    $client['user_id'], array(
+//                    'status_date' => time(),
+//                    'status_id' => 4
+//                ));
+//                $this->client_model->update_client(
+//                   $client['user_id'], array(
+//                       'observation' => 'Canceled by max retry payment in Vindi by Tio Patinhas',
+//                   ));
+//            }
         }
     }
 
@@ -2553,16 +2595,32 @@ class Welcome extends CI_Controller {
         var_dump($this->client_model->is_vindi_client( 40206 ));
     }
     
+    public function rectify_mundi_to_vindi_incoherences() {
+        $this->load->model('class/client_model');
+        $this->load->library('external_services');
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $clients = $this->client_model->get_all_clients_by_status_id(2);
+        foreach ($clients as $client) {
+            if($this->client_model->is_vindi_client($client['user_id'])){
+                $this->client_model->update_client(
+                    $client['user_id'], array(
+                    'mundi_to_vindi' => 1,
+                ));
+                echo "Client ".$client['user_id']. " atualizado<br><br>";
+            }
+        }
+    }
+    
     public function mundi_to_vindi() {
         $this->load->model('class/client_model');
         $this->load->model('class/Crypt');
         $this->load->library('external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
-        //$this->Vindi = new \follows\cls\Payment\Vindi();
-        $sts = array(2,10,3,1); //6,5,9
-        $clients = $this->client_model->get_all_clients_by_status_id(10);
+         //6,5,9,2,10,3,1
+        $clients = $this->client_model->get_all_clients_by_status_id(2);
+        var_dump($clients);die();
         foreach ($clients as $client) {
             if(!$this->client_model->is_vindi_client($this->session->userdata('id'))){                
                 $datas['user_email'] = $client['email'];
