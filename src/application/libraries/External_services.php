@@ -192,7 +192,7 @@ class External_services{
         $string = curl_error($handler);
         curl_close($handler);
         return json_decode($response); 
-    }    
+    }
     
     function get_number_followed_today($client_id){
         $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
