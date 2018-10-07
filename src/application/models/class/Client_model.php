@@ -88,6 +88,10 @@
             //insert respectivity datas in the user table
             $data_user['name']=$data_insta->full_name;              //desde instagram
             $data_user['email']=$datas['client_email'];             //desde el formulario de logueo
+           
+            $data_user['phone_ddd']=$datas['client_phone_ddd'];             //desde el formulario de logueo
+            $data_user['phone_number']=$datas['client_phone_number'];             //desde el formulario de logueo
+            
             $data_user['login']=$datas['client_login'];             //desde el formulario de logueo
             $data_user['pass']=$datas['client_pass'];               //desde el formulario de logueo
             $data_user['role_id']=$datas['role_id'];                //desde el controlador
@@ -398,6 +402,15 @@
             }
         }
         
+        public function delete_client_from_client_payment_table($user_id) {
+            try {    
+                $this->db->where('dumbu_client_id', $user_id);
+                return $this->db->delete('client_payment');
+            } catch (Exception $exc) {
+                echo $exc->getTraceAsString();
+            }
+        }
+        
         
         public function get_all_clients_by_status_id($status_id) {
             $this->db->select('*');        
@@ -440,6 +453,7 @@
                 echo 'Retentando los de estatus 20';
             }
             $this->db->where('credit_card_name <>','PAYMENT_BY_TICKET_BANK');
+            $this->db->where('credit_card_name <>','');
             $this->db->where('credit_card_number <>','');
             $this->db->where('credit_card_cvc <>','');
             $this->db->where('mundi_to_vindi',1);
@@ -770,5 +784,8 @@
                 echo $exc->getTraceAsString();
             }
         }      
+        
+        
+        
 }
 ?>

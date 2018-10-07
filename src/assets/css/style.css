@@ -449,7 +449,7 @@ li{
     cursor:pointer;
 }
 .select select > option{
-    padding:5px 5px;
+    padding:2px 2px;
     margin:0px;
     background-color:#FFF;
     color:#474747;

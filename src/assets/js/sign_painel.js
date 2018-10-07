@@ -129,10 +129,25 @@ $(document).ready(function () {
     
     
     $("#signin_btn_insta_login").click(function() {
-        if ($('#signin_clientLogin').val() != '' && $('#signin_clientPassword').val() != '' && $('#client_email').val() != '') {
-            if (validate_element('#client_email', "^[a-zA-Z0-9\._-]+@([a-zA-Z0-9-]{2,}[.])*[a-zA-Z]{2,4}$")) {
+        if($('#client_phone_ddd').length && $('#client_phone_number').length){
+            if(!validate_element('#client_phone_ddd', "^[0-9]{2,3}$")){
+                $('#container_sigin_message').text(T('DDD incorreto'));
+                $('#container_sigin_message').css('visibility', 'visible');
+                $('#container_sigin_message').css('color', 'red');
+                return;
+            }else
+            if(!validate_element('#client_phone_number', "^[0-9]{5,10}$")){
+                $('#container_sigin_message').text(T('Telefone incorreto'));
+                $('#container_sigin_message').css('visibility', 'visible');
+                $('#container_sigin_message').css('color', 'red');
+                return;
+            }
+            phone_number=true;
+        }else
+            phone_number=true;
+        if(phone_number && $('#signin_clientLogin').val() != '' && $('#signin_clientPassword').val() != '' && $('#client_email').val() != '') {
+            if (validate_element('#client_email', "^[a-zA-Z0-9\._-]+@([a-zA-Z0-9-]{2,}[.])*[a-zA-Z]{2,}$")) {
                 if (validate_element('#signin_clientLogin', '^[a-zA-Z0-9\._]{1,300}$')) {                   
-                    //if($("#errorcaptcha").text()!='Codigo de segurança errado' && $("#errorcaptcha").text()!=''){
                         var l = Ladda.create(this);
                         l.start();
                         l.start();
@@ -140,6 +155,8 @@ $(document).ready(function () {
                             url: base_url + 'index.php/welcome/check_user_for_sing_in',
                             data: {
                                 'client_email': $('#client_email').val(),
+                                'client_phone_ddd': $('#client_phone_ddd').val(),
+                                'client_phone_number': $('#client_phone_number').val(),
                                 'client_login': $('#signin_clientLogin').val(),
                                 'client_pass': $('#signin_clientPassword').val(),
                                 'language': language,
@@ -206,7 +223,6 @@ $(document).ready(function () {
                 $('#container_sigin_message').text(T('Problemas na estrutura do email informado!'));
                 $('#container_sigin_message').css('visibility', 'visible');
                 $('#container_sigin_message').css('color', 'red');
-                //modal_alert_message('O email informado não é correto');
             }
         } else {
             $('#container_sigin_message').text(T('Deve preencher todos os dados corretamente!'));
@@ -414,35 +430,6 @@ $(document).ready(function () {
         }
     });
 
-//    $('#container_plane_4_90').click(function () {
-//        $("#container_plane_4_90").addClass( "active" );
-//        $("#container_plane_9_90").removeClass( "active" );
-//        $("#container_plane_29_90").removeClass( "active" );
-//        $("#container_plane_99_90").removeClass( "active" );
-//        plane = '2';
-//    });
-//    $('#container_plane_9_90').click(function () {
-//        $("#container_plane_4_90").removeClass( "active" );
-//        $("#container_plane_9_90").addClass( "active" );
-//        $("#container_plane_29_90").removeClass( "active" );
-//        $("#container_plane_99_90").removeClass( "active" );
-//        plane = '3';
-//    });
-//    $('#container_plane_29_90').click(function () {
-//        $("#container_plane_4_90").removeClass( "active" );
-//        $("#container_plane_9_90").removeClass( "active" );
-//        $("#container_plane_29_90").addClass( "active" );
-//        $("#container_plane_99_90").removeClass( "active" );
-//        plane = '4';
-//    });
-//    $('#container_plane_99_90').click(function () {
-//        $("#container_plane_4_90").removeClass( "active" );
-//        $("#container_plane_9_90").removeClass( "active" );
-//        $("#container_plane_29_90").removeClass( "active" );
-//        $("#container_plane_99_90").addClass( "active" );
-//        plane = '5';
-//    });
-
     $('#btn_select_plane_slow').click(function () {
         $("#btn_select_plane_slow span div").text(T("SELECIONADO"));
         $("#btn_select_plane_moderated span div").text(T("SELECIONAR"));
@@ -499,11 +486,6 @@ $(document).ready(function () {
         plane = '5';
     });
     
-//    $('#container_plane_4_90').hover(function () {$("#container_plane_4_90").css('cursor', 'pointer');},function () {$("#container_plane_4_90").css('cursor', 'auto');});
-//    $('#container_plane_9_90').hover(function () {$("#container_plane_9_90").css('cursor', 'pointer');},function () {$("#container_plane_9_90").css('cursor', 'auto');});
-//    $('#container_plane_29_90').hover(function () {$("#container_plane_29_90").css('cursor', 'pointer');},function () {$("#container_plane_29_90").css('cursor', 'auto');});
-//    $('#container_plane_99_90').hover(function () {$("#container_plane_99_90").css('cursor', 'pointer');},function () {$("#container_plane_99_90").css('cursor', 'auto');});
-
     $('#coniner_data_panel').css({'height': ''+$('#coniner_login_panel').height()});
     $('#container_sing_in_panel').css({'height': ''+$('#coniner_login_panel').height()});
 

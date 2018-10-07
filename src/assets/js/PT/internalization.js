@@ -125,7 +125,11 @@ var Translation={
     "SELECIONADO":
             "SELECIONADO",
     "SELECIONAR":
-            "SELECIONAR"
+            "SELECIONAR",
+    "DDD incorreto":
+            "DDD incorreto",
+    "Telefone incorreto":
+            "Telefone incorreto",
 };
 
 function T(token){

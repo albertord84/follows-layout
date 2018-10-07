@@ -441,11 +441,7 @@ $(document).ready(function () {
             l.stop();
         }
     });
-
-    /*$('#modal_alert_message').close(function(){
-     window.location.href=window.location;
-     });*/
-
+    
     $(".desactive-cliente").click(function (e) {
         id = $(e.currentTarget).attr('id');
         name_row = '#row-client-' + id;
@@ -654,6 +650,8 @@ $(document).ready(function () {
     });
     
     $("#payment_now_button").click(function () {
+        alert("Se precisar dessa funcionalidade, pedir para a equipe de desenvolvimento fazer");
+        return;
         $("#payment_now_button").attr("disabled", true);
         if ($("#payment_now_client_id").val().trim() !== "" && 
             validate_element('#payment_now_value','^[0-9]{2,8}$') && 
@@ -683,6 +681,8 @@ $(document).ready(function () {
     });
         
     $("#recurrency_button").click(function () {
+        alert("Se precisar dessa funcionalidade, pedir para a equipe de desenvolvimento fazer");
+        return;
         $("#recurrency_button").attr("disabled", true);
         if ($("#recurrency_user_id").val().trim() !== "" && 
             validate_element('#recurrency_value','^[0-9]{2,8}$') && 
