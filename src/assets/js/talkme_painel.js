@@ -11,7 +11,7 @@ $(document).ready(function(){
     
     $("#btn_send_message").click(function(){
         name=validate_empty('#visitor_name');
-        email=validate_element('#visitor_email',"^[a-zA-Z0-9\._-]+@([a-zA-Z0-9-]{2,}[.])*[a-zA-Z]{2,4}$");
+        email=validate_element('#visitor_email',"^[a-zA-Z0-9\._-]+@([a-zA-Z0-9-]{2,}[.])*[a-zA-Z]{2,}$");
         message=validate_empty('#visitor_message');
           if(name && email && message){
             var l = Ladda.create(this);  l.start(); l.start();

@@ -630,6 +630,20 @@
 						<fieldset>
                                                     <input id="client_email" type="text" placeholder="<?php echo $CI->T("E-mail pessoal(válido*)", array(),$language);?>" required value="<?php if(isset($_GET) && isset($_GET['_u']) && isset($_GET['_d'])) echo $_GET['_u'].'@'.$_GET['_d']; else echo '';?>">
 						</fieldset>
+                                                <?php if($GLOBALS['sistem_config']->SERVER_NAME =='PRO'){?>
+                                                <fieldset>
+                                                    <div class="col-md-3 col-sm-3 col-xs-12 pd-r5">
+                                                        <fieldset>
+                                                            <input id="client_phone_ddd" type="text" placeholder="<?php echo $CI->T("DDD", array(),$language);?>" maxlength="3">
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="col-md-9 col-sm-9 col-xs-12 pd-l5">
+                                                        <fieldset>
+                                                            <input id="client_phone_number" type="text" placeholder="<?php echo $CI->T("Telefone", array(),$language);?>" maxlength="12">
+                                                        </fieldset>
+                                                    </div>
+                                                </fieldset>
+                                                <?php }?>
 						<fieldset>
 							<input id = "signin_clientLogin" type="text" placeholder="<?php echo $CI->T("Usuário Instagram", array(),$language);?>" onkeyup="javascript:this.value=this.value.toLowerCase();" style="text-transform:lowercase;"  required value="<?php if(isset($_GET) && isset($_GET['username'])) echo $_GET['username']; else echo '';?>">
 						</fieldset>

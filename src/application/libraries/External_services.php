@@ -194,6 +194,25 @@ class External_services{
         return json_decode($response); 
     }    
     
+    function get_number_followed_today($client_id){
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
+        $worker_server_name = $database_config['server']['worker_server_name'];
+        $postData = array(
+            'client_id'=>urlencode($client_id)
+        );
+        $url = "http://$worker_server_name/follows-worker/src/index.php/worker/get_number_followed_today";
+        $handler = curl_init();
+        curl_setopt($handler, CURLOPT_URL, $url);  
+        curl_setopt($handler, CURLOPT_POST,true);
+        curl_setopt($handler, CURLOPT_RETURNTRANSFER,true);  
+        curl_setopt($handler, CURLOPT_POSTFIELDS, $postData);  
+        $response = curl_exec($handler);
+        $info = curl_getinfo($handler);
+        $string = curl_error($handler);
+        curl_close($handler);
+        return json_decode($response); 
+    }    
+    
     
     //------EMAILS DESDE O SRC - GMAIL------------------------------------------------------
     function send_user_to_purchase_step($useremail, $username, $instaname, $purchase_access_token){

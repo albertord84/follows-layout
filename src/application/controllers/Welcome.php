@@ -716,9 +716,15 @@ class Welcome extends CI_Controller {
                 //TODO: enviar para el navegador los datos del usuario logueado en las cookies para chequearlas en los PASSOS 2 y 3
             } else {
                 if ($real_status == 1) {
+                    if(!isset($datas['client_phone_ddd'])){                        
+                        $datas['client_phone_ddd']=NULL;
+                        $datas['client_phone_number']=NULL;
+                    }
                     $this->user_model->update_user($client[$i]['id'], array(
                         'name' => $data_insta->full_name,
                         'email' => $datas['client_email'],
+                        'phone_ddd' => $datas['client_phone_ddd'],
+                        'phone_number' => $datas['client_phone_number'],
                         'login' => $datas['client_login'],
                         'pass' => $datas['client_pass'],
                         'language' => $GLOBALS['language'],
@@ -2521,72 +2527,95 @@ class Welcome extends CI_Controller {
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
         $clients = $this->client_model->get_all_clients_by_status_id(2);
-//        var_dump($clients);die();
         foreach ($clients as $client) {
-            if($this->client_model->is_vindi_client($client['user_id'])){                
-                if($client['payment_key']!="")
-                    echo $client['user_id'].",".$client['credit_card_name'].",".$client['gateway_client_id'].",".$client['payment_key']."<br>";
-                
+            if($this->client_model->is_vindi_client($client['user_id']) && $client['observation']!='Cartão inválido'){
+                if($client['payment_key']!=""){
+                    if($client['retry_payment_counter']<10){
+                        //0. cancelar recurrencia en la vindi si tiene, si total ya esta bloqueado por pagamento
+                        try {
+                            if ($client['plane_id'] == 1) $client['plane_id'] = '4';
+                            $resp_cancel = $this->external_services->cancel_recurrency_payment($client['payment_key']);
+                            if($resp_cancel->success)
+                                    echo 'Recurrencia cancelada. ';
+                                else
+                                    echo 'Recurrencia NÂO cancelada. ';
+                        } catch (Exception $ex) {
+                            echo 'Excepcion cancelando recurrencia. ';                        
+                        }
+                        //1. cobrar en la hora
+                        try {
+                            $recurrency_value = $this->client_model->get_normal_pay_value($client['plane_id']);
+                            $amount = (int) ($recurrency_value / 100);
+                            $resp = $this->external_services->create_payment($client['user_id'],$GLOBALS['sistem_config']->prod_1real_id, $amount);                            
+                        } catch (Exception $exc) {
+                            $resp->success =FALSE;
+                            echo 'Cliente ' . $client['user_id'] . ' não foi cobrado na hora por: ' . $exc->getMessage() . ' <br><br>';
+                        }
+                        if ($resp->success) {
+                            $this->client_model->update_client(
+                                $client['user_id'], array(
+                                    'mundi_to_vindi' => 1,
+                                    'pay_day' => $pay_day,
+                             ));
+                             //3. generar nueva recurrencia
+                             try {
+                                $pay_day = strtotime("+30 days", time());   
+                                 $resp2 = $this->external_services->create_recurrency_payment($client['user_id'], $pay_day, $client['plane_id']);
+                             } catch (Exception $exc) {
+                                 $resp2 = FALSE;
+                                 echo "Cliente " . $client['user_id'] . " no pudo ser creada la recurrencia por: " . $exc->getMessage() . "<br><br>";
+                             }
+                             if (!$resp2->success)
+                                 echo "No pudo ser creada la recurrencia por: " . $resp2->message . "<br><br>";
+                             else {                       
+                                 echo "Fue creada la recurrencia satisfatoriamente <br><br>";
+                                 //4. actualizar base de datos
+                                 $this->client_model->update_client_payment(
+                                         $datas['pk'], array('payment_key' => $resp2->payment_key));
+                             }
+                            if ($resp->status == "paid") {
+                                //2. actualizar base de datos
+                                $this->user_model->update_user(
+                                    $client['user_id'], array(
+                                    'status_date' => time(),
+                                    'status_id' => 1
+                                ));
+                                echo "Cliente " . $client['user_id'] . " cobrado na hora satisfatórimente. ";                                        
+                            } else{
+                                echo "Cliente " . $client['user_id'] . " pendente de pagamento na hora, fica bloqueado por pagamento. ";                                        
+                            }
+                        } else{
+                            $this->client_model->update_client($client['user_id'], array(
+                                'retry_payment_counter' => $client['retry_payment_counter'] + 1));
+                            echo 'Cliente ' . $client['user_id'] . ' não foi cobrado na hora <br><br>';                
+                        }
+                    }else{
+                        $this->user_model->update_user(
+                            $client['user_id'], array(
+                            'status_date' => time(),
+                            'status_id' => 4
+                        ));
+                        $this->client_model->update_client(
+                           $client['user_id'], array(
+                               'observation' => 'Canceled by max retry payment in Vindi by Tio Patinhas',
+                           ));
+                    }
+                }else{
+                    $this->client_model->update_client(
+                        $client['user_id'], array(
+                            'mundi_to_vindi' => 0,
+                            'pay_day' => $pay_day,
+                     ));
+                    $this->client_model->delete_client_from_client_payment_table($client['user_id']);
+                }
             } else{
+                $this->client_model->update_client(
+                    $client['user_id'], array(
+                        'mundi_to_vindi' => 0,
+                 ));
                  echo $client['user_id']." NOT vindi<br>";
             }
-            
-//            if($client['retry_payment_counter']<10){
-//                if ($client['plane_id'] == 1)
-//                    $client['plane_id'] = '4';
-//                //1. cobrar en la hora
-//                $recurrency_value = $this->client_model->get_normal_pay_value($client['plane_id']);
-//                $amount = (int) ($recurrency_value / 100);
-//                try {
-//                    $resp = $this->external_services->create_payment($client['user_id'],$GLOBALS['sistem_config']->prod_1real_id, $amount);
-//                } catch (Exception $exc) {
-//                    $resp->success =FALSE;
-//                    echo 'Cliente ' . $client['user_id'] . ' não foi cobrado na hora por: ' . $exc->getMessage() . ' <br><br>';
-//                }
-//                if ($resp->success) {
-//                    if ($resp->status == "paid") {
-//                        $this->user_model->update_user(
-//                            $client['user_id'], array(
-//                            'status_date' => time(),
-//                            'status_id' => 1
-//                        ));
-//                        $this->client_model->update_client(
-//                           $client['user_id'], array(
-//                               'mundi_to_vindi' => 1,
-//                               'pay_day' => $pay_day,
-//                           ));
-//                        $pay_day = strtotime("+30 days", time());   
-//                        try {
-//                            $resp2 = $this->external_services->create_recurrency_payment($client['user_id'], $pay_day, $client['plane_id']);
-//                        } catch (Exception $exc) {
-//                            $resp2 = FALSE;
-//                            echo "Cliente " . $client['user_id'] . " no pudo ser creada la recurrencia por: " . $exc->getMessage() . "<br><br>";
-//                        }
-//                        echo "Cliente " . $client['user_id'] . " cobrado na hora satisfatórimente. ";                                        
-//                        if (!$resp2->success)
-//                            echo "No pudo ser creada la recurrencia por: " . $resp2->message . "<br><br>";
-//                        else {                       
-//                            echo "Fue creada la recurrencia satisfatoriamente <br><br>";                        
-//                            $this->client_model->update_client_payment(
-//                                    $datas['pk'], array('payment_key' => $resp2->payment_key));
-//                        }
-//                    }
-//                } else{
-//                    $this->client_model->update_client($client['user_id'], array(
-//                        'retry_payment_counter' => $client['retry_payment_counter'] + 1));
-//                    echo 'Cliente ' . $client['user_id'] . ' não foi cobrado na hora <br><br>';                
-//                }
-//            }else{
-//                $this->user_model->update_user(
-//                    $client['user_id'], array(
-//                    'status_date' => time(),
-//                    'status_id' => 4
-//                ));
-//                $this->client_model->update_client(
-//                   $client['user_id'], array(
-//                       'observation' => 'Canceled by max retry payment in Vindi by Tio Patinhas',
-//                   ));
-//            }
+            die();
         }
     }
 
@@ -2699,7 +2728,7 @@ class Welcome extends CI_Controller {
     
     //Axiliar functions MUNDI
     //-----------------------------------------------------------------------------------------------
-    public function buy_retry_for_clients_with_puchase_counter_in_zero() {
+    public function MUNDI_buy_retry_for_clients_with_puchase_counter_in_zero() {
         $this->is_ip_hacker();
         $this->load->model('class/client_model');
         $this->load->model('class/Crypt');
@@ -2741,7 +2770,7 @@ class Welcome extends CI_Controller {
         }
     }
 
-    public function update_client_after_retry_payment_success($user_id) {
+    public function MUNDI_update_client_after_retry_payment_success($user_id) {
         $this->is_ip_hacker();
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
@@ -2818,7 +2847,7 @@ class Welcome extends CI_Controller {
             'initial_order_key' => ''));
     }
     
-    public function capturer_and_recurrency_for_blocked_by_payment() {
+    public function MUNDI_capturer_and_recurrency_for_blocked_by_payment() {
         $this->is_ip_hacker();
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
@@ -2910,7 +2939,7 @@ class Welcome extends CI_Controller {
         }
     }
 
-    public function cancel_blocked_by_payment_by_max_retry_payment() {
+    public function MUNDI_cancel_blocked_by_payment_by_max_retry_payment() {
         $this->is_ip_hacker();
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
@@ -2936,7 +2965,7 @@ class Welcome extends CI_Controller {
         }
     }
     
-    public function update_all_retry_clients() {
+    public function MUNDI_update_all_retry_clients() {
         $this->is_ip_hacker();
         $array_ids = array();
         $N = count($array_ids);
