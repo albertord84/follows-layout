@@ -430,6 +430,27 @@ class External_services{
     }
     
     
+    //------PAGAMENTO - MUNDI------------------------------------------------------
+    function delete_payment($order_key){
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
+        $worker_server_name = $database_config['server']['worker_server_name'];
+        $postData = array(
+            'order_key'=>urlencode($order_key)
+        );
+        $url = "http://$worker_server_name/follows-worker/src/index.php/payment/mundi_delete_payment";
+        $handler = curl_init();
+        curl_setopt($handler, CURLOPT_URL, $url);  
+        curl_setopt($handler, CURLOPT_POST,true);
+        curl_setopt($handler, CURLOPT_RETURNTRANSFER,true);  
+        curl_setopt($handler, CURLOPT_POSTFIELDS, $postData);  
+        $response = curl_exec($handler);
+        $info = curl_getinfo($handler);
+        $string = curl_error($handler);
+        curl_close($handler);
+        return json_decode($response); 
+    }
+    
+    
 }
 
 ?> 

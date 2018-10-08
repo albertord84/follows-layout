@@ -991,7 +991,8 @@ class Welcome extends CI_Controller {
                             }
                             //3. si pagamento correcto: logar cliente, establecer sesion, actualizar status, emails, initdate
                             if ($response['success']) {
-                                $this->client_model->update_client($datas['pk'], array('purchase_access_token' => '0','mundi_to_vindi'=>1));
+                                $this->client_model->update_client($datas['pk'], 
+                                        array('purchase_access_token' => '0','mundi_to_vindi'=>1));
                                 $this->load->model('class/user_model');
                                 $data_insta = $this->is_insta_user($datas['user_login'], $datas['user_pass'], $datas['force_login']);
                                 if ($data_insta['status'] === 'ok' && $data_insta['authenticated']) {
@@ -1248,21 +1249,16 @@ class Welcome extends CI_Controller {
         if ($now < $pay_day) {
             $datas['pay_day'] = $pay_day;
         } else
-        if ($d_today < $d_pay_day) {
-            if ($this->session->userdata('status_id') == (string) user_status::PENDING)
-                $datas['pay_now'] = true;
-            $previous_month = strtotime("-30 days", $now); //1. mes anterior respecto a hoy            
-            $previous_payment_date = strtotime($d_pay_day . '-' . date("n", $previous_month) . '-' . date("Y", $previous_month)); //2. dia de pagamento en el mes anterior al actual            
-            $datas['pay_day'] = strtotime("+30 days", $previous_payment_date); //3. nuevo dia de pagamento para el mes actual
-        } else
-        if ($d_today > $d_pay_day) {
-            //0. si pendiente por pagamento, inidcar que se debe hacer pagamento
-            if ($this->session->userdata('status_id') == (string) user_status::PENDING)
-                $datas['pay_now'] = true;
-            $recorrency_date = strtotime($d_pay_day . '-' . $m_today . '-' . $y_today); //mes actual com el dia de pagamento
-            $datas['pay_day'] = strtotime("+30 days", $recorrency_date); //proximo mes
-        } else
-            $datas['pay_day'] = false;
+            if ($d_today < $d_pay_day) {
+                $previous_month = strtotime("-1 month", $now); //1. mes anterior respecto a hoy            
+                $previous_payment_date = strtotime($d_pay_day . '-' . date("n", $previous_month) . '-' . date("Y", $previous_month)); //2. dia de pagamento en el mes anterior al actual            
+                $datas['pay_day'] = strtotime("+1 month", $previous_payment_date); //3. nuevo dia de pagamento para el mes actual
+            } else
+            if ($d_today >= $d_pay_day) {
+                //0. si pendiente por pagamento, inidcar que se debe hacer pagamento
+                $recorrency_date = strtotime($d_pay_day . '-' . $m_today . '-' . $y_today); //mes actual com el dia de pagamento
+                $datas['pay_day'] = strtotime("+1 month", $recorrency_date); //proximo mes
+            }
         return $datas;
     }
 
@@ -1320,8 +1316,8 @@ class Welcome extends CI_Controller {
         $this->is_ip_hacker();
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->library('Payment');
-        $response = $this->payment->delete_payment($order_key);
+        $this->load->library('external_services');
+        $response = $this->external_services->delete_payment($order_key);
         return $response;
     }
 
@@ -2648,10 +2644,10 @@ class Welcome extends CI_Controller {
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
          //6,5,9,2,10,3,1
-        $clients = $this->client_model->get_all_clients_by_status_id(2);
-        var_dump($clients);die();
+         //6,5,9
+        $clients = $this->client_model->get_all_clients_by_status_id(9);
         foreach ($clients as $client) {
-            if(!$this->client_model->is_vindi_client($this->session->userdata('id'))){                
+            if(!$this->client_model->is_vindi_client($client['id'])){                
                 $datas['user_email'] = $client['email'];
                 $datas['credit_card_number'] = $this->Crypt->decodify_level1($client['credit_card_number']);
                 $datas['credit_card_cvc'] = $this->Crypt->decodify_level1($client['credit_card_cvc']);
@@ -2659,16 +2655,18 @@ class Welcome extends CI_Controller {
                 $datas['credit_card_exp_month'] = $client['credit_card_exp_month'];
                 $datas['credit_card_exp_year'] = $client['credit_card_exp_year'];
                 $datas['pay_day'] = $this->get_pay_day($client['pay_day'])['pay_day'] ;
-                if ($datas['credit_card_name'] !== 'PAYMENT_BY_TICKET_BANK' && $datas['credit_card_name'] != '' && $datas['credit_card_number'] != '' && $datas['credit_card_cvc'] != '' && $datas['credit_card_exp_month'] != '' && $datas['credit_card_exp_year'] != '') {
+                if ($datas['credit_card_name'] !== 'PAYMENT_BY_TICKET_BANK'
+                 && $datas['credit_card_name'] != '' && $datas['credit_card_number'] != '' && $datas['credit_card_cvc'] != '' && $datas['credit_card_exp_month'] != '' && $datas['credit_card_exp_year'] != '') {
                     //1. crear cliente en la vindi
+                    echo "Cliente " . $client['user_id'];
                     try {
                         $gateway_client_id = $this->external_services->addClient($datas['credit_card_name'], $datas['user_email']);
                     } catch (Exception $exc) {
                         $gateway_client_id = FALSE;
-                        echo "Cliente " . $client['user_id'] . "no pudo ser cadastrado en la Vindi por" . $exc->getMessage() . "<br><br>";
+                        echo " no pudo ser cadastrado en la Vindi por" . $exc->getMessage() . "<br><br>";
                     }
                     if (!$gateway_client_id)
-                        echo "Cliente " . $client['user_id'] . "no pudo ser cadastrado en la Vindi " . "<br><br>";
+                        echo " no pudo ser cadastrado en la Vindi " . "<br><br>";
                     else {
                         //2. insertar datos del pagamneto en el sistema                    
                         $this->client_model->set_client_payment(
@@ -2678,20 +2676,20 @@ class Welcome extends CI_Controller {
                             $resp1 = $this->external_services->addClientPayment($client['user_id'], $datas);
                         } catch (Exception $exc) {
                             $resp1 = false;
-                            echo "Cliente " . $client['user_id'] . "no pudo ser creado o cartão de crédito por: " . $exc->getMessage() . "<br><br>";
+                            echo " no pudo ser creado o cartão de crédito por: " . $exc->getMessage() . "<br><br>";
                         }
                         if (!$resp1->success)
-                            echo "Cliente " . $client['user_id'] . "no pudo ser creado o cartão de crédito por: " . $resp2->message . "<br><br>";
+                            echo " no pudo ser creado o cartão de crédito por: " . $resp2->message . "<br><br>";
                         else {
                             //4. crear recurrencia segun plano-producto
                             try {
                                 $resp2 = $this->external_services->create_recurrency_payment($client['user_id'], $datas['pay_day'], $client['plane_id']);
                             } catch (Exception $exc) {
                                 $resp2 = FALSE;
-                                echo "Cliente " . $client['user_id'] . " no pudo ser creada la recurrencia por: " . $exc->getMessage() . "<br><br>";
+                                echo " no pudo ser creada la recurrencia por: " . $exc->getMessage() . "<br><br>";
                             }
                             if (!$resp2->success)
-                                echo "Cliente " . $client['user_id'] . " no pudo ser creada la recurrencia por: " . $resp2->message . "<br><br>";
+                                echo " no pudo ser creada la recurrencia por: " . $resp2->message . "<br><br>";
                             else {
                                 //5. salvar order_key (payment_key)
                                 $this->client_model->update_client_payment(
@@ -2699,29 +2697,31 @@ class Welcome extends CI_Controller {
                                     array(
                                         'payment_key' => $resp2->payment_key,                                            
                                     ));
-                                echo "Cliente: " . $client['user_id'] . " creada recurrencia bien. <br><br>";
-                                
-                                if (date('d/m/Y', $datas['pay_day']) == date('d/m/Y', time()))
-                                    echo "analisar si fue cobrado en la mundi y en la Vindi hoje <br><br>";
-                                $this->delete_recurrency_payment($client['order_key']);
-                                if($client['pay_day'])
-                                    $pay_day = $this->get_pay_day($client['pay_day'])['pay_day'];
-                                else
-                                    $pay_day = $this->get_pay_day(strtotime("+2 days",$client['init_date']))['pay_day'];
+                                echo " creada recurrencia bien.";
+                                if(date('d/m/Y', $datas['pay_day']) == date('d/m/Y', time()))
+                                    echo " Analisar si fue cobrado en la mundi y en la Vindi hoje.";
+                                try {
+                                    $this->delete_recurrency_payment($client['order_key']);
+                                } catch (Exception $exc) {
+                                    echo " Erro cancelando recurrencia na mundipagg.";
+                                }
                                 //6. actualizar mundi_to_vindi en la base de datos
-                                $this->client_model->update_client(
+                                $resp = $this->client_model->update_client(
                                     $client['user_id'], 
                                     array(
                                         'mundi_to_vindi' => 1,
-                                        'pay_day' => $pay_day
+                                        'pay_day' => $datas['pay_day']
                                    ));
+                                if($resp)
+                                    echo " Dados atualizados com secesso <br><br>";
+                                else
+                                    echo " Erro atualizando mundi_to_vindi e pay_day <br><br>";
                             }
                         }
                     }
                 } else
                     echo "<br>Cliente " . $client['user_id'] . " com cartão inválido: <br><br>";
             }
-            die();
         }
     }
     
