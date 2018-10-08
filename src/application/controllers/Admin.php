@@ -4,44 +4,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Admin extends CI_Controller {
 
-    public function index() {        
+    
+    //---- Functions to ADMIN-----------------------------
+    public function index(){        
         $this->load->view('admin_login_view');
     }
-    
-    public function do_payments() {
-        $this->load->model('class/user_role');
-        if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
-            $data['section1'] = $this->load->view('responsive_views/admin/admin_header_painel', '', true);
-            $data['section2'] = $this->load->view('responsive_views/admin/do_payments_view', '' , true);
-            $data['section3'] = $this->load->view('responsive_views/admin/users_end_painel', '', true);
-            $this->load->view('view_admin', $data);
-        }
-        else {
-            echo "Não pode acessar a esse recurso, deve fazer login!!";
-        }                
-    }
-       
-    public function T($token, $array_params=NULL, $lang=NULL) {
-        if(!$lang){
-            $this->load->model('class/system_config');
-            $GLOBALS['sistem_config'] = $this->system_config->load();
-            if(isset($language['language']))
-                $param['language']=$language['language'];
-            else
-                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;        
-            $GLOBALS['language']=$param['language'];
-            $lang=$param['language'];
-        }
-        $this->load->model('class/translation_model');
-        $text = $this->translation_model->get_text_by_token($token,$lang);
-        $N = count($array_params);
-        for ($i = 0; $i < $N; $i++) {
-            $text = str_replace('@' . ($i + 1), $array_params[$i], $text);
-        }
-        return $text;
-    }
-    
+      
     public function admin_do_login() {
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
@@ -90,7 +58,7 @@ class Admin extends CI_Controller {
             $data['section2'] = $this->load->view('responsive_views/admin/admin_body_painel', $datas, true);
             $data['section3'] = $this->load->view('responsive_views/admin/users_end_painel', '', true);
             $this->load->view('view_admin', $data);
-        }        
+        }
     }
 
     public function list_filter_view_or_get_emails() {
@@ -135,6 +103,106 @@ class Admin extends CI_Controller {
         }
     }
         
+    public function reference_profile_view() {        
+        $this->load->model('class/user_role');
+        $this->load->model('class/client_model');
+        $this->load->model('class/user_model');
+        $this->load->library('external_services');
+        if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
+            $id = $this->input->get()['id'];
+            
+            $sql = 'SELECT plane_id FROM clients WHERE user_id='.$id;
+            $plane_id = $this->user_model->execute_sql_query($sql);
+            $sql = 'SELECT * FROM plane WHERE id='.$plane_id[0]['plane_id'];
+            $plane_datas = $this->user_model->execute_sql_query($sql);            
+            $datas['plane_datas'] = $plane_datas[0]['to_follow'];
+            
+            $active_profiles = $this->client_model->get_client_active_profiles($id);
+            $canceled_profiles = $this->client_model->get_client_canceled_profiles($id);            
+            $datas['active_profiles'] = $active_profiles;
+            $datas['canceled_profiles'] = $canceled_profiles;
+            $datas['my_daily_work'] = $this->get_daily_work($active_profiles); 
+            
+            $datas['followed_today'] =  $this->external_services->get_number_followed_today($id);            
+            $data['section1'] = $this->load->view('responsive_views/admin/admin_header_painel', '', true);
+            $data['section2'] = $this->load->view('responsive_views/admin/admin_body_painel_reference_profile', $datas, true);
+            $data['section3'] = $this->load->view('responsive_views/admin/users_end_painel', '', true);
+            $this->load->view('view_admin', $data);
+        } else{
+            echo "Não pode acessar a esse recurso, deve fazer login!!";
+        }
+    }
+    
+    public function desactive_client() {
+        $this->load->model('class/user_role');
+        if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
+            $this->load->model('class/user_model');
+            $this->load->model('class/user_status');
+            $id = $this->input->post()['id'];
+            try {
+                $this->delete_work_of_client($id);              
+                $this->user_model->update_user($id, array(
+                    'status_id' => user_status::DELETED,
+                    'end_date' => time()));
+                $this->user_model->insert_washdog($id,'CLIENT DELETED FROM ADMIN');
+            } catch (Exception $exc) {
+                echo $exc->getTraceAsString();
+                $result['success'] = false;
+                $result['message'] = "Erro no banco de dados. Contate o grupo de desenvolvimento!";
+            } finally {
+                $result['success'] = true;
+                $result['message'] = "Cliente desativado com sucesso!";
+            }
+            echo json_encode($result);
+        } else{
+            echo "Não pode acessar a esse recurso, deve fazer login!!";
+        }
+    }
+    
+    public function send_curl() {
+        $this->load->model('class/user_role');
+        $this->load->library('external_services');
+        if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
+            $datas = $this->input->post();
+            $client_id = $datas['client_id'];
+            $curl = urldecode($datas['curl']);
+            try {
+                $this->external_services->set_client_cookies_by_curl($client_id, $curl, NULL);
+            } catch (Exception $exc) {
+                $result['success'] = false;
+                $result['message'] = "Erro no banco de dados. Contate o grupo de desenvolvimento!";
+            } finally {
+                $result['success'] = true;
+                $result['message'] = "cURL enviada com sucesso!";
+            }
+            echo json_encode($result);
+        } else {
+            echo "Não pode acessar a esse recurso, deve fazer login!!";
+        }
+    }
+    
+    public function clean_cookies() {
+        $this->load->model('class/user_role');
+        $this->load->model('class/client_model');
+        if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
+            $client_id = $this->input->post()['client_id'];            
+            try {
+                $this->client_model->update_client($client_id, array('cookies' => ''));
+            } catch (Exception $exc) {
+                $result['success'] = false;
+                $result['message'] = "Erro no banco de dados. Contate o grupo de desenvolvimento!";
+            } finally {
+                $result['success'] = true;
+                $result['message'] = "Cookies limpadas com sucesso!";
+            }
+            
+            echo json_encode($result);
+        } else {
+            echo "Não pode acessar a esse recurso, deve fazer login!!";
+        }
+    }
+    
+    //---- Functions to PENDENCES------------------------------
     public function create_pendence() {
         $this->load->model('class/user_role');
         if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
@@ -187,66 +255,10 @@ class Admin extends CI_Controller {
         }
     }
 
-    public function desactive_client() {
-        $this->load->model('class/user_role');
-        if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
-            $this->load->model('class/user_model');
-            $this->load->model('class/user_status');
-            $id = $this->input->post()['id'];
-            try {
-                $this->delete_work_of_client($id);              
-                $this->user_model->update_user($id, array(
-                    'status_id' => user_status::DELETED,
-                    'end_date' => time()));
-                $this->user_model->insert_washdog($id,'CLIENT DELETED FROM ADMIN');
-            } catch (Exception $exc) {
-                echo $exc->getTraceAsString();
-                $result['success'] = false;
-                $result['message'] = "Erro no banco de dados. Contate o grupo de desenvolvimento!";
-            } finally {
-                $result['success'] = true;
-                $result['message'] = "Cliente desativado com sucesso!";
-            }
-            echo json_encode($result);
-        } else{
-            echo "Não pode acessar a esse recurso, deve fazer login!!";
-        }
-    }
-
     public function recorrency_cancel() {
         $result['success'] = false;
         $result['message'] = 'Cancele diretamente na Vindi';
         echo json_encode($result);
-    }
-
-    public function reference_profile_view() {        
-        $this->load->model('class/user_role');
-        $this->load->model('class/client_model');
-        $this->load->model('class/user_model');
-        $this->load->library('external_services');
-        if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
-            $id = $this->input->get()['id'];
-            
-            $sql = 'SELECT plane_id FROM clients WHERE user_id='.$id;
-            $plane_id = $this->user_model->execute_sql_query($sql);
-            $sql = 'SELECT * FROM plane WHERE id='.$plane_id[0]['plane_id'];
-            $plane_datas = $this->user_model->execute_sql_query($sql);            
-            $datas['plane_datas'] = $plane_datas[0]['to_follow'];
-            
-            $active_profiles = $this->client_model->get_client_active_profiles($id);
-            $canceled_profiles = $this->client_model->get_client_canceled_profiles($id);            
-            $datas['active_profiles'] = $active_profiles;
-            $datas['canceled_profiles'] = $canceled_profiles;
-            $datas['my_daily_work'] = $this->get_daily_work($active_profiles); 
-            
-            $datas['followed_today'] =  $this->external_services->get_number_followed_today($id);            
-            $data['section1'] = $this->load->view('responsive_views/admin/admin_header_painel', '', true);
-            $data['section2'] = $this->load->view('responsive_views/admin/admin_body_painel_reference_profile', $datas, true);
-            $data['section3'] = $this->load->view('responsive_views/admin/users_end_painel', '', true);
-            $this->load->view('view_admin', $data);
-        } else{
-            echo "Não pode acessar a esse recurso, deve fazer login!!";
-        }
     }
 
     public function pendences() {
@@ -261,7 +273,8 @@ class Admin extends CI_Controller {
             echo "Não pode acessar a esse recurso, deve fazer login!!";
         }
     }
-        
+    
+    //---- Functions to peixe urbano-----------------------------
     public function change_ticket_peixe_urbano_status_id() {
         $this->load->model('class/user_role');
         if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN){
@@ -280,37 +293,26 @@ class Admin extends CI_Controller {
         }
     }
     
-    public function get_daily_work($active_profiles) {
-        $this->load->model('class/client_model');
-        $this->load->model('class/user_role');
-        $n = count($active_profiles);
-        $my_daily_work = array();
-        //if($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN){
-            for ($i = 0; $i < $n; $i++){
-                $work = $this->client_model->get_daily_work_to_profile($active_profiles[$i]['id']);
-                if (count($work)) {
-                    $work = $work[0];
-                }
-                if (count($work)) {
-                    $to_follow = $work['to_follow'];
-                    $to_unfollow = $work['to_unfollow'];
-                } else {
-                    $to_follow = '----';
-                    $to_unfollow = '----';
-                }
-                $tmp = array('profile' => $active_profiles[$i]['insta_name'],
-                    'id' => $active_profiles[$i]['id'],
-                    'to_follow' => $to_follow,
-                    'to_unfollow' => $to_unfollow,
-                    'end_date' => $active_profiles[$i]['end_date']
-                );
-                $my_daily_work[$i] = $tmp;
-            }
-            return $my_daily_work;
-        //} else return 0;
+    public function change_pay_day_peixe_urbano(){
+        $this->load->model('class/admin_model');
+        $datas = $this->input->post();
+        list ($mes, $dia, $ano) = explode ('/', $datas['pu_new_date']);
+        $pay_day = strtotime($mes."/".$dia."/".$ano." 14:00:00");
+        $client_id = $datas['client_id'];
+        $resp = $this->admin_model->change_pay_day($client_id, $pay_day);
         
+        if ($resp) {
+            $response['success'] = true;
+            $response['message'] = "Data modificada corretamente";
+        } else {
+            $response['success'] = false;
+            $response['message'] = "Erro, não foi possível alterar a data de pagamento do cliente, contate ao grupo de desenvolvimento";
+        }
+        
+        echo json_encode($response);
     }
     
+    //---- Functions to watchdog-----------------------------
     public function watchdog() {
         $this->load->model('class/user_role');
         if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
@@ -368,99 +370,21 @@ class Admin extends CI_Controller {
         return $response;
     }
     
-    public function send_curl() {
+    //---- Functions to basic operations-----------------------------
+    public function do_payments() {
         $this->load->model('class/user_role');
-        $this->load->library('external_services');
         if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
-            $datas = $this->input->post();
-            $client_id = $datas['client_id'];
-            $curl = urldecode($datas['curl']);
-            try {
-                $this->external_services->set_client_cookies_by_curl($client_id, $curl, NULL);
-            } catch (Exception $exc) {
-                $result['success'] = false;
-                $result['message'] = "Erro no banco de dados. Contate o grupo de desenvolvimento!";
-            } finally {
-                $result['success'] = true;
-                $result['message'] = "cURL enviada com sucesso!";
-            }
-            echo json_encode($result);
-        } else {
+            $data['section1'] = $this->load->view('responsive_views/admin/admin_header_painel', '', true);
+            $data['section2'] = $this->load->view('responsive_views/admin/do_payments_view', '' , true);
+            $data['section3'] = $this->load->view('responsive_views/admin/users_end_painel', '', true);
+            $this->load->view('view_admin', $data);
+        }
+        else {
             echo "Não pode acessar a esse recurso, deve fazer login!!";
-        }
+        }                
     }
     
-    public function clean_cookies() {
-        $this->load->model('class/user_role');
-        $this->load->model('class/client_model');
-        if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
-            $client_id = $this->input->post()['client_id'];            
-            try {
-                $this->client_model->update_client($client_id, array('cookies' => ''));
-            } catch (Exception $exc) {
-                $result['success'] = false;
-                $result['message'] = "Erro no banco de dados. Contate o grupo de desenvolvimento!";
-            } finally {
-                $result['success'] = true;
-                $result['message'] = "Cookies limpadas com sucesso!";
-            }
-            
-            echo json_encode($result);
-        } else {
-            echo "Não pode acessar a esse recurso, deve fazer login!!";
-        }
-    }
-    
-    public function detectCardType($num) {
-        $re = array(
-            "visa" => "/^4[0-9]{12}(?:[0-9]{3})?$/",
-            "mastercard" => "/^5[1-5][0-9]{14}$/",
-            "amex" => "/^3[47][0-9]{13}$/",
-            "discover" => "/^6(?:011|5[0-9]{2})[0-9]{12}$/",
-            "diners" => "/^3[068]\d{12}$/",
-            "elo" => "/^((((636368)|(438935)|(504175)|(451416)|(636297))\d{0,10})|((5067)|(4576)|(4011))\d{0,12})$/",
-            "hipercard" => "/^(606282\d{10}(\d{3})?)|(3841\d{15})$/"
-        );
-
-        if (preg_match($re['visa'], $num)) {
-            return 'Visa';
-        } else if (preg_match($re['mastercard'], $num)) {
-            return 'Mastercard';
-        } else if (preg_match($re['amex'], $num)) {
-            return 'Amex';
-        } else if (preg_match($re['discover'], $num)) {
-            return 'Discover';
-        } else if (preg_match($re['diners'], $num)) {
-            return 'Diners';
-        } else if (preg_match($re['elo'], $num)) {
-            return 'Elo';
-        } else if (preg_match($re['hipercard'], $num)) {
-            return 'Hipercard';
-        } else {
-            return false;
-        }
-    }
-    
-    public function change_pay_day_peixe_urbano(){
-        $this->load->model('class/admin_model');
-        $datas = $this->input->post();
-        list ($mes, $dia, $ano) = explode ('/', $datas['pu_new_date']);
-        $pay_day = strtotime($mes."/".$dia."/".$ano." 14:00:00");
-        $client_id = $datas['client_id'];
-        $resp = $this->admin_model->change_pay_day($client_id, $pay_day);
-        
-        if ($resp) {
-            $response['success'] = true;
-            $response['message'] = "Data modificada corretamente";
-        } else {
-            $response['success'] = false;
-            $response['message'] = "Erro, não foi possível alterar a data de pagamento do cliente, contate ao grupo de desenvolvimento";
-        }
-        
-        echo json_encode($response);
-    }
-    
-    /*public function do_payment_at_moment() {
+    public function do_payment_at_moment() {
         $this->load->model('class/admin_model');
         $this->load->model('class/client_model');
         $this->load->model('class/Crypt');
@@ -530,7 +454,7 @@ class Admin extends CI_Controller {
         }
         
         echo json_encode($response);
-    }*/
+    }
     
     public function do_change_status_client() {
         $this->load->model('class/user_model');
@@ -577,6 +501,28 @@ class Admin extends CI_Controller {
         echo json_encode($response);
     }
     
+    //---- Functions auxiliars-----------------------------
+    public function T($token, $array_params=NULL, $lang=NULL) {
+        if(!$lang){
+            $this->load->model('class/system_config');
+            $GLOBALS['sistem_config'] = $this->system_config->load();
+            if(isset($language['language']))
+                $param['language']=$language['language'];
+            else
+                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;        
+            $GLOBALS['language']=$param['language'];
+            $lang=$param['language'];
+        }
+        $this->load->model('class/translation_model');
+        $text = $this->translation_model->get_text_by_token($token,$lang);
+        $N = count($array_params);
+        for ($i = 0; $i < $N; $i++) {
+            $text = str_replace('@' . ($i + 1), $array_params[$i], $text);
+        }
+        return $text;
+    }
+       
     public function delete_work_of_client($client_id) {
         $this->load->model('class/client_model');
         $active_profiles = $this->client_model->get_client_workable_profiles($client_id);        
@@ -587,6 +533,65 @@ class Admin extends CI_Controller {
         return true;
     }
     
-       
+    public function detectCardType($num) {
+        $re = array(
+            "visa" => "/^4[0-9]{12}(?:[0-9]{3})?$/",
+            "mastercard" => "/^5[1-5][0-9]{14}$/",
+            "amex" => "/^3[47][0-9]{13}$/",
+            "discover" => "/^6(?:011|5[0-9]{2})[0-9]{12}$/",
+            "diners" => "/^3[068]\d{12}$/",
+            "elo" => "/^((((636368)|(438935)|(504175)|(451416)|(636297))\d{0,10})|((5067)|(4576)|(4011))\d{0,12})$/",
+            "hipercard" => "/^(606282\d{10}(\d{3})?)|(3841\d{15})$/"
+        );
+
+        if (preg_match($re['visa'], $num)) {
+            return 'Visa';
+        } else if (preg_match($re['mastercard'], $num)) {
+            return 'Mastercard';
+        } else if (preg_match($re['amex'], $num)) {
+            return 'Amex';
+        } else if (preg_match($re['discover'], $num)) {
+            return 'Discover';
+        } else if (preg_match($re['diners'], $num)) {
+            return 'Diners';
+        } else if (preg_match($re['elo'], $num)) {
+            return 'Elo';
+        } else if (preg_match($re['hipercard'], $num)) {
+            return 'Hipercard';
+        } else {
+            return false;
+        }
+    }
+    
+    public function get_daily_work($active_profiles) {
+        $this->load->model('class/client_model');
+        $this->load->model('class/user_role');
+        $n = count($active_profiles);
+        $my_daily_work = array();
+        //if($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN){
+            for ($i = 0; $i < $n; $i++){
+                $work = $this->client_model->get_daily_work_to_profile($active_profiles[$i]['id']);
+                if (count($work)) {
+                    $work = $work[0];
+                }
+                if (count($work)) {
+                    $to_follow = $work['to_follow'];
+                    $to_unfollow = $work['to_unfollow'];
+                } else {
+                    $to_follow = '----';
+                    $to_unfollow = '----';
+                }
+                $tmp = array('profile' => $active_profiles[$i]['insta_name'],
+                    'id' => $active_profiles[$i]['id'],
+                    'to_follow' => $to_follow,
+                    'to_unfollow' => $to_unfollow,
+                    'end_date' => $active_profiles[$i]['end_date']
+                );
+                $my_daily_work[$i] = $tmp;
+            }
+            return $my_daily_work;
+        //} else return 0;
+        
+    }
     
 }

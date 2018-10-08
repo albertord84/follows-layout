@@ -8,6 +8,10 @@ class Welcome extends CI_Controller {
 
     public $language = NULL;
 
+    public function test() {
+        
+    }
+    
     public function index() {
         $this->is_ip_hacker();
         $language = $this->input->get();
