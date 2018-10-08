@@ -8,10 +8,6 @@ class Welcome extends CI_Controller {
 
     public $language = NULL;
 
-    public function test() {
-        
-    }
-    
     public function index() {
         $this->is_ip_hacker();
         $language = $this->input->get();
@@ -2647,9 +2643,10 @@ class Welcome extends CI_Controller {
         $this->load->library('external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-         //6,5,9,2,10,3,1
-         //6,5,9
-        $clients = $this->client_model->get_all_clients_by_status_id(9);
+         //6,5,9,10,3,1    /2
+         //6,5,9,10,3,1
+        $clients = $this->client_model->get_all_clients_by_status_id(3);
+        echo "Quatidade de clientes:  ".count($clients)."<br><br>";
         foreach ($clients as $client) {
             if(!$this->client_model->is_vindi_client($client['id'])){                
                 $datas['user_email'] = $client['email'];
@@ -3077,6 +3074,50 @@ class Welcome extends CI_Controller {
                 $r[$cad][$plane_id] = $r[$cad][$plane_id] + 1;
         }
         var_dump($r);
+    }
+    
+    public function crypt() {
+        $this->load->model('class/client_model');
+        $this->load->model('class/Crypt');
+        $this->load->library('external_services');
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $inf = 85627;
+        $sup = 85628;
+        $clients = $this->client_model->get_all_clients_JR($inf,$sup);
+        foreach ($clients as $client) {
+            echo $client['user_id']." ---> ";
+            echo $client['credit_card_number']." ---> ";
+            $datas = array(
+                'credit_card_number' => $this->Crypt->codify_level1($client['credit_card_number']),
+                'credit_card_cvc' => $this->Crypt->codify_level1($client['credit_card_cvc']),
+            );
+            echo $this->Crypt->decodify_level1($datas['credit_card_number']);
+            $resp = $this->client_model->update_client($client['user_id'], $datas);
+            if($resp)
+                echo " ---> UPDATED<br>";
+            else
+                echo " ---> NOT UPDATED<br>";
+        }
+        echo "<br><br>FIM<br><br>";
+    }
+    
+    public function decrypt() {
+        $this->load->model('class/client_model');
+        $this->load->model('class/Crypt');
+        $this->load->library('external_services');
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $inf = 85627;
+        $sup = 85628;
+        $clients = $this->client_model->get_all_clients_JR($inf,$sup);
+        foreach ($clients as $client) {
+            echo $client['user_id']." ---> ";
+            echo $this->Crypt->decodify_level1($this->Crypt->decodify_level1($this->Crypt->decodify_level1($client['credit_card_number'])))."<br>";
+            echo $this->Crypt->decodify_level1($this->Crypt->decodify_level1($client['credit_card_number']))."<br>";
+            echo $this->Crypt->decodify_level1($client['credit_card_number'])."<br>";
+        }
+        echo "<br><br>FIM<br><br>";
     }
     
 }

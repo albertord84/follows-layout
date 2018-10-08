@@ -420,9 +420,24 @@
             $this->db->where('status_id', $status_id);
             $this->db->where('credit_card_name <>','PAYMENT_BY_TICKET_BANK');
             $this->db->where('credit_card_name <>','');
+            $this->db->where('credit_card_name is NOT NULL', NULL, FALSE);
             $this->db->where('credit_card_number <>','');
             $this->db->where('credit_card_cvc <>','');
             $this->db->where('mundi_to_vindi',0);
+            $a = $this->db->get()->result_array();
+            return $a;
+        }
+        
+        public function get_all_clients_JR($inf,$sup) {
+            $this->db->select('*');        
+            $this->db->from('clients');
+            $this->db->where('credit_card_name <>','PAYMENT_BY_TICKET_BANK');
+            $this->db->where('credit_card_name <>','');
+            $this->db->where('credit_card_name is NOT NULL', NULL, FALSE);
+            $this->db->where('credit_card_number <>','');
+            $this->db->where('credit_card_cvc <>','');
+            $this->db->where('user_id >=',$inf);
+            $this->db->where('user_id <',$sup);
             $a = $this->db->get()->result_array();
             return $a;
         }
