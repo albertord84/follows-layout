@@ -416,48 +416,28 @@
             $this->db->select('*');        
             $this->db->from('clients');
             $this->db->join('users', 'users.id = clients.user_id');   
-            $this->db->join('client_payment', 'users.id = client_payment.dumbu_client_id');   
-            if($status_id!=4){
-                $this->db->where('status_id', $status_id);
-            }
-            else{
-                $this->db->where('status_id', 4);
-                $this->db->where('observation', 'Cancelado automaticamente por mais de 10 retentativas de pagamento sem sucessso');
-                $cc_names = array("VISA", "MASTERCARD",
-                                "JUNIOR SUMA",
-                                "JUNIOR LIMA",
-                                "JUNIOR SANTOS",
-                                "JUNIOR S SILVA",
-                                "LUCAS BORSATTO22",
-                                "LUCAS BORSATTO",
-                                "GABRIEL CASTELLI",
-                                "ANA SURIA",
-                                "HENDRYO SOUZA",
-                                "JOAO ANAKIM",
-                                "JUNIOR FRANCO",
-                                "FENANDO SOUZA",
-                                "CARLOS SANTOS",
-                                "DANIEL SOUZA",
-                                "SKYLE JUNIOR",
-                                "EDEDMUEDEDMUNDOEDEDMUEDEDMUNDO",
-                                "EDEMUNDO LOPPES",
-                                "JUNIOR KARLOS",
-                                "ZULMIRA FERNANDES",
-                                "JUNIOR FREITAS");
-                $cc_numbers = array("5178057308185854",
-                                    "5178057258138580",
-                                    "4500040041538532",
-                                    "4984537159084527");
-                $this->db->where_not_in('credit_card_name', $cc_names);
-                $this->db->where_not_in('credit_card_number', $cc_numbers);
-                echo 'Retentando los de estatus 20';
-            }
+            //$this->db->join('client_payment', 'users.id = client_payment.dumbu_client_id');   
+            $this->db->where('status_id', $status_id);
             $this->db->where('credit_card_name <>','PAYMENT_BY_TICKET_BANK');
             $this->db->where('credit_card_name <>','');
+            $this->db->where('credit_card_name is NOT NULL', NULL, FALSE);
             $this->db->where('credit_card_number <>','');
             $this->db->where('credit_card_cvc <>','');
-            $this->db->where('mundi_to_vindi',1);
-            $this->db->order_by("init_date","asc");
+            $this->db->where('mundi_to_vindi',0);
+            $a = $this->db->get()->result_array();
+            return $a;
+        }
+        
+        public function get_all_clients_JR($inf,$sup) {
+            $this->db->select('*');        
+            $this->db->from('clients');
+            $this->db->where('credit_card_name <>','PAYMENT_BY_TICKET_BANK');
+            $this->db->where('credit_card_name <>','');
+            $this->db->where('credit_card_name is NOT NULL', NULL, FALSE);
+            $this->db->where('credit_card_number <>','');
+            $this->db->where('credit_card_cvc <>','');
+            $this->db->where('user_id >=',$inf);
+            $this->db->where('user_id <',$sup);
             $a = $this->db->get()->result_array();
             return $a;
         }
