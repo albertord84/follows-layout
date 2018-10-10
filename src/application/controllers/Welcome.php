@@ -969,8 +969,8 @@ class Welcome extends CI_Controller {
                                     if ($datas['plane_type'] == '1')
                                         $datas['plane_type'] = 4;
                                     $this->client_model->set_client_payment(
-                                            $datas['pk'], $gateway_client_id, $datas['plane_type']);
-                                    $datas['pay_day'] = strtotime("+" . $GLOBALS['sistem_config']->PROMOTION_N_FREE_DAYS . " days", time());
+                                            $datas['pk'], $gateway_client_id, $datas['plane_type']);                                    
+                                    $datas['pay_day'] = time()+3600;
                                     $this->client_model->update_client(
                                             $datas['pk'], array('pay_day' => $datas['pay_day'], 'plane_id' => $datas['plane_type']
                                     ));
