@@ -1499,6 +1499,113 @@ class Welcome extends CI_Controller {
         }
     }
 
+    public function client_insert_hashtag() {
+        $this->is_ip_hacker();
+        $id = $this->session->userdata('id');
+        if ($this->session->userdata('id')) {
+            $this->load->model('class/system_config');
+            $GLOBALS['sistem_config'] = $this->system_config->load();
+            $language = $this->input->get();
+            if (isset($language['language']))
+                $param['language'] = $language['language'];
+            else
+                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
+            $GLOBALS['language'] = $param['language'];
+            $this->load->model('class/client_model');
+            $this->load->model('class/user_status');
+            $profile = $this->input->post();
+            $active_profiles = $this->client_model->get_client_active_profiles($this->session->userdata('id'));
+            $N = count($active_profiles);
+            $N_profiles = 0;
+            $is_active_tag = false;
+            for ($i = 0; $i < $N; $i++) {
+                if ($active_profiles[$i]['type'] === '2' && $active_profiles[$i]['deleted'] === '0')
+                    $N_profiles = $N_profiles + 1;
+                if ($active_profiles[$i]['insta_name'] == $profile['hashtag']) {
+                    if ($active_profiles[$i]['deleted'] == false && $active_profiles[$i]['type'] === '2')
+                        $is_active_tag = true;
+                    break;
+                }
+            }
+            if (!$is_active_tag) {
+                if ($N_profiles < $GLOBALS['sistem_config']->REFERENCE_PROFILE_AMOUNT) {
+                    $profile_datas = $this->check_insta_tag_from_client($profile['hashtag']);
+                    if ($profile_datas) {
+                        $p = $this->client_model->insert_insta_profile($this->session->userdata('id'), $profile['hashtag'], $profile_datas->id, '2');
+                        $result = $this->verify_profile($p, $active_profiles, $N);
+                        $result['img_url'] = base_url() . 'assets/images/avatar_hashtag_present.png';
+                        ;
+                        $result['profile'] = $profile['hashtag'];
+                        $result['follows_from_profile'] = 0;
+                    } else {
+                        $result['success'] = false;
+                        $result['message'] = "#" . $profile['hashtag'] . " " . $this->T('não é um hashtag do Instagram', array(), $GLOBALS['language']);
+                    }
+                } else {
+                    $result['success'] = false;
+                    $result['message'] = $this->T('Você alcançou a quantidade máxima de perfis ativos', array(), $GLOBALS['language']);
+                }
+            } else {
+                $result['success'] = false;
+                if ($is_active_profile)
+                    $result['message'] = $this->T('O perfil informado ja está ativo', array(), $GLOBALS['language']);
+                else
+                    $result['message'] = $this->T('O perfil informado é uma hashtag ativo', array(), $GLOBALS['language']);
+            }
+            if ($result['success'] == true) {
+                $this->load->model('class/user_model');
+                $this->user_model->insert_washdog($this->session->userdata('id'), 'HASHTAG INSERTED');
+            }
+            echo json_encode($result);
+        }
+    }
+
+    public function client_desactive_hashtag() {
+        $this->is_ip_hacker();
+        if ($this->session->userdata('id')) {
+            $this->load->model('class/system_config');
+            $GLOBALS['sistem_config'] = $this->system_config->load();
+            $language = $this->input->get();
+            if (isset($language['language']))
+                $param['language'] = $language['language'];
+            else
+                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
+            $GLOBALS['language'] = $param['language'];
+            $this->load->model('class/client_model');
+            $profile = $this->input->post();
+            if ($this->client_model->desactive_profiles($this->session->userdata('id'), $profile['hashtag'])) {
+                $result['success'] = true;
+                $result['message'] = $this->T('Hashtag eliminado', array(), $GLOBALS['language']);
+            } else {
+                $result['success'] = false;
+                $result['message'] = $this->T('Erro no sistema, tente novamente', array(), $GLOBALS['language']);
+            }
+            if ($result['success'] == true) {
+                $this->load->model('class/user_model');
+                $this->user_model->insert_washdog($this->session->userdata('id'), 'HASHTAG ELIMINATED');
+            }
+            echo json_encode($result);
+        }
+    }
+
+    public function check_insta_tag_from_client($profile) {
+        $this->is_ip_hacker();
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $this->load->library('external_services');
+        $data = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $profile);
+        if (is_object($data)) {
+            return $data;
+        } else
+        if (is_string($data)) {
+            return json_decode($data);
+        } else {
+            return NULL;
+        }
+    }
+    
     public function client_insert_profile() {
         $this->is_ip_hacker();
         $id = $this->session->userdata('id');
@@ -2261,118 +2368,11 @@ class Welcome extends CI_Controller {
         }
     }
 
-    public function client_insert_hashtag() {
-        $this->is_ip_hacker();
-        $id = $this->session->userdata('id');
-        if ($this->session->userdata('id')) {
-            $this->load->model('class/system_config');
-            $GLOBALS['sistem_config'] = $this->system_config->load();
-            $language = $this->input->get();
-            if (isset($language['language']))
-                $param['language'] = $language['language'];
-            else
-                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
-            $GLOBALS['language'] = $param['language'];
-            $this->load->model('class/client_model');
-            $this->load->model('class/user_status');
-            $profile = $this->input->post();
-            $active_profiles = $this->client_model->get_client_active_profiles($this->session->userdata('id'));
-            $N = count($active_profiles);
-            $N_profiles = 0;
-            $is_active_tag = false;
-            for ($i = 0; $i < $N; $i++) {
-                if ($active_profiles[$i]['type'] === '2' && $active_profiles[$i]['deleted'] === '0')
-                    $N_profiles = $N_profiles + 1;
-                if ($active_profiles[$i]['insta_name'] == $profile['hashtag']) {
-                    if ($active_profiles[$i]['deleted'] == false && $active_profiles[$i]['type'] === '2')
-                        $is_active_tag = true;
-                    break;
-                }
-            }
-            if (!$is_active_tag) {
-                if ($N_profiles < $GLOBALS['sistem_config']->REFERENCE_PROFILE_AMOUNT) {
-                    $profile_datas = $this->check_insta_tag_from_client($profile['hashtag']);
-                    if ($profile_datas) {
-                        $p = $this->client_model->insert_insta_profile($this->session->userdata('id'), $profile['hashtag'], $profile_datas->id, '2');
-                        $result = $this->verify_profile($p, $active_profiles, $N);
-                        $result['img_url'] = base_url() . 'assets/images/avatar_hashtag_present.png';
-                        ;
-                        $result['profile'] = $profile['hashtag'];
-                        $result['follows_from_profile'] = 0;
-                    } else {
-                        $result['success'] = false;
-                        $result['message'] = "#" . $profile['hashtag'] . " " . $this->T('não é um hashtag do Instagram', array(), $GLOBALS['language']);
-                    }
-                } else {
-                    $result['success'] = false;
-                    $result['message'] = $this->T('Você alcançou a quantidade máxima de perfis ativos', array(), $GLOBALS['language']);
-                }
-            } else {
-                $result['success'] = false;
-                if ($is_active_profile)
-                    $result['message'] = $this->T('O perfil informado ja está ativo', array(), $GLOBALS['language']);
-                else
-                    $result['message'] = $this->T('O perfil informado é uma hashtag ativo', array(), $GLOBALS['language']);
-            }
-            if ($result['success'] == true) {
-                $this->load->model('class/user_model');
-                $this->user_model->insert_washdog($this->session->userdata('id'), 'HASHTAG INSERTED');
-            }
-            echo json_encode($result);
-        }
-    }
-
-    public function client_desactive_hashtag() {
-        $this->is_ip_hacker();
-        if ($this->session->userdata('id')) {
-            $this->load->model('class/system_config');
-            $GLOBALS['sistem_config'] = $this->system_config->load();
-            $language = $this->input->get();
-            if (isset($language['language']))
-                $param['language'] = $language['language'];
-            else
-                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
-            $GLOBALS['language'] = $param['language'];
-            $this->load->model('class/client_model');
-            $profile = $this->input->post();
-            if ($this->client_model->desactive_profiles($this->session->userdata('id'), $profile['hashtag'])) {
-                $result['success'] = true;
-                $result['message'] = $this->T('Hashtag eliminado', array(), $GLOBALS['language']);
-            } else {
-                $result['success'] = false;
-                $result['message'] = $this->T('Erro no sistema, tente novamente', array(), $GLOBALS['language']);
-            }
-            if ($result['success'] == true) {
-                $this->load->model('class/user_model');
-                $this->user_model->insert_washdog($this->session->userdata('id'), 'HASHTAG ELIMINATED');
-            }
-            echo json_encode($result);
-        }
-    }
-
-    public function check_insta_tag_from_client($profile) {
-        $this->is_ip_hacker();
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->library('external_services');
-        $data = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $profile);
-        if (is_object($data)) {
-            return $data;
-        } else
-        if (is_string($data)) {
-            return json_decode($data);
-        } else {
-            return NULL;
-        }
-    }
-
     public function verify_profile($profile_id, $active_profiles, $N) {
         $this->is_ip_hacker();
         if ($profile_id) {
-            if ($this->session->userdata('status_id') == user_status::ACTIVE && $this->session->userdata('insta_datas'))
-                $q = $this->client_model->insert_profile_in_daily_work($profile_id, $this->session->userdata('insta_datas'), $N, $active_profiles, $this->session->userdata('to_follow'));
+            if ($this->session->userdata('status_id') == user_status::ACTIVE && $this->session->userdata('cookies'))
+                $q = $this->client_model->insert_profile_in_daily_work($profile_id, json_decode($this->session->userdata('cookies')), $N, $active_profiles, $this->session->userdata('to_follow'));
             else
                 $q = true;
             $result['success'] = true;
