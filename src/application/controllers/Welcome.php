@@ -787,6 +787,7 @@ class Welcome extends CI_Controller {
         $this->load->model('class/client_model');
         $this->load->model('class/Crypt');
         $this->load->model('class/system_config');
+        $this->load->library('external_services');
         $GLOBALS['sistem_config'] = $this->system_config->load();
         $origin_datas = $datas;
         $datas = $this->input->post();
@@ -906,7 +907,6 @@ class Welcome extends CI_Controller {
                     'pay_day' => strtotime("+7 days", time()),
                     'ticket_access_token' => md5($datas['pk'] . '-abc-' . $insta_id . '-cba-' . '8053')
                 ));
-                $this->load->library('external_services');
                 $email = $this->external_services->send_link_ticket_bank_and_access_link($username, $useremail, $access_link, $ticket_url);
                 //7. retornar response e tomar decisão no cliente
                 if ($email['success']) {
@@ -1295,6 +1295,7 @@ class Welcome extends CI_Controller {
 
     public function check_mundipagg_boleto($datas) {
         $this->is_ip_hacker();
+        $this->load->library('external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
         $this->load->library('Payment');
@@ -1310,7 +1311,7 @@ class Welcome extends CI_Controller {
         $payment_data['neighborhood_address'] = $datas['neighborhood_address'];
         $payment_data['municipality_address'] = $datas['municipality_address'];
         $payment_data['state_address'] = $datas['state_address'];
-        return $this->payment->create_boleto_payment($payment_data);
+        return $this->external_services->create_boleto_payment($payment_data);
     }
 
     public function delete_recurrency_payment($order_key) {
