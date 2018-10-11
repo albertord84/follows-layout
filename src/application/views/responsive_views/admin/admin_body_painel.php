@@ -523,6 +523,9 @@
                                     echo '<b>Total Unfollow: </b>'.($result[$i]['unfollow_total'] ? 'Sim' : 'Não').'<br>';
                                     echo '<b>Autolike: </b>'.($result[$i]['like_first'] ? 'Sim' : 'Não').'<br>';
                                     echo '<a target="_blank" href="'.base_url().'index.php/admin/list_filter_view_pendences?pendences_date=all&client_id_listar='.$result[$i]['user_id'].'&type_option1=true&type_option2=false&type_option3=false">Ver pendências abertas ou<br>criar pendências novas</a><br>';
+                                    echo '<br>';
+                                    echo '<b>Telefone: </b>('.$result[$i]['phone_ddd'].') '.$result[$i]['phone_number'].'<br>';
+                                    
                                 echo '<br>';
                                 if($result[$i]['observation']!=NULL && $result[$i]['observation']!==''){
                                     echo '<b style="color:red">OBSERVAÇÂO!</b><br>';
