@@ -165,8 +165,9 @@ class Welcome extends CI_Controller {
                             for ($i = 0; $i < $N; $i++) {
                                 $sql = 'SELECT * FROM daily_work WHERE reference_id=' . $active_profiles[$i]['id'];
                                 $response = count($this->user_model->execute_sql_query($sql));
-                                if (!$response && !$active_profiles[$i]['end_date'])
+                                if (!$response && !$active_profiles[$i]['end_date']){
                                     $this->client_model->insert_profile_in_daily_work($active_profiles[$i]['id'], $insta_login['insta_login_response'], $i, $active_profiles, $this->session->userdata('to_follow'));
+                                }
                             }
                         }
                         //4. actualizar la sesion
@@ -1797,7 +1798,7 @@ class Welcome extends CI_Controller {
             if ($login_data->json_response->authenticated) {
                 $data_insta['authenticated'] = true;
                 $data_insta['insta_id'] = $login_data->ds_user_id;
-                $user_data = $login_data = $this->external_services->get_insta_ref_prof_data_from_client($login_data, $client_login);
+                $user_data = $this->external_services->get_insta_ref_prof_data_from_client($login_data, $client_login);
                 if ($data_insta && isset($user_data->follower_count))
                     $data_insta['insta_followers_ini'] = $user_data->follower_count;
                 else
