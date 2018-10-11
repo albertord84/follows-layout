@@ -266,25 +266,7 @@
                                                 <button id="btn_confirm_new" type="button" style="margin:1%; color:white;font-size:1em; " class="btn btn-success ladda-button"  data-style="expand-left" data-spinner-color="#ffffff" disabled>
                                                     ' . $CI->T("CONFIRMAR", array(), $language) . '
                                                 </button>
-                                            </div>';
-                                            
-                                    /*echo '
-                                            <div class="center" style="margin-left:20%; width:60%; padding: 2%;  border:1px solid red; border-radius:5px ">
-                                                <b style="margin:1%; font-family:sans-serif; font-size:1em; color:red;">' . $CI->T("ATIVE SUA CONTA", array(), $language) . '</b><br>
-                                                <b style="margin:1%; font-family:sans-serif; font-size:0.8em;">' . $CI->T("PRECISAMOS QUE VOCÊ VERIFIQUE SUA CONTA", array(), $language) . '</b> <br><br>
-                                                <label>' . $CI->T("PASSO 1: Ative sua conta diretamente no Indtagram ", array(), $language) . '</label>                                               
-                                                <label>' . $CI->T("PASSO 2: Contate nosso atendimento para resolver o problema", array(), $language) . '</label> <br>                                                
-                                            </div>';*/
-
-                                    /*echo '  <div class="center" style="margin-left:20%; width:60%; padding: 2%;  border:1px solid red; border-radius:5px ">
-                                                <b style="margin:1%; font-family:sans-serif; font-size:1em; color:red;">' . $CI->T("ATIVE SUA CONTA", array(), $language) . '</b><BR>
-                                                <b style="margin:1%; font-family:sans-serif; font-size:0.8em;">' . $CI->T("PRECISAMOS QUE VOCÊ VERIFIQUE SUA CONTA DIRETAMENTE NO INSTAGRAM COMO MEDIDA DE SEGURANÇA", array(), $language) . '</b>  <br>           
-                                                <a id="lnk_verify_account" target="_blank" style="color:black;font-size:1em;"  href="' . $verify_account_datas['verify_account_url'] . '">
-                                                    <button id="btn_verify_account" type="button" style="margin:1%; color:white;font-size:1em; " class="btn btn-success ladda-button"  data-style="expand-left" data-spinner-color="#ffffff">
-                                                        ' . $CI->T("ATIVAR AGORA", array(), $language) . '
-                                                    </button>
-                                                </a>
-                                            </div>';*/ 
+                                            </div>'; 
                                 } else
                                     echo '
                                             <div class="center" style="margin-left:20%; width:60%; padding: 2%;  border:1px solid red; border-radius:5px ">
@@ -333,13 +315,6 @@
                     <button type="button" class="btn btn-drop fleft100 dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <b><?php echo $CI->T("AVISOS IMPORTANTES", array(), $language); ?></b> <img src="<?php echo base_url() . 'assets/images/seta.png'; ?>" alt="" class="wauto fright">
                     </button>
-<!--                    <ul class="dropdown-menu drop-lista bk-cinza fleft100">
-                        <li><?php //echo $CI->T("O Instagram só permite que você siga 7.500 perfis no total. Se você segue entre 6.000 e 7.500, precisarémos desseguir perfis para iniciar a ferramenta;", array(), $language); ?></li>
-                        <li><?php //echo $CI->T("Nossa ferramenta é integrada ao instagram, por isso, pode sofrer variações no desempenho a cada atualização feita pelo instagram;", array(), $language); ?></li>
-                        <li><?php //echo $CI->T("Caso altere sua senha ou usuário, não se preocupe, basta você efetuar login em nosso site e pronto! Sua conta será atualizada automatcamente;", array(), $language); ?></li>
-                        <li><?php //echo $CI->T("Nunca deixe sua conta privada, você conseguirá captar mais seguidores se eles puderem ver seu conteúdo e se identificarem com seu perfil;", array(), $language); ?></li>
-                        <li><?php //echo $CI->T("Nunca escolha perfis privados ou com poucos seguidores.", array(), $language); ?></li>
-                    </ul>-->
                     <ul class="dropdown-menu drop-lista bk-cinza fleft100">
                         <div class="col-md-3 col-sm-3 col-xs-12 "><p class="text-justify"><?php echo $CI->T("O Instagram só permite que você siga 7.500 perfis no total. Se você segue entre 6.000 e 7.500, precisarémos desseguir perfis para iniciar a ferramenta;", array(), $language); ?><p></div>
                         <div class="col-md-2 col-sm-2 col-xs-12"><p class="text-justify"><?php echo $CI->T("Nossa ferramenta é integrada ao instagram, por isso, pode sofrer variações no desempenho a cada atualização feita pelo instagram;", array(), $language); ?><p></div>
@@ -352,24 +327,7 @@
                 
                 <div class="col-md-12 col-sm-12 col-xs-12 m-t20">
                     <div class="col-md-1 col-sm-1 col-xs-12"></div>
-                    <div class="col-md-4 col-sm-4 col-xs-12"></div>
-                    
-                     <!--<<div style="font-size:0.9rem" class="col-md-4 col-sm-4 col-xs-12 bk-cinza pf-novidades m-t20 text-justify">
-                       span>
-                            <img src="<?php //echo base_url() . 'assets/images/ESTRELA.png'; ?>" width="20px" class="wauto" alt="">
-                            <?php //echo $CI->T('Novidades', array(), $language); ?>
-                        </span>
-                        <br>
-                        <p >
-                            <?php //echo $CI->T('Agora a Dumbu disponibiliza dois novos recursos: ', array(), $language); ?><br>
-                        </p>
-                        <p class="m-t10">
-                            <b><?php //echo $CI->T('AutoLike - ', array(), $language); ?></b> <?php //echo $CI->T('Permite que sua conta, além de seguir, interaja com as contas através de um like na ultima foto postada.', array(), $language); ?><br>
-                        </p> 
-                        <p class="m-t10">
-                            <b><?php //echo $CI->T('Geolocalização - ', array(), $language); ?></b> <?php //echo $CI->T('Agora você pode captar seguidores a partir de qualquer região, é só adicionar um local e pronto!', array(), $language); ?><br>
-                        </p>
-                    </div>-->                    
+                    <div class="col-md-4 col-sm-4 col-xs-12"></div>                               
                     <div class="col-md-2 col-sm-2 col-xs-12 text-center bloco m-t20">
                             <img id="my_img" src="<?php echo $my_img_profile; ?>" class="img50" alt="">
                             <b><p id="my_name" style="font-size:1.2em; font-family:sans-serif;"><?php echo $my_login_profile; ?></p></b> 
@@ -391,20 +349,6 @@
                                 ?>
                             </span>
                     </div>
-                    <!--<div class="col-md-5 col-sm-5 col-xs-12 text-center bloco ">
-                        <div class="btn-group fleft100">
-                            <button type="button" class="btn btn-drop fleft100 dropdown-toggle bk-cinza pf-novidades" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <b><?php //echo $CI->T("AVISOS IMPORTANTES", array(), $language); ?></b> <img src="<?php //echo base_url() . 'assets/images/seta.png'; ?>" alt="" class="wauto fright">
-                            </button>
-                            <ul class="dropdown-menu drop-lista bk-cinza pf-novidades fleft100">
-                                <p class="m-t10 text-justify pf-avisos"><b><?php //echo $CI->T("O Instagram só permite que você siga 7.500 perfis no total. Se você segue entre 6.000 e 7.500, precisarémos desseguir perfis para iniciar a ferramenta;", array(), $language); ?></b></p>
-                                <p class="m-t10 text-justify pf-avisos"><b><?php //echo $CI->T("Nossa ferramenta é integrada ao instagram, por isso, pode sofrer variações no desempenho a cada atualização feita pelo instagram;", array(), $language); ?></b></p>
-                                <p class="m-t10 text-justify pf-avisos"><b><?php //echo $CI->T("Caso altere sua senha ou usuário, não se preocupe, basta você efetuar login em nosso site e pronto! Sua conta será atualizada automatcamente;", array(), $language); ?></b></p>
-                                <p class="m-t10 text-justify pf-avisos"><b><?php //echo $CI->T("Nunca deixe sua conta privada, você conseguirá captar mais seguidores se eles puderem ver seu conteúdo e se identificarem com seu perfil;", array(), $language); ?></b></p>
-                                <p class="m-t10 text-justify pf-avisos"><b><?php //echo $CI->T("Nunca escolha perfis privados ou com poucos seguidores.", array(), $language); ?></p>
-                            </ul>
-                        </div>
-                    </div>-->
                         <?php if($plane_id=='5'){?>
                             <div style="font-size:0.9rem" class="col-md-4 col-sm-4 col-xs-12 bk-cinza pf-novidades m-t20 text-justify">
                                 <span>
@@ -445,22 +389,6 @@
                         <div class="col-md-3 col-sm-3 col-xs-12"></div>
                     </div>
                 <?php } ?>
-                
-                <!--<div class="text-center m-t30">
-                    <img id="my_img" src="<?php //echo $my_img_profile; ?>" class="img50" alt="">
-                    <b><p id="my_name" style="font-size:1.2em; font-family:sans-serif;"><?php //echo $my_login_profile; ?></p></b> 
-                    
-                    <span class="fleft100 cl-green">
-                        <?php
-                        /*if ($status['status_id'] == 1 || $status['status_id'] == 6 || $status['status_id'] == 10)
-                            echo '<b id="status_text" style="font-family:sans-serif">' . $CI->T($status["status_name"], array(), $language) . '</b>';
-                        else
-                            echo '<b id="status_text" ">' . $CI->T($status["status_name"], array(), $language) . '</b>';
-                        */?>
-                    </span>
-                </div>-->
-                
-                
                 <!----------------------------------------------------------------------------------------------------------------------------------->
                 <!--REFERENCES PROFILES-->
                 <div class="pf fleft100 text-center m-t30">
@@ -965,275 +893,41 @@
                     <img src="<?php echo base_url() . 'assets/images/perf.png'; ?>" class="wauto" alt="">
                     <h4 class="fleft100"><b><?php echo $CI->T("PERFOMANCE", array(), $language); ?></b></h4>
                 </div>
-
-                <!--
-                <div class="col-md-6 col-sm-6 col-xs-12 m-t20">
-                        <div class="col-md-5 col-sm-5 col-xs-12 bk-cinza text-center bloco">
-                            <h3 class="fleft100 m-t10"><b>INÍCIO <?php //echo date("j", $my_sigin_date).'/'.date("n", $my_sigin_date); ?></b></h3>
-                            <div class="col-md-6 col-sm-6 col-xs-12 border pd-r15"><h3 class="no-mg"><b><?php //echo $my_initial_followings; ?></b></h3><small class="fleft100">Seguindo</small></div>
-                            <div class="col-md-6 col-sm-6 col-xs-12 pd-l15"><h3 class="no-mg"><b><?php //echo $my_initial_followers; ?></b></h3><small class="fleft100">Seguidores</small></div>
-                        </div>
-
-                        <div class="col-md-1 col-sm-1 col-xs-12"><br></div>
-
-                        <div class="col-md-5 col-sm-5 col-xs-12 bk-cinza text-center bloco cl-blue">
-                            <h3 class="fleft100 m-t10"><b>AGORA</b></h3>
-                            <div class="col-md-6 col-sm-6 col-xs-12 border pd-r15"><h3 class="no-mg"><b><?php //echo $my_actual_followings; ?></b></h3><small class="fleft100">Seguindo</small></div>
-                            <div class="col-md-6 col-sm-6 col-xs-12 pd-l15"><h3 class="no-mg"><b><?php //echo $my_actual_followers; ?></b></h3><small class="fleft100">Seguidores</small></div>
-                        </div>
-
-
-                        <div class="col-md-4 col-sm-4 col-xs-12 cl-blue m-t30 no-pd center-mobile">
-                            <b class="cl-black">Ganho hoje</b>
-                            <h1 class="no-mg fleft100 fsize60"><b>256</b></h1>
-                        </div>
-
-                        <div class="col-md-8 col-sm-8 col-xs-12 cl-green m-t30 no-pd center-mobile">
-                            <b class="cl-black fleft100 m-b10">Conversão</b>
-                            <div class="cv fleft">56%</div>
-                            <img src="<?php //echo base_url().'assets/images/s-top.png'; ?>" class="wauto fleft st" alt="">
-                        </div>
-
-                        <div class="fleft100 m-t45">
-                            <div class="col-md-4 col-sm-4 col-xs-12 no-pd center-mobile m-b10">
-                                <b class="cl-black">Ganho semanal</b>
-                                <h1 class="no-mg fleft100"><b>892</b></h1>
-                            </div>
-                            <div class="col-md-4 col-sm-4 col-xs-12 no-pd center-mobile m-b10">
-                                <b class="cl-black">Ganho Mensal</b>
-                                <h1 class="no-mg fleft100"><b>37822</b></h1>
-                            </div>
-                            <div class="col-md-4 col-sm-4 col-xs-12 no-pd center-mobile m-b10">
-                                <b class="cl-black">Ganho desde o início</b>
-                                <h1 class="no-mg fleft100"><b>10.522</b></h1>
-                            </div>
-                        </div>
-
-                        <div class="col-md-12 col-sm-12 col-xs-12 no-pd m-t30 center-mobile m-b10">
-                            <b class="cl-black">Seguidas até hoje</b>
-                            <h1 class="no-mg fleft100"><b>37005</b></h1>
-                        </div>  
-                </div>
-
-                <div class="col-md-6 col-sm-6 col-xs-12 m-t20">
-                        <div class="col-md-6 col-sm-6 col-xs-12 pd-r5">
-                            <div class='input-group date'>
-                                <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-calendar"></span>
-                                </span>
-                                <input type='text' class="form-control" id='datetimepicker1' placeholder="Selecione o período" />		                    
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-sm-6 col-xs-12 pd-l5">
-                            <div class='input-group date'>
-                                <input type='text' class="form-control" id='datetimepicker2' placeholder="Selecione o período" />
-                                <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-calendar"></span>
-                                </span>
-                            </div>
-                        </div>
-
-                        <b class="cl-black m-t20 fleft100">Gráfico de desempenho</b>
-                        <div class="grafico fleft100 m-tb20">
-                            <img src="<?php //echo base_url().'assets/images/grafico.jpg'; ?>" alt="">
-                        </div>
-                        <span class="fleft100"><b style="color:#2f61c5;">▬Seguidores ganhos</b> <b style="color:#ea4018;">▬Seguidores iniciais</b></span>
-
-                        <b class="cl-black fleft100 m-t30 center-mobile">Melhores Perfis de referência:</b>
-                        <div class="fleft100 pf-melhor pf-painel m-t30">
-                            <ul class="add-perfil text-center">
-                                <li><a href=""><span>1º</span><img src="<?php //echo base_url().'assets/images/avatar.png'; ?>" class="wauto" alt=""></a><small class="fleft100 m-t10">@perfilderef <b class="cl-green fleft100 m-t20">25% <br><small>seguiu você</small></b></small></li>
-                                <li><a href=""><span>2º</span><img src="<?php //echo base_url().'assets/images/avatar.png'; ?>" class="wauto" alt=""></a><small class="fleft100 m-t10">@perfilderef <b class="cl-green fleft100 m-t20">25% <br><small>seguiu você</small></b></small></li>
-                                <li><a href=""><span>3º</span><img src="<?php //echo base_url().'assets/images/avatar.png'; ?>" class="wauto" alt=""></a><small class="fleft100 m-t10">@perfilderef <b class="cl-green fleft100 m-t20">25% <br><small>seguiu você</small></b></small></li>							
-                            </ul>
-                        </div>
-                </div>
-                
-                <div class="fleft100">
-                        <div class="col-md-6 col-sm-6 col-xs-12 bk text-center pd-r15 m-t30">
-                            <div class="fleft100 bk-cinza">
-                                <img src="<?php //echo base_url().'assets/images/direct.png'; ?>" class="wauto" alt="">
-                                <h2 class="no-mg"><b>DIRECT</b></h2>
-                                <div class="breve">EM BREVE</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-sm-6 col-xs-12 bk text-center pd-l15 m-t30">
-                            <div class="fleft100 bk-cinza">
-                                <img src="<?php //echo base_url().'assets/images/viu.png'; ?>" class="wauto" alt="">
-                                <h2 class="no-mg"><b>QUEM VIU SEU PERFIL</b></h2>
-                                <div class="breve">EM BREVE</div>
-                            </div>
-                        </div>
-                </div>
-
-                <div class="col-md-12 col-sm-12 col-xs-12 bk text-center no-pd m-t30">
-                        <div class="fleft100 bk-cinza local">
-                            <img src="<?php //echo base_url().'assets/images/local.png'; ?>" class="wauto" alt="">
-                            <h2 class="no-mg"><b>GEOLOCALIZAÇÃO</b></h2>
-                            <div class="breve"><a href="" data-toggle="modal" data-target=".bs-simular">EM BREVE</a></div>
-
-                <!-- Modal --><!--
-                <div class="modal fade bs-simular bs-example-ligar" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
-                    <div class="modal-dialog modal-lg ligar" role="document">
-                        <div class="modal-content text-center pd-20">
-                            <h4 class="m-tb30 cl-green"><b>MUITAS NOVIDADES!</b></h4>
-                            <p class="">EM BREVE A DUMBU DISBONIBILIZARÁ NOVAS FUNÇÕES, CLIQUE EM OK SE QUISER <br>PARTICIPAR DA VERSÃO DE TESTES E SER UM DOS PRIMEROS A TER ACESSO.</p>
-                            <div class="text-center m-b20"><button class="btn-primary w40 btn-green m-t20">QUERO PARTICIPAR</button></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    </div>
-    
-    
-    <div class="fleft100">
-        <div class="col-md-6 col-sm-6 col-xs-12 bk text-center pd-r15 m-t30">
-            <div class="fleft100 bk-cinza">
-                <img src="<?php //echo base_url().'assets/images/direct.png'; ?>" class="wauto" alt="">
-                <h2 class="no-mg"><b>DIRECT</b></h2>
-                <div class="breve">EM BREVE</div>
-            </div>
-        </div>
-        <div class="col-md-6 col-sm-6 col-xs-12 bk text-center pd-l15 m-t30">
-            <div class="fleft100 bk-cinza">
-                <img src="<?php //echo base_url().'assets/images/viu.png'; ?>" class="wauto" alt="">
-                <h2 class="no-mg"><b>QUEM VIU SEU PERFIL</b></h2>
-                <div class="breve">EM BREVE</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-12 col-sm-12 col-xs-12 bk text-center no-pd m-t30">
-        <div class="fleft100 bk-cinza local">
-            <img src="<?php //echo base_url().'assets/images/local.png'; ?>" class="wauto" alt="">
-            <h2 class="no-mg"><b>GEOLOCALIZAÇÃO</b></h2>
-            <div class="breve"><a href="" data-toggle="modal" data-target=".bs-simular">EM BREVE</a></div>
-
-                <!-- Modal --><!--
-                <div class="modal fade bs-simular bs-example-ligar" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
-                    <div class="modal-dialog modal-lg ligar" role="document">
-                        <div class="modal-content text-center pd-20">
-                            <h4 class="m-tb30 cl-green"><b>MUITAS NOVIDADES!</b></h4>
-                            <p class="">EM BREVE A DUMBU DISBONIBILIZARÁ NOVAS FUNÇÕES, CLIQUE EM OK SE QUISER <br>PARTICIPAR DA VERSÃO DE TESTES E SER UM DOS PRIMEROS A TER ACESSO.</p>
-                            <div class="text-center m-b20"><button class="btn-primary w40 btn-green m-t20">QUERO PARTICIPAR</button></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-                -->
-
                 <div class="col-md-6 col-sm-6 col-xs-12 m-t40">                            
                     <div class="col-md-5 col-sm-5 col-xs-12 bk-cinza text-center bloco">
                         <h3 class="fleft100 m-t10"><b><?php echo $CI->T("INÍCIO ", array(), $language); ?><?php echo date("j", $my_sigin_date) . '/' . date("n", $my_sigin_date); ?></b></h3>
                         <div class="col-md-6 col-sm-6 col-xs-12 border pd-r15"><h3 class="no-mg"><b><?php echo $my_initial_followings; ?></b></h3><small class="fleft100"><?php echo $CI->T("Seguindo", array(), $language); ?></small></div>
                         <div class="col-md-6 col-sm-6 col-xs-12 pd-l15"><h3 class="no-mg"><b><?php echo $my_initial_followers; ?></b></h3><small class="fleft100"><?php echo $CI->T("Seguidores", array(), $language); ?></small></div>
                     </div>
-
                     <div class="col-md-1 col-sm-1 col-xs-12"><br></div>
-
                     <div class="col-md-5 col-sm-5 col-xs-12 bk-cinza text-center bloco cl-blue">
                         <h3 class="fleft100 m-t10"><b><?php echo $CI->T("AGORA", array(), $language); ?></b></h3>
                         <div class="col-md-6 col-sm-6 col-xs-12 border pd-r15"><h3 class="no-mg"><b><?php echo $my_actual_followings; ?></b></h3><small class="fleft100"><?php echo $CI->T("Seguindo", array(), $language); ?></small></div>
                         <div class="col-md-6 col-sm-6 col-xs-12 pd-l15"><h3 class="no-mg"><b><?php echo $my_actual_followers; ?></b></h3><small class="fleft100"><?php echo $CI->T("Seguidores", array(), $language); ?></small></div>
                     </div>
-
                     <div class="fleft100 m-t45">
                         <div class="col-md-6 col-sm-6 col-xs-12 no-pd text-center center-mobile m-b10">
                             <b class="cl-black"><?php echo $CI->T("Seguidos até hoje", array(), $language); ?></b>
                             <h1 class="no-mg fleft100"><b><?php echo ($amount_followers_by_reference_profiles+$amount_followers_by_geolocalization+$amount_followers_by_hashtag); ?></b></h1>
                         </div>
-
                         <div class="col-md-6 col-sm-6 col-xs-12 no-pd text-center center-mobile m-b10">
                             <b class="cl-black"><?php echo $CI->T("Ganho desde o início", array(), $language); ?></b>
                             <h1 class="no-mg fleft100"><b><?php echo ($my_actual_followers - $my_initial_followers); ?></b></h1>
                         </div>
                     </div>                    
                 </div>
-
-
-                <!--
-                <div class="col-md-4 col-sm-4 col-xs-12 cl-blue m-t30 no-pd center-mobile">
-                    <b class="cl-black">Ganho hoje</b>
-                    <h1 class="no-mg fleft100 fsize60"><b>256</b></h1>
-                </div>
-
-                <div class="col-md-8 col-sm-8 col-xs-12 cl-green m-t30 no-pd center-mobile">
-                    <b class="cl-black fleft100 m-b10">Conversão</b>
-                    <div class="cv fleft">56%</div>
-                    <img src="<?php //echo base_url().'assets/images/s-top.png'; ?>" class="wauto fleft st" alt="">
-                </div>
-
-                <div class="fleft100 m-t45">
-                    <div class="col-md-4 col-sm-4 col-xs-12 no-pd center-mobile m-b10">
-                        <b class="cl-black">Ganho semanal</b>
-                        <h1 class="no-mg fleft100"><b>892</b></h1>
-                    </div>
-                    <div class="col-md-4 col-sm-4 col-xs-12 no-pd center-mobile m-b10">
-                        <b class="cl-black">Ganho Mensal</b>
-                        <h1 class="no-mg fleft100"><b>37822</b></h1>
-                    </div>
-                    <div class="col-md-4 col-sm-4 col-xs-12 no-pd center-mobile m-b10">
-                        <b class="cl-black">Ganho desde o início</b>
-                        <h1 class="no-mg fleft100"><b>10.522</b></h1>
-                    </div>
-                </div>
-
-                <div class="col-md-12 col-sm-12 col-xs-12 no-pd m-t30 center-mobile m-b10">
-                    <b class="cl-black">Seguidas até hoje</b>
-                    <h1 class="no-mg fleft100"><b>37005</b></h1>
-                </div> 
-                -->
-
-
-
-                <div class="col-md-6 col-sm-6 col-xs-12 m-t20">
-                    <!--<div class="col-md-6 col-sm-6 col-xs-12 pd-r5">
-                        <div class='input-group date'>
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
-                            <input type='text' class="form-control" id='datetimepicker1' placeholder="Selecione o período" />		                    
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 col-sm-6 col-xs-12 pd-l5">
-                        <div class='input-group date'>
-                            <input type='text' class="form-control" id='datetimepicker2' placeholder="Selecione o período" />
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
-                        </div>
-                    </div>-->
-
+                <div class="col-md-6 col-sm-6 col-xs-12 m-t20">  
                     <b class="cl-black fleft100"><?php echo $CI->T("Gráfico de desempenho", array(), $language); ?></b>
                     <div class="grafico fleft100 m-tb20  text-center">
-                        <!--<img src="<?php //echo base_url().'assets/images/grafico.jpg'; ?>" alt="">-->
                         <div id="chartContainer" style="height: 300px; width: 90%;"></div>
-                    </div>
-                    <!--<span class="fleft100">
-                        <b style="color:#2f61c5;">▬Seguidores ganhos</b> 
-                        <b style="color:#ea4018;">▬Seguidores iniciais</b>
-                    </span>-->
-
-                    <!--<b class="cl-black fleft100 m-t30 center-mobile">Melhores Perfis de referência:</b>
-                    <div class="fleft100 pf-melhor pf-painel m-t30">
-                        <ul class="add-perfil text-center">
-                            <li><a href=""><span>1º</span><img src="<?php //echo base_url().'assets/images/avatar.png'; ?>" class="wauto" alt=""></a><small class="fleft100 m-t10">@perfilderef <b class="cl-green fleft100 m-t20">25% <br><small>seguiu você</small></b></small></li>
-                            <li><a href=""><span>2º</span><img src="<?php //echo base_url().'assets/images/avatar.png'; ?>" class="wauto" alt=""></a><small class="fleft100 m-t10">@perfilderef <b class="cl-green fleft100 m-t20">25% <br><small>seguiu você</small></b></small></li>
-                            <li><a href=""><span>3º</span><img src="<?php //echo base_url().'assets/images/avatar.png'; ?>" class="wauto" alt=""></a><small class="fleft100 m-t10">@perfilderef <b class="cl-green fleft100 m-t20">25% <br><small>seguiu você</small></b></small></li>							
-                        </ul>
-                    </div>-->
+                    </div>                    
                 </div>    
                 
                 <?php if ($status['status_id'] == 1 || $status['status_id'] == 6 || $status['status_id'] == 7 || $status['status_id'] == 10) { ?>
                     <div class="col-md-5 col-sm-5 col-xs-12 m-t20 text-center">    
                         <img src="<?php echo base_url().'assets/images/unfollow_icon.png'; ?>" class="wauto" alt="">
                         <h4 class="m-t10"><?php echo $CI->T("UNFOLLOW TOTAL", array(), $language); ?></h4>
-                        <p style="text-align:justify"> <?php echo $CI->T('Ao ativar o recurso UNFOLLOW TOTAL sua conta iniciará um processo onde deixará de seguir todos os perfis que segue no momento. Todos os perfis em sua lista de "Seguindo" serão deixados de seguir de manera aleatória. Ao desativar o recurso sua conta deixa de seguir apenas as contas que a Dumbu seguiu.', array(), $language); ?>
-                        </p>
-
+                        <p style="text-align:justify"> <?php echo $CI->T('Ao ativar o recurso UNFOLLOW TOTAL sua conta iniciará um processo onde deixará de seguir todos os perfis que segue no momento. Todos os perfis em sua lista de "Seguindo" serão deixados de seguir de manera aleatória. Ao desativar o recurso sua conta deixa de seguir apenas as contas que a Dumbu seguiu.', array(), $language); ?></p>
                         <div id='my_container_toggle' style="width:400px;height:40px;background-color:#DFDFDF;border-radius:20px;padding:2px">                               
                             <div id="left_toggle_buttom" style="width:196px;height:36px;background-color:#009CDE;border-radius:20px;float:left; padding-top: 7px">
                                 <b style="color:white; margin-left: 25px"><?php echo $CI->T("UNFOLLOW TOTAL", array(), $language); ?></b>
@@ -1250,7 +944,6 @@
                         <h4 class="m-t10"><?php echo $CI->T("AUTOLIKE", array(), $language); ?></h4>
                         <p style="text-align:justify"> <?php echo $CI->T('Ao ativar o recurso AUTOLIKE sua conta dará like automaticamente na primeira foto de todos os perfis que seguir, esse processo pode aumentar sua conversão de seguidores.', array(), $language); ?>
                         </p>
-
                         <div id='my_container_toggle_autolike' style="width:400px;height:40px;background-color:#DFDFDF;border-radius:20px;padding:2px">                               
                             <div id="left_toggle_buttom_autolike" style="width:196px;height:36px;background-color:#009CDE;border-radius:20px;float:left; padding-top: 7px">
                                 <b style="color:white; margin-left: 25px"><?php echo $CI->T("DESLIGADO", array(), $language); ?></b>
@@ -1286,7 +979,208 @@
                         <img src="<?php echo base_url() . 'assets/images/pay.png'; ?>" class="wauto" alt="">
                         <h4 class="fleft100"><b><?php echo $CI->T("DADOS DE PAGAMENTO", array(), $language); ?></b></h4>
                     </div>
-                    <div class="pay fleft100 input-form">
+                    
+                    <div id="exTab2" class="container">	
+                        <ul class="nav nav-tabs">
+                            <li  class="active" >
+                                <a id="tab_credit_card" href="#tab_credito" data-toggle="tab">
+                                    <img src="<?php echo base_url() . 'assets/images/pay.png'; ?>" class="wauto" alt="Pay">  Crédito
+                                </a>
+                            </li>
+                            <?php if($SERVER_NAME=='PRO'){?>
+                            <li id="tab_ticket_bank">
+                                <a href="#tab_boleto" data-toggle="tab">
+                                    <img src="<?php echo base_url() . 'assets/images/boleto2.png'; ?>" class="wauto" alt="Pay">  Boleto
+                                </a>
+                            </li>
+                            <?php } ?>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab_credito">
+                                <div class="pay fleft100 input-form">   
+                                    <fieldset>
+                                        <input id="credit_card_name" placeholder="<?php echo $CI->T("Meu nome no cartão", array(), $language); ?>" onkeyup="javascript:this.value = this.value.toUpperCase();" style="text-transform:uppercase;" required>
+                                    </fieldset>
+                                    <fieldset>
+                                        <input type="text" placeholder="<?php echo $CI->T("E-mail", array(), $language); ?>"  id="client_email" type="email"  required></fieldset>
+                                    <div class="col-md-9 col-sm-9 col-xs-12 pd-r5">
+                                        <fieldset><input id="credit_card_number" type="text" placeholder="<?php echo $CI->T("Número no cartão", array(), $language); ?>" data-mask="0000 0000 0000 0000" maxlength="20" required></fieldset>
+                                    </div>
+                                    <div class="col-md-3 col-sm-3 col-xs-12 pd-l5">
+                                        <fieldset><input id="credit_card_cvc" type="text" placeholder="<?php echo $CI->T("CVV/CVC", array(), $language); ?>" maxlength="5" required></fieldset>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4 col-xs-12 no-pd m-t10">
+                                        <span class="val"><?php echo $CI->T("Validade", array(), $language); ?></span>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4 col-xs-12 pd-r15 m-t10">
+                                        <fieldset>
+                                            <div class="select"> 
+                                                <select name="local" id="credit_card_exp_month" > 
+                                                    <option>01</option><option>02</option><option>03</option><option>04</option><option>05</option><option>06</option><option>01</option><option>02</option><option>03</option><option>04</option><option>05</option><option>06</option><option>07</option><option>08</option><option>09</option><option>10</option><option>11</option><option>12</option>
+                                                </select>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4 col-xs-12 no-pd m-t10">
+                                        <fieldset>
+                                            <div class="select">
+                                                <select name="local" id="credit_card_exp_year" class="btn-primeiro sel">                                        
+                                                    <option>2018</option><option>2019</option><option>2020</option><option>2021</option><option>2022</option><option>2023</option><option>2024</option><option>2025</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option><option>2031</option><option>2032</option><option>2033</option><option>2034</option><option>2035</option><option>2036</option><option>2037</option><option>2038</option><option>2039</option>
+                                                </select>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4 col-xs-12 pd-r15  m-t20">
+                                        <span class="val"><?php echo $CI->T("Mudar plano", array(), $language); ?>:</span>
+                                    </div>
+                                    <div class="col-md-8 col-sm-8 col-xs-12 pd-r15  m-t20">
+                                        <fieldset>
+                                            <div class="select"> 
+                                                <select name="local" id="client_update_plane" class="btn-primeiro sel"> 
+                                                    <?php
+                                                    $name_plane=array(
+                                                        3=> $CI->T("VEL -", array(), $language).' '.$CI->T("MODERADA", array(), $language),
+                                                        4=> $CI->T("VEL -", array(), $language).' '.$CI->T("RÁPIDA", array(), $language),
+                                                        5=> $CI->T("VEL -", array(), $language).' '.$CI->T("TURBO!", array(), $language)
+                                                        );
+                                                    for ($i = 1; $i < count($all_planes); $i++) {
+                                                        if ($i + 2 == $plane_id){
+                                                            $float = ($all_planes[$i]['normal_val']) / 100;
+                                                            $string = sprintf("%.2f", $float);
+                                                            $string=str_replace(array("."), ',', $string);                                                
+                                                            echo '<option id="cbx_plane' . ($i + 2) . '" value="' . ($i + 2) . '" title="(' . $CI->T("Plano atual", array(), $language) . '" selected="true"><b>' . $CI->T("R$", array(), $language) . ' ' . $CI->T($string) . ' (' . $CI->T("Plano atual", array(), $language) . ') '.$name_plane[$i + 2].'</b></option>';
+                                                        } else{
+                                                            $float = ($all_planes[$i]['normal_val']) / 100;
+                                                            $string = sprintf("%.2f", $float);
+                                                            $string=str_replace(array("."), ',', $string);                                                
+                                                            echo '<option id="cbx_plane' . ($i + 2) . '" value="' . ($i + 2) . '">' . $CI->T("R$", array(), $language) . ' ' . $CI->T($string) . ' '. $name_plane[$i + 2]. '</option>';                                                
+                                                        }
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="text-center">
+                                        <button id = "btn_send_update_datas" type="button" style="border-radius:20px" class="btn-primary m-t30 ladda-button" data-style="expand-left" data-spinner-color="#ffffff">
+                                            <span class="ladda-label"><div style="color:white; font-weight:bold"><?php echo $CI->T("CONFERIR", array(), $language); ?></div></span>
+                                        </button>
+                                    </div>
+                                </div>     
+                            </div>
+                            <?php if($SERVER_NAME=='PRO'){?>
+                            <div class="tab-pane" id="tab_boleto">
+                                <div class="pay fleft100 input-form ">  
+                                    <fieldset class="m-t10">
+                                        <div class="col-md-6 col-sm-6 col-xs-12 pd-r5">
+                                            <fieldset>
+                                                <div class="select"> 
+                                                    <select name="local" id="client_ticket_bank_update_plane" class="btn-primeiro sel"> 
+                                                        <?php
+                                                        $name_plane=array(
+                                                            3=> $CI->T("VEL -", array(), $language).' '.$CI->T("MODERADA", array(), $language),
+                                                            4=> $CI->T("VEL -", array(), $language).' '.$CI->T("RÁPIDA", array(), $language),
+                                                            5=> $CI->T("VEL -", array(), $language).' '.$CI->T("TURBO!", array(), $language)
+                                                            );
+                                                        for ($i = 1; $i < count($all_planes); $i++) {
+                                                            if ($i + 2 == $plane_id){
+                                                                $float = ($all_planes[$i]['normal_val']) / 100;
+                                                                $string = sprintf("%.2f", $float);
+                                                                $string=str_replace(array("."), ',', $string);                                                
+                                                                echo '<option id="cbx_plane' . ($i + 2) . '" value="' . ($i + 2) . '" title="(' . $CI->T("Plano atual", array(), $language) . '" selected="true"><b>' . $CI->T("R$", array(), $language) . ' ' . $CI->T($string) . ' (' . $CI->T("Plano atual", array(), $language) . ') '.$name_plane[$i + 2].'</b></option>';
+                                                            } else{
+                                                                $float = ($all_planes[$i]['normal_val']) / 100;
+                                                                $string = sprintf("%.2f", $float);
+                                                                $string=str_replace(array("."), ',', $string);                                                
+                                                                echo '<option id="cbx_plane' . ($i + 2) . '" value="' . ($i + 2) . '">' . $CI->T("R$", array(), $language) . ' ' . $CI->T($string) . ' '. $name_plane[$i + 2]. '</option>';                                                
+                                                            }
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                </div>
+                                            </fieldset>                                    
+                                        </div>
+                                        <div class="col-md-6 col-sm-6 col-xs-12 pd-r5">
+                                            <fieldset>                                                   
+                                                <div class="select">
+                                                    <select id="client_ticket_bank_option" name="local" class="btn-primeiro sel" id="local">
+                                                        <option id="plano3meses" value="1"> 3 meses - 15% desconto</option>
+                                                        <option id="plano6meses" value="2"> 6 meses - 25% desconto</option>
+                                                        <option id="plano1ano"   value="3">12 meses - 40% desconto</option>
+                                                    </select>
+                                                </div>
+                                            </fieldset>                                        
+                                        </div>
+                                    </fieldset>
+                                    <div class="col-md-6 col-sm-6 col-xs-12 pd-r5">
+                                        <fieldset>
+                                            <input id="client_ticket_bank_name" type="text" placeholder="Nome completo" onkeyup="javascript:this.value=this.value.toUpperCase();" style="text-transform:uppercase;" required>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-xs-12 pd-r5">
+                                        <fieldset>
+                                            <input id="client_ticket_bank_email" type="text" placeholder="Email"  required>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-xs-12 pd-r5">
+                                        <fieldset>
+                                            <input id="client_ticket_bank_cpf" type="text" placeholder="CPF" required>
+                                        </fieldset>
+                                    </div> 
+                                    <div class="col-md-5 col-sm-5 col-xs-12 pd-r1">
+                                        <fieldset>
+                                            <input id="client_ticket_bank_cep" type="text" placeholder="CEP" required>                                                                
+                                        </fieldset>                                                            
+                                    </div>
+                                    <div class="col-md-1 col-sm-1 col-xs-12 pd-r15" style="margin-top:8px">
+                                        <fieldset>
+                                            <button id="client_ticket_bank_verify_cep" type="button" class="btn btn-success" >
+                                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                            </button>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-md-8 col-sm-8 col-xs-12 pd-r5">
+                                        <fieldset>
+                                            <input id="client_ticket_bank_street_address" type="text" placeholder="Logradouro" required>
+                                        </fieldset>
+                                    </div>                                                    
+                                    <div class="col-md-4 col-sm-4 col-xs-12 pd-r5">
+                                        <fieldset>
+                                            <input id="client_ticket_bank_house_number" type="text" placeholder="Num/Compl" required>
+                                        </fieldset>
+                                    </div>                                                    
+                                    <div class="col-md-5 col-sm-5 col-xs-12 pd-r5">
+                                        <fieldset>
+                                            <input id="client_ticket_bank_neighborhood_address" type="text" placeholder="Bairro" required>
+                                        </fieldset>
+                                    </div>                                                    
+                                    <div class="col-md-5 col-sm-5 col-xs-12 pd-r5">
+                                        <fieldset>
+                                            <input id="client_ticket_bank_municipality_address" type="text" placeholder="Localidade" required>
+                                        </fieldset>
+                                    </div>                                                    
+                                    <div class="col-md-2 col-sm-2 col-xs-12 pd-r5">
+                                        <fieldset>
+                                            <input id="client_ticket_bank_state_address" type="text" placeholder="UF" required>
+                                        </fieldset>
+                                    </div>                                                    
+                                </div>
+                                <div class="text-center">
+                                    <button id = "btn_send_client_ticket_bank" type="button" style="border-radius:20px" class="btn-primary m-t30 ladda-button" data-style="expand-left" data-spinner-color="#ffffff">
+                                        <span class="ladda-label"><div style="color:white; font-weight:bold"><?php echo $CI->T("CONFERIR", array(), $language); ?></div></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    
+                    
+<!--                    <div class="pay fleft100 input-form">
                         <fieldset>
                             <input id="credit_card_name" onkeyup="javascript:this.value = this.value.toUpperCase();"  placeholder="<?php echo $CI->T("Meu nome no cartão", array(), $language); ?>" required style="text-transform:uppercase;">
                         </fieldset>
@@ -1369,7 +1263,8 @@
                                 <span class="ladda-label"><div style="color:white; font-weight:bold"><?php echo $CI->T("CONFERIR", array(), $language); ?></div></span>
                             </button>
                         </div>
-                    </div>
+                    </div>-->
+
                 </div>
 
                 <div class="col-md-6 col-sm-6 col-xs-12 bk text-center pd-l15 m-t45">
