@@ -150,7 +150,7 @@ class External_services{
         $info = curl_getinfo($handler);
         $string = curl_error($handler);
         curl_close($handler);
-        return json_decode($response);
+        return json_decode($response); 
     }
         
     function make_checkpoint($user_login, $security_code){
