@@ -270,5 +270,16 @@
             $resp = $this->db->update('clients');
             return $resp;
         }
+        
+        public function get_dumbu_statistic($user_status) {
+            try {
+                $this->db->select('*');
+                $this->db->from('dumbudb.dumbu_statistic');
+                $this->db->where('status_id', $user_status);
+                return $this->db->get()->result_array();
+            } catch (Exception $exc) {
+                echo $exc->getTraceAsString();
+            }
+        }
     }
 ?>

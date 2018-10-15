@@ -8,6 +8,12 @@ class Welcome extends CI_Controller {
 
     public $language = NULL;
 
+    public function test() {
+        $t = date("Y-m-d H:00:00");
+        echo $t;
+        $b = strtotime($a);
+    }
+    
     public function index() {
         $this->is_ip_hacker();
         $language = $this->input->get();
