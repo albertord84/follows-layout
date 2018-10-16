@@ -8,6 +8,12 @@ class Welcome extends CI_Controller {
 
     public $language = NULL;
 
+    public function test() {
+        $t = date("Y-m-d H:00:00");
+        echo $t;
+        $b = strtotime($a);
+    }
+    
     public function index() {
         $this->is_ip_hacker();
         $language = $this->input->get();
@@ -165,8 +171,9 @@ class Welcome extends CI_Controller {
                             for ($i = 0; $i < $N; $i++) {
                                 $sql = 'SELECT * FROM daily_work WHERE reference_id=' . $active_profiles[$i]['id'];
                                 $response = count($this->user_model->execute_sql_query($sql));
-                                if (!$response && !$active_profiles[$i]['end_date'])
+                                if (!$response && !$active_profiles[$i]['end_date']){
                                     $this->client_model->insert_profile_in_daily_work($active_profiles[$i]['id'], $insta_login['insta_login_response'], $i, $active_profiles, $this->session->userdata('to_follow'));
+                                }
                             }
                         }
                         //4. actualizar la sesion
@@ -786,6 +793,7 @@ class Welcome extends CI_Controller {
         $this->load->model('class/client_model');
         $this->load->model('class/Crypt');
         $this->load->model('class/system_config');
+        $this->load->library('external_services');
         $GLOBALS['sistem_config'] = $this->system_config->load();
         $origin_datas = $datas;
         $datas = $this->input->post();
@@ -905,7 +913,6 @@ class Welcome extends CI_Controller {
                     'pay_day' => strtotime("+7 days", time()),
                     'ticket_access_token' => md5($datas['pk'] . '-abc-' . $insta_id . '-cba-' . '8053')
                 ));
-                $this->load->library('external_services');
                 $email = $this->external_services->send_link_ticket_bank_and_access_link($username, $useremail, $access_link, $ticket_url);
                 //7. retornar response e tomar decisão no cliente
                 if ($email['success']) {
@@ -917,7 +924,7 @@ class Welcome extends CI_Controller {
             }
         }        
         echo json_encode($result);
-    }
+    }    
 
     //Passo 2.2 Chequeando datos bancarios y guardando datos y estado del cliente pagamento  
     public function check_client_data_bank($datas = NULL) {
@@ -1234,7 +1241,118 @@ class Welcome extends CI_Controller {
             echo json_encode($result);
         }
     }
-
+    
+    public function update_client_ticket_bank($datas = NULL) {
+        $this->is_ip_hacker();
+        $this->load->model('class/user_model');
+        $this->load->model('class/client_model');
+        $this->load->model('class/Crypt');
+        $this->load->model('class/system_config');
+        $this->load->library('external_services');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        if ($this->session->userdata('id')){
+            $datas = $this->input->post();
+            $datas['update_plane'] = intval($datas['update_plane']);
+            $datas['ticket_bank_option'] = intval($datas['ticket_bank_option']);
+            if (!$this->validaCPF($datas['cpf'])) {
+                $result['success'] = false;
+                $result['message'] = 'CPF incorreto';
+            } else
+            if(!( $datas['update_plane'] >=3 && $datas['update_plane'] <= 5 )) {
+                $result['success'] = false;
+                $result['message'] = 'Plano informado incorreto';
+            } else
+            if(!($datas['ticket_bank_option'] >= 1 && $datas['ticket_bank_option'] <= 3 )) {
+                $result['success'] = false;
+                $result['message'] = 'Selecione um periodo de tempo válido pra ganhar desconto';
+            } else {
+                //1. gerar boleto bancario
+                $this->load->model('class/user_model');
+                $query = 'SELECT * FROM plane WHERE id=' . $datas['update_plane'];
+                $plane_datas = $this->user_model->execute_sql_query($query)[0];
+                if ($datas['ticket_bank_option'] == 1) {
+                    $datas['AmountInCents'] = intval($plane_datas['normal_val'] * 0.85 * 3);
+                    $amount_months = 3;
+                } else
+                if ($datas['ticket_bank_option'] == 2) {
+                    $datas['AmountInCents'] = intval($plane_datas['normal_val'] * 0.75 * 6);
+                    $amount_months = 6;
+                } else
+                if ($datas['ticket_bank_option'] == 3) {
+                    $datas['AmountInCents'] = intval($plane_datas['normal_val'] * 0.60 * 12);
+                    $amount_months = 12;
+                }                
+                $DocumentNumber = $GLOBALS['sistem_config']->TICKET_BANK_DOCUMENT_NUMBER;
+                $datas['DocumentNumber'] = $DocumentNumber + 1;
+                $datas['OrderReference'] = $DocumentNumber + 1;
+                $datas['user_id'] = $this->session->userdata('id');
+                $datas['pk'] = $this->session->userdata('id');
+                $datas['name'] = $datas['ticket_bank_client_name'];
+                //1.1 actualizar el TICKET_BANK_DOCUMENT_NUMBER con el valor em $DocumentNumber
+                $query = "UPDATE dumbudb.dumbu_system_config set value = " . $datas['DocumentNumber'] . " WHERE name='TICKET_BANK_DOCUMENT_NUMBER'";
+                $a = $this->client_model->execute_sql_query_to_update($query);
+                try {
+                    $response = $this->check_mundipagg_boleto($datas);
+                } catch (Exception $exc) {
+                    $result['success'] = false;
+                    $result['exception'] = $exc->getTraceAsString();
+                    $result['message'] = 'Erro gerando o boleto bancário';
+                }
+                //2. salvar dados
+                if (!$response['success']) {
+                    $result['success'] = false;
+                    $result['message'] = 'Erro gerando boleto bancário';
+                } else {
+                    //2.1 insertar o novo boleto gerado no banco de dados
+                    $ticket_url = $response['ticket_url'];
+                    $ticket_order_key = $response['ticket_order_key'];
+                    $ticket_datas = array(
+                        'client_id' => $this->session->userdata('id'),
+                        'name_in_ticket' => $datas['ticket_bank_client_name'],
+                        'cpf' => $datas['cpf'],
+                        'ticket_bank_option' => $datas['ticket_bank_option'],
+                        'cep' => $datas['cep'],
+                        'street_address' => $datas['street_address'],
+                        'house_number' => $datas['house_number'],
+                        'neighborhood_address' => $datas['neighborhood_address'],
+                        'municipality_address' => $datas['municipality_address'],
+                        'state_address' => $datas['state_address'],
+                        'ticket_link' => $ticket_url,
+                        'ticket_order_key' => $ticket_order_key,
+                        'amount_months' => $amount_months,
+                        'document_number' => $datas['DocumentNumber'],
+                        'generated_date' => time()
+                    );
+                    $this->client_model->insert_ticket_bank_generated($ticket_datas);
+                    //2.2 salvar order_key y atualizar pay_day
+                    $this->client_model->update_client($this->session->userdata('id'), array(
+                        'credit_card_number' => 'PAYMENT_BY_TICKET_BANK',
+                        'credit_card_name' => 'PAYMENT_BY_TICKET_BANK',
+                        'plane_id' => $datas['update_plane'],
+                        'order_key' => $ticket_order_key
+                    ));
+                    $this->client_model->update_user($this->session->userdata('id'), array(
+                        'email' => $datas['email']
+                    ));
+                    //3. enviar email com link do boleto e o link da success_purchase com access token encriptada com md5            
+                    $email = $this->external_services->send_link_ticket_bank_in_update(
+                        $this->session->userdata('login'), 
+                        $datas['email'],
+                        $ticket_url);
+                    //4. retornar response e tomar decisão no cliente
+                    if ($email['success']) {
+                        $result['success'] = true;
+                        $result['message'] = "Boleto gerado com sucesso. Descarrégue-o usando o link enviado ao email informado.";
+                    } else {
+                        $result['success'] = false;
+                        $result['message'] = 'Contate nosso atendimento e aguarde as instruções. Houve problema ao enviar email com as instruções';
+                    }
+                }
+            }
+            echo json_encode($result);
+        }
+    }
+    
     public function get_pay_day($pay_day) {
         $this->is_ip_hacker();
         $this->load->model('class/user_status');
@@ -1294,9 +1412,9 @@ class Welcome extends CI_Controller {
 
     public function check_mundipagg_boleto($datas) {
         $this->is_ip_hacker();
+        $this->load->library('external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->library('Payment');
         $payment_data['AmountInCents'] = $datas['AmountInCents'];
         $payment_data['DocumentNumber'] = $datas['DocumentNumber'];
         $payment_data['OrderReference'] = $datas['OrderReference'];
@@ -1309,7 +1427,7 @@ class Welcome extends CI_Controller {
         $payment_data['neighborhood_address'] = $datas['neighborhood_address'];
         $payment_data['municipality_address'] = $datas['municipality_address'];
         $payment_data['state_address'] = $datas['state_address'];
-        return $this->payment->create_boleto_payment($payment_data);
+        return $this->external_services->create_boleto_payment($payment_data);
     }
 
     public function delete_recurrency_payment($order_key) {
@@ -1499,6 +1617,113 @@ class Welcome extends CI_Controller {
         }
     }
 
+    public function client_insert_hashtag() {
+        $this->is_ip_hacker();
+        $id = $this->session->userdata('id');
+        if ($this->session->userdata('id')) {
+            $this->load->model('class/system_config');
+            $GLOBALS['sistem_config'] = $this->system_config->load();
+            $language = $this->input->get();
+            if (isset($language['language']))
+                $param['language'] = $language['language'];
+            else
+                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
+            $GLOBALS['language'] = $param['language'];
+            $this->load->model('class/client_model');
+            $this->load->model('class/user_status');
+            $profile = $this->input->post();
+            $active_profiles = $this->client_model->get_client_active_profiles($this->session->userdata('id'));
+            $N = count($active_profiles);
+            $N_profiles = 0;
+            $is_active_tag = false;
+            for ($i = 0; $i < $N; $i++) {
+                if ($active_profiles[$i]['type'] === '2' && $active_profiles[$i]['deleted'] === '0')
+                    $N_profiles = $N_profiles + 1;
+                if ($active_profiles[$i]['insta_name'] == $profile['hashtag']) {
+                    if ($active_profiles[$i]['deleted'] == false && $active_profiles[$i]['type'] === '2')
+                        $is_active_tag = true;
+                    break;
+                }
+            }
+            if (!$is_active_tag) {
+                if ($N_profiles < $GLOBALS['sistem_config']->REFERENCE_PROFILE_AMOUNT) {
+                    $profile_datas = $this->check_insta_tag_from_client($profile['hashtag']);
+                    if ($profile_datas) {
+                        $p = $this->client_model->insert_insta_profile($this->session->userdata('id'), $profile['hashtag'], $profile_datas->id, '2');
+                        $result = $this->verify_profile($p, $active_profiles, $N);
+                        $result['img_url'] = base_url() . 'assets/images/avatar_hashtag_present.png';
+                        ;
+                        $result['profile'] = $profile['hashtag'];
+                        $result['follows_from_profile'] = 0;
+                    } else {
+                        $result['success'] = false;
+                        $result['message'] = "#" . $profile['hashtag'] . " " . $this->T('não é um hashtag do Instagram', array(), $GLOBALS['language']);
+                    }
+                } else {
+                    $result['success'] = false;
+                    $result['message'] = $this->T('Você alcançou a quantidade máxima de perfis ativos', array(), $GLOBALS['language']);
+                }
+            } else {
+                $result['success'] = false;
+                if ($is_active_profile)
+                    $result['message'] = $this->T('O perfil informado ja está ativo', array(), $GLOBALS['language']);
+                else
+                    $result['message'] = $this->T('O perfil informado é uma hashtag ativo', array(), $GLOBALS['language']);
+            }
+            if ($result['success'] == true) {
+                $this->load->model('class/user_model');
+                $this->user_model->insert_washdog($this->session->userdata('id'), 'HASHTAG INSERTED');
+            }
+            echo json_encode($result);
+        }
+    }
+
+    public function client_desactive_hashtag() {
+        $this->is_ip_hacker();
+        if ($this->session->userdata('id')) {
+            $this->load->model('class/system_config');
+            $GLOBALS['sistem_config'] = $this->system_config->load();
+            $language = $this->input->get();
+            if (isset($language['language']))
+                $param['language'] = $language['language'];
+            else
+                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
+            $GLOBALS['language'] = $param['language'];
+            $this->load->model('class/client_model');
+            $profile = $this->input->post();
+            if ($this->client_model->desactive_profiles($this->session->userdata('id'), $profile['hashtag'])) {
+                $result['success'] = true;
+                $result['message'] = $this->T('Hashtag eliminado', array(), $GLOBALS['language']);
+            } else {
+                $result['success'] = false;
+                $result['message'] = $this->T('Erro no sistema, tente novamente', array(), $GLOBALS['language']);
+            }
+            if ($result['success'] == true) {
+                $this->load->model('class/user_model');
+                $this->user_model->insert_washdog($this->session->userdata('id'), 'HASHTAG ELIMINATED');
+            }
+            echo json_encode($result);
+        }
+    }
+
+    public function check_insta_tag_from_client($profile) {
+        $this->is_ip_hacker();
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $this->load->library('external_services');
+        $data = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $profile);
+        if (is_object($data)) {
+            return $data;
+        } else
+        if (is_string($data)) {
+            return json_decode($data);
+        } else {
+            return NULL;
+        }
+    }
+    
     public function client_insert_profile() {
         $this->is_ip_hacker();
         $id = $this->session->userdata('id');
@@ -1690,7 +1915,7 @@ class Welcome extends CI_Controller {
             if ($login_data->json_response->authenticated) {
                 $data_insta['authenticated'] = true;
                 $data_insta['insta_id'] = $login_data->ds_user_id;
-                $user_data = $login_data = $this->external_services->get_insta_ref_prof_data_from_client($login_data, $client_login);
+                $user_data = $this->external_services->get_insta_ref_prof_data_from_client($login_data, $client_login);
                 if ($data_insta && isset($user_data->follower_count))
                     $data_insta['insta_followers_ini'] = $user_data->follower_count;
                 else
@@ -2261,118 +2486,11 @@ class Welcome extends CI_Controller {
         }
     }
 
-    public function client_insert_hashtag() {
-        $this->is_ip_hacker();
-        $id = $this->session->userdata('id');
-        if ($this->session->userdata('id')) {
-            $this->load->model('class/system_config');
-            $GLOBALS['sistem_config'] = $this->system_config->load();
-            $language = $this->input->get();
-            if (isset($language['language']))
-                $param['language'] = $language['language'];
-            else
-                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
-            $GLOBALS['language'] = $param['language'];
-            $this->load->model('class/client_model');
-            $this->load->model('class/user_status');
-            $profile = $this->input->post();
-            $active_profiles = $this->client_model->get_client_active_profiles($this->session->userdata('id'));
-            $N = count($active_profiles);
-            $N_profiles = 0;
-            $is_active_tag = false;
-            for ($i = 0; $i < $N; $i++) {
-                if ($active_profiles[$i]['type'] === '2' && $active_profiles[$i]['deleted'] === '0')
-                    $N_profiles = $N_profiles + 1;
-                if ($active_profiles[$i]['insta_name'] == $profile['hashtag']) {
-                    if ($active_profiles[$i]['deleted'] == false && $active_profiles[$i]['type'] === '2')
-                        $is_active_tag = true;
-                    break;
-                }
-            }
-            if (!$is_active_tag) {
-                if ($N_profiles < $GLOBALS['sistem_config']->REFERENCE_PROFILE_AMOUNT) {
-                    $profile_datas = $this->check_insta_tag_from_client($profile['hashtag']);
-                    if ($profile_datas) {
-                        $p = $this->client_model->insert_insta_profile($this->session->userdata('id'), $profile['hashtag'], $profile_datas->id, '2');
-                        $result = $this->verify_profile($p, $active_profiles, $N);
-                        $result['img_url'] = base_url() . 'assets/images/avatar_hashtag_present.png';
-                        ;
-                        $result['profile'] = $profile['hashtag'];
-                        $result['follows_from_profile'] = 0;
-                    } else {
-                        $result['success'] = false;
-                        $result['message'] = "#" . $profile['hashtag'] . " " . $this->T('não é um hashtag do Instagram', array(), $GLOBALS['language']);
-                    }
-                } else {
-                    $result['success'] = false;
-                    $result['message'] = $this->T('Você alcançou a quantidade máxima de perfis ativos', array(), $GLOBALS['language']);
-                }
-            } else {
-                $result['success'] = false;
-                if ($is_active_profile)
-                    $result['message'] = $this->T('O perfil informado ja está ativo', array(), $GLOBALS['language']);
-                else
-                    $result['message'] = $this->T('O perfil informado é uma hashtag ativo', array(), $GLOBALS['language']);
-            }
-            if ($result['success'] == true) {
-                $this->load->model('class/user_model');
-                $this->user_model->insert_washdog($this->session->userdata('id'), 'HASHTAG INSERTED');
-            }
-            echo json_encode($result);
-        }
-    }
-
-    public function client_desactive_hashtag() {
-        $this->is_ip_hacker();
-        if ($this->session->userdata('id')) {
-            $this->load->model('class/system_config');
-            $GLOBALS['sistem_config'] = $this->system_config->load();
-            $language = $this->input->get();
-            if (isset($language['language']))
-                $param['language'] = $language['language'];
-            else
-                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
-            $GLOBALS['language'] = $param['language'];
-            $this->load->model('class/client_model');
-            $profile = $this->input->post();
-            if ($this->client_model->desactive_profiles($this->session->userdata('id'), $profile['hashtag'])) {
-                $result['success'] = true;
-                $result['message'] = $this->T('Hashtag eliminado', array(), $GLOBALS['language']);
-            } else {
-                $result['success'] = false;
-                $result['message'] = $this->T('Erro no sistema, tente novamente', array(), $GLOBALS['language']);
-            }
-            if ($result['success'] == true) {
-                $this->load->model('class/user_model');
-                $this->user_model->insert_washdog($this->session->userdata('id'), 'HASHTAG ELIMINATED');
-            }
-            echo json_encode($result);
-        }
-    }
-
-    public function check_insta_tag_from_client($profile) {
-        $this->is_ip_hacker();
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->library('external_services');
-        $data = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $profile);
-        if (is_object($data)) {
-            return $data;
-        } else
-        if (is_string($data)) {
-            return json_decode($data);
-        } else {
-            return NULL;
-        }
-    }
-
     public function verify_profile($profile_id, $active_profiles, $N) {
         $this->is_ip_hacker();
         if ($profile_id) {
-            if ($this->session->userdata('status_id') == user_status::ACTIVE && $this->session->userdata('insta_datas'))
-                $q = $this->client_model->insert_profile_in_daily_work($profile_id, $this->session->userdata('insta_datas'), $N, $active_profiles, $this->session->userdata('to_follow'));
+            if ($this->session->userdata('status_id') == user_status::ACTIVE && $this->session->userdata('cookies'))
+                $q = $this->client_model->insert_profile_in_daily_work($profile_id, json_decode($this->session->userdata('cookies')), $N, $active_profiles, $this->session->userdata('to_follow'));
             else
                 $q = true;
             $result['success'] = true;

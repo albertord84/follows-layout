@@ -1,8 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 class External_services{
-    //web services com curl
-    
         
     function vindi_notif_post($post_str){
         $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
@@ -23,8 +21,7 @@ class External_services{
         return $response; 
     }
     
-    //funções com o Instagram
-    //---------------------------------------------------------------------------------------
+    //FUNÇÕES PARA INTERAGIR COM O INSTAGRAM ----------------------------------------------------------------
     function bot_login($client_login, $client_pass,$force_login){
         //bot_login com curl
         $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
@@ -214,7 +211,7 @@ class External_services{
     }    
     
     
-    //------EMAILS DESDE O SRC - GMAIL------------------------------------------------------
+    //------EMAILS DESDE O FOLLOWS-LAYOUT - GMAIL------------------------------------------------------
     function send_user_to_purchase_step($useremail, $username, $instaname, $purchase_access_token){
         $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
@@ -257,6 +254,27 @@ class External_services{
         $string = curl_error($handler);
         curl_close($handler);
         return json_decode($response); 
+    }
+    
+    function send_link_ticket_bank_in_update($username, $useremail, $ticket_link){
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
+        $worker_server_name = $database_config['server']['worker_server_name'];
+        $postData = array(
+            'username'=>urlencode($username),
+            'useremail'=>urlencode($useremail),
+            'ticket_link'=>urlencode($ticket_link)
+        );
+        $url = "http://$worker_server_name/follows-worker/src/index.php/gmail/send_link_ticket_bank_in_update";
+        $handler = curl_init();
+        curl_setopt($handler, CURLOPT_URL, $url);  
+        curl_setopt($handler, CURLOPT_POST,true);
+        curl_setopt($handler, CURLOPT_RETURNTRANSFER,true);  
+        curl_setopt($handler, CURLOPT_POSTFIELDS, $postData);  
+        $response = curl_exec($handler);
+        $info = curl_getinfo($handler);
+        $string = curl_error($handler);
+        curl_close($handler);
+        return (array)json_decode($response); 
     }
     
     function send_client_contact_form($username, $useremail, $usermsg, $usercompany, $userphone){
@@ -449,6 +467,27 @@ class External_services{
         curl_close($handler);
         return json_decode($response); 
     }
+    
+    function create_boleto_payment($payment_data){
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
+        $worker_server_name = $database_config['server']['worker_server_name'];
+        $postData = array(
+            'payment_data'=>urlencode(json_encode($payment_data))
+        );
+        $url = "http://$worker_server_name/follows-worker/src/index.php/payment/mundi_create_boleto_payment";
+        $handler = curl_init();
+        curl_setopt($handler, CURLOPT_URL, $url);  
+        curl_setopt($handler, CURLOPT_POST,true);
+        curl_setopt($handler, CURLOPT_RETURNTRANSFER,true);  
+        curl_setopt($handler, CURLOPT_POSTFIELDS, $postData);  
+        $response = curl_exec($handler);
+        $info = curl_getinfo($handler);
+        $string = curl_error($handler);
+        curl_close($handler);
+        return (array)json_decode($response); 
+    }
+    
+    
     
     
 }

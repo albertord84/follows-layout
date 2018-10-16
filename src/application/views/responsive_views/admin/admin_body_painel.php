@@ -555,12 +555,10 @@
                                     else
                                         echo '<b>Actual payment value: </b>'.$result[$i]['normal_val'].'<br>';
                                     
-                                    //echo '<b>Initial order key: </b>'.$result[$i]['initial_order_key'].'<br>';
-                                    echo '<b>Initial order key: </b><a href="https://dashboard.mundipagg.com/#/9d0703f8-98a6-4f61-a28f-6be3771f3510/live/transactions?currentTab=creditCardTransactions&pageNumber=1&sortField=CreateDate&sortMode=DESC&pageSize=20&identifier='.$result[$i]['initial_order_key'].'" target="_blank">'.$result[$i]['initial_order_key'].'</a><br>';
-                                    //echo '<b>Recurrency order key: </b>'.$result[$i]['order_key'].'<br>';
                                     echo '<b>Recurrency order key: </b><a href="https://dashboard.mundipagg.com/#/9d0703f8-98a6-4f61-a28f-6be3771f3510/live/transactions?currentTab=creditCardTransactions&pageNumber=1&sortField=CreateDate&sortMode=DESC&pageSize=20&identifier='.$result[$i]['order_key'].'" target="_blank">'.$result[$i]['order_key'].'</a><br>';
-                                    //echo '<b>Pending order key: </b>'.$result[$i]['pending_order_key'].'<br>';
-                                    echo '<b>Pending order key: </b><a href="https://dashboard.mundipagg.com/#/9d0703f8-98a6-4f61-a28f-6be3771f3510/live/transactions?currentTab=creditCardTransactions&pageNumber=1&sortField=CreateDate&sortMode=DESC&pageSize=20&identifier='.$result[$i]['pending_order_key'].'" target="_blank">'.$result[$i]['pending_order_key'].'</a><br>';
+                                    
+                                    echo '<br><b>Proxy: </b><br>';
+                                    echo '<b>ID: </b>'.$result[$i]['idProxy'].'</a><br>';
                                 echo '</td>';
                                 echo '<td style="width:240px; padding:5px">';
                                 

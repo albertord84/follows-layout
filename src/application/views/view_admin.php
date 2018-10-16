@@ -34,15 +34,13 @@
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script type="text/javascript">var base_url = '<?php echo base_url();?>'; </script>    
         <script type="text/javascript" src="<?php echo base_url().'assets/js/admin.js?'.$SCRIPT_VERSION;?>"></script>
-<!--        <script type="text/javascript" src="<?php //echo base_url().'assets/js/modal_alert_message.js?'.$SCRIPT_VERSION;?>"></script>-->
+        <script type="text/javascript">var language = 'PT';</script>
         
-        <!-- Performance Chart -->
-        <script type="text/javascript">followings_data= jQuery.parseJSON('<?php echo $followings; ?>');</script>
-        <script type="text/javascript">followers_data= jQuery.parseJSON('<?php echo $followers; ?>'); </script>
+        <!-- Performance Chart -->                
         <script type="text/javascript">var language = 'PT';</script>
         <script type="text/javascript" src="<?php echo base_url() . 'assets/canvasjs-1.9.6/canvasjs.min.js'; ?>"></script>
-        <script type="text/javascript" src="<?php echo base_url() . 'assets/js/chart.js?'.$SCRIPT_VERSION; ?>"></script>
         
+
         <?php include_once("pixel_facebook.php")?>
   </head>
   <body>

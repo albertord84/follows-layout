@@ -589,9 +589,25 @@ class Admin extends CI_Controller {
                 );
                 $my_daily_work[$i] = $tmp;
             }
-            return $my_daily_work;
-        //} else return 0;
-        
+        return $my_daily_work;
+    }
+    
+    public function dumbu_statistics_view() {
+        $this->load->model('class/user_role');
+        $this->load->model('class/user_status');
+        $this->load->model('class/admin_model');
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
+            $param = $this->input->post();
+            $datas['DATAS'] = $this->admin_model->get_dumbu_statistic($param);
+            $data['section1'] = $this->load->view('responsive_views/admin/admin_header_painel', '', true);
+            $data['section2'] = $this->load->view('responsive_views/admin/admin_body_painel_dumbu_statistics', $datas, true);
+            $data['section3'] = $this->load->view('responsive_views/admin/users_end_painel', '', true);
+            $this->load->view('view_admin', $data);
+        } else{
+            echo "Não pode acessar a esse recurso, deve fazer login!!";
+        }
     }
     
 }

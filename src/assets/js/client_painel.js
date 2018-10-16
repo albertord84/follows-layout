@@ -1728,6 +1728,35 @@ $(document).ready(function () {
             }
         });
     });
+    
+    $("#client_ticket_bank_verify_cep").click(function () {
+        if(validate_element("#client_ticket_bank_cep",'^[0-9]{8}$')){
+            $.ajax({
+                url: base_url+'index.php/welcome/get_cep_datas',                
+                data: {
+                    'cep': $('#client_ticket_bank_cep').val(),
+                },
+                type: 'POST',
+                dataType: 'json',
+                success: function (response) {
+                    if(response['success']){
+                        response = response['datas'];
+                        $('#client_ticket_bank_street_address').val(response['logradouro']);
+                        $('#client_ticket_bank_neighborhood_address').val(response['bairro']);
+                        $('#client_ticket_bank_municipality_address').val(response['localidade']);
+                        $('#client_ticket_bank_state_address').val(response['uf']);            
+                    } else
+                        modal_alert_message('CEP inválido');
+                }
+        });
+        } else{
+            modal_alert_message('CEP inválido');
+        }
+    });
+    
+    
+    
+    
 }); 
 
 function select_hashtag_from_search(tag_name) {
