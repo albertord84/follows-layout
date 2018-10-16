@@ -18,6 +18,7 @@
                 $this->db->from('clients');
                 $this->db->join('users', 'clients.user_id = users.id');
                 $this->db->join('plane', 'clients.plane_id = plane.id');
+                $this->db->join('Proxy', 'clients.proxy = Proxy.idProxy');
             }
             else {
                 $this->db->distinct();
@@ -271,11 +272,16 @@
             return $resp;
         }
         
-        public function get_dumbu_statistic($user_status) {
+        public function get_dumbu_statistic($param) {
             try {
                 $this->db->select('*');
                 $this->db->from('dumbudb.dumbu_statistic');
-                $this->db->where('status_id', $user_status);
+                if(isset($param['date_from']) && isset($param['date_to'])){
+                    $date_from =strtotime($param['date_from']." 00:00:00");
+                    $date_to =strtotime($param['date_to']." 23:59:00");
+                    $this->db->where('date>=', $date_from);
+                    $this->db->where('date <=', $date_to);
+                }                    
                 return $this->db->get()->result_array();
             } catch (Exception $exc) {
                 echo $exc->getTraceAsString();

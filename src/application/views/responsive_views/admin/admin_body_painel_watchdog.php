@@ -1,3 +1,6 @@
+<script type="text/javascript">followings_data= jQuery.parseJSON('<?php echo $followings; ?>');</script>
+        <script type="text/javascript">followers_data= jQuery.parseJSON('<?php echo $followers; ?>'); </script>
+<script type="text/javascript" src="<?php echo base_url() . 'assets/js/chart.js?'.$SCRIPT_VERSION; ?>"></script>
 <br><br>
 <form action="<?php echo base_url().'index.php/admin/list_filter_view'?>" method="post">  
         <div id="login_container2">

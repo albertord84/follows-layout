@@ -924,7 +924,7 @@ class Welcome extends CI_Controller {
             }
         }        
         echo json_encode($result);
-    }
+    }    
 
     //Passo 2.2 Chequeando datos bancarios y guardando datos y estado del cliente pagamento  
     public function check_client_data_bank($datas = NULL) {
@@ -1241,7 +1241,118 @@ class Welcome extends CI_Controller {
             echo json_encode($result);
         }
     }
-
+    
+    public function update_client_ticket_bank($datas = NULL) {
+        $this->is_ip_hacker();
+        $this->load->model('class/user_model');
+        $this->load->model('class/client_model');
+        $this->load->model('class/Crypt');
+        $this->load->model('class/system_config');
+        $this->load->library('external_services');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        if ($this->session->userdata('id')){
+            $datas = $this->input->post();
+            $datas['update_plane'] = intval($datas['update_plane']);
+            $datas['ticket_bank_option'] = intval($datas['ticket_bank_option']);
+            if (!$this->validaCPF($datas['cpf'])) {
+                $result['success'] = false;
+                $result['message'] = 'CPF incorreto';
+            } else
+            if(!( $datas['update_plane'] >=3 && $datas['update_plane'] <= 5 )) {
+                $result['success'] = false;
+                $result['message'] = 'Plano informado incorreto';
+            } else
+            if(!($datas['ticket_bank_option'] >= 1 && $datas['ticket_bank_option'] <= 3 )) {
+                $result['success'] = false;
+                $result['message'] = 'Selecione um periodo de tempo válido pra ganhar desconto';
+            } else {
+                //1. gerar boleto bancario
+                $this->load->model('class/user_model');
+                $query = 'SELECT * FROM plane WHERE id=' . $datas['update_plane'];
+                $plane_datas = $this->user_model->execute_sql_query($query)[0];
+                if ($datas['ticket_bank_option'] == 1) {
+                    $datas['AmountInCents'] = intval($plane_datas['normal_val'] * 0.85 * 3);
+                    $amount_months = 3;
+                } else
+                if ($datas['ticket_bank_option'] == 2) {
+                    $datas['AmountInCents'] = intval($plane_datas['normal_val'] * 0.75 * 6);
+                    $amount_months = 6;
+                } else
+                if ($datas['ticket_bank_option'] == 3) {
+                    $datas['AmountInCents'] = intval($plane_datas['normal_val'] * 0.60 * 12);
+                    $amount_months = 12;
+                }                
+                $DocumentNumber = $GLOBALS['sistem_config']->TICKET_BANK_DOCUMENT_NUMBER;
+                $datas['DocumentNumber'] = $DocumentNumber + 1;
+                $datas['OrderReference'] = $DocumentNumber + 1;
+                $datas['user_id'] = $this->session->userdata('id');
+                $datas['pk'] = $this->session->userdata('id');
+                $datas['name'] = $datas['ticket_bank_client_name'];
+                //1.1 actualizar el TICKET_BANK_DOCUMENT_NUMBER con el valor em $DocumentNumber
+                $query = "UPDATE dumbudb.dumbu_system_config set value = " . $datas['DocumentNumber'] . " WHERE name='TICKET_BANK_DOCUMENT_NUMBER'";
+                $a = $this->client_model->execute_sql_query_to_update($query);
+                try {
+                    $response = $this->check_mundipagg_boleto($datas);
+                } catch (Exception $exc) {
+                    $result['success'] = false;
+                    $result['exception'] = $exc->getTraceAsString();
+                    $result['message'] = 'Erro gerando o boleto bancário';
+                }
+                //2. salvar dados
+                if (!$response['success']) {
+                    $result['success'] = false;
+                    $result['message'] = 'Erro gerando boleto bancário';
+                } else {
+                    //2.1 insertar o novo boleto gerado no banco de dados
+                    $ticket_url = $response['ticket_url'];
+                    $ticket_order_key = $response['ticket_order_key'];
+                    $ticket_datas = array(
+                        'client_id' => $this->session->userdata('id'),
+                        'name_in_ticket' => $datas['ticket_bank_client_name'],
+                        'cpf' => $datas['cpf'],
+                        'ticket_bank_option' => $datas['ticket_bank_option'],
+                        'cep' => $datas['cep'],
+                        'street_address' => $datas['street_address'],
+                        'house_number' => $datas['house_number'],
+                        'neighborhood_address' => $datas['neighborhood_address'],
+                        'municipality_address' => $datas['municipality_address'],
+                        'state_address' => $datas['state_address'],
+                        'ticket_link' => $ticket_url,
+                        'ticket_order_key' => $ticket_order_key,
+                        'amount_months' => $amount_months,
+                        'document_number' => $datas['DocumentNumber'],
+                        'generated_date' => time()
+                    );
+                    $this->client_model->insert_ticket_bank_generated($ticket_datas);
+                    //2.2 salvar order_key y atualizar pay_day
+                    $this->client_model->update_client($this->session->userdata('id'), array(
+                        'credit_card_number' => 'PAYMENT_BY_TICKET_BANK',
+                        'credit_card_name' => 'PAYMENT_BY_TICKET_BANK',
+                        'plane_id' => $datas['update_plane'],
+                        'order_key' => $ticket_order_key
+                    ));
+                    $this->client_model->update_user($this->session->userdata('id'), array(
+                        'email' => $datas['email']
+                    ));
+                    //3. enviar email com link do boleto e o link da success_purchase com access token encriptada com md5            
+                    $email = $this->external_services->send_link_ticket_bank_in_update(
+                        $this->session->userdata('login'), 
+                        $datas['ticket_bank_client_name'],
+                        $ticket_url);
+                    //4. retornar response e tomar decisão no cliente
+                    if ($email['success']) {
+                        $result['success'] = true;
+                        $result['message'] = "Boleto gerado com sucesso. Descarrégue-o usando o link enviado ao email informado.";
+                    } else {
+                        $result['success'] = false;
+                        $result['message'] = 'Contate nosso atendimento e aguarde as instruções. Houve problema ao enviar email com as instruções';
+                    }
+                }
+            }
+            echo json_encode($result);
+        }
+    }
+    
     public function get_pay_day($pay_day) {
         $this->is_ip_hacker();
         $this->load->model('class/user_status');
@@ -1304,7 +1415,6 @@ class Welcome extends CI_Controller {
         $this->load->library('external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->library('Payment');
         $payment_data['AmountInCents'] = $datas['AmountInCents'];
         $payment_data['DocumentNumber'] = $datas['DocumentNumber'];
         $payment_data['OrderReference'] = $datas['OrderReference'];

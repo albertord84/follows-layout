@@ -36,11 +36,10 @@
         <script type="text/javascript" src="<?php echo base_url().'assets/js/admin.js?'.$SCRIPT_VERSION;?>"></script>
         <script type="text/javascript">var language = 'PT';</script>
         
-        <!-- Performance Chart -->        
-        <script type="text/javascript"> var followings_data= jQuery.parseJSON(<?php echo $followings?>);</script>';
-        <script type="text/javascript"> var followers_data= jQuery.parseJSON(<?php echo $followers?>);</script>';
-        <script type="text/javascript" src="' .base_url().'assets/js/chart.js?'.$SCRIPT_VERSION.'"></script>';
+        <!-- Performance Chart -->                
+        <script type="text/javascript">var language = 'PT';</script>
         <script type="text/javascript" src="<?php echo base_url() . 'assets/canvasjs-1.9.6/canvasjs.min.js'; ?>"></script>
+        
 
         <?php include_once("pixel_facebook.php")?>
   </head>

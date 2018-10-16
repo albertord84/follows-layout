@@ -34,7 +34,7 @@ $(document).ready(function(){
                 $(fieldErrorMessage).css('color','green');
                 var force_login = false;                
                 if($(fieldCheckForceLogin).prop('checked'))
-                    force_login = true;                
+                    force_login = true;
                 $.ajax({
                     //url : base_url+'index.php/welcome/md',
                     url : base_url+'index.php/welcome/user_do_login',      
@@ -88,7 +88,7 @@ $(document).ready(function(){
                             $(fieldContainerLoginForce).css('visibility','hidden');
                             $(fieldErrorMessage).css('color','red');
                             l.stop();   
-                        }                                
+                        }
                         }
                     },                
                     error : function(xhr, status) {

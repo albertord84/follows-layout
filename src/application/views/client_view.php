@@ -1069,6 +1069,7 @@
                                     </div>
                                 </div>     
                             </div>
+                            
                             <?php if($SERVER_NAME=='PRO'){?>
                             <div class="tab-pane" id="tab_boleto">
                                 <div class="pay fleft100 input-form ">  
@@ -1076,7 +1077,7 @@
                                         <div class="col-md-6 col-sm-6 col-xs-12 pd-r5">
                                             <fieldset>
                                                 <div class="select"> 
-                                                    <select name="local" id="client_ticket_bank_update_plane" class="btn-primeiro sel"> 
+                                                    <select name="local" id="update_plane" class="btn-primeiro sel"> 
                                                         <?php
                                                         $name_plane=array(
                                                             3=> $CI->T("VEL -", array(), $language).' '.$CI->T("MODERADA", array(), $language),
@@ -1104,7 +1105,7 @@
                                         <div class="col-md-6 col-sm-6 col-xs-12 pd-r5">
                                             <fieldset>                                                   
                                                 <div class="select">
-                                                    <select id="client_ticket_bank_option" name="local" class="btn-primeiro sel" id="local">
+                                                    <select id="ticket_bank_option" name="local" class="btn-primeiro sel" id="local">
                                                         <option id="plano3meses" value="1"> 3 meses - 15% desconto</option>
                                                         <option id="plano6meses" value="2"> 6 meses - 25% desconto</option>
                                                         <option id="plano1ano"   value="3">12 meses - 40% desconto</option>
@@ -1115,59 +1116,59 @@
                                     </fieldset>
                                     <div class="col-md-6 col-sm-6 col-xs-12 pd-r5">
                                         <fieldset>
-                                            <input id="client_ticket_bank_name" type="text" placeholder="Nome completo" onkeyup="javascript:this.value=this.value.toUpperCase();" style="text-transform:uppercase;" required>
+                                            <input id="name" type="text" placeholder="Nome completo" onkeyup="javascript:this.value=this.value.toUpperCase();" style="text-transform:uppercase;" required>
                                         </fieldset>
                                     </div>
                                     <div class="col-md-6 col-sm-6 col-xs-12 pd-r5">
                                         <fieldset>
-                                            <input id="client_ticket_bank_email" type="text" placeholder="Email"  required>
+                                            <input id="email" type="text" placeholder="Email"  required>
                                         </fieldset>
                                     </div>
                                     <div class="col-md-6 col-sm-6 col-xs-12 pd-r5">
                                         <fieldset>
-                                            <input id="client_ticket_bank_cpf" type="text" placeholder="CPF" required>
+                                            <input id="cpf" type="text" placeholder="CPF" required>
                                         </fieldset>
                                     </div> 
                                     <div class="col-md-5 col-sm-5 col-xs-12 pd-r1">
                                         <fieldset>
-                                            <input id="client_ticket_bank_cep" type="text" placeholder="CEP" required>                                                                
+                                            <input id="cep" type="text" placeholder="CEP" required>                                                                
                                         </fieldset>                                                            
                                     </div>
                                     <div class="col-md-1 col-sm-1 col-xs-12 pd-r15" style="margin-top:8px">
                                         <fieldset>
-                                            <button id="client_ticket_bank_verify_cep" type="button" class="btn btn-success" >
+                                            <button id="verify_cep" type="button" class="btn btn-success" >
                                                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                                             </button>
                                         </fieldset>
                                     </div>
                                     <div class="col-md-8 col-sm-8 col-xs-12 pd-r5">
                                         <fieldset>
-                                            <input id="client_ticket_bank_street_address" type="text" placeholder="Logradouro" required>
+                                            <input id="street_address" type="text" placeholder="Logradouro" required>
                                         </fieldset>
                                     </div>                                                    
                                     <div class="col-md-4 col-sm-4 col-xs-12 pd-r5">
                                         <fieldset>
-                                            <input id="client_ticket_bank_house_number" type="text" placeholder="Num/Compl" required>
+                                            <input id="house_number" type="text" placeholder="Num/Compl" required>
                                         </fieldset>
                                     </div>                                                    
                                     <div class="col-md-5 col-sm-5 col-xs-12 pd-r5">
                                         <fieldset>
-                                            <input id="client_ticket_bank_neighborhood_address" type="text" placeholder="Bairro" required>
+                                            <input id="neighborhood_address" type="text" placeholder="Bairro" required>
                                         </fieldset>
                                     </div>                                                    
                                     <div class="col-md-5 col-sm-5 col-xs-12 pd-r5">
                                         <fieldset>
-                                            <input id="client_ticket_bank_municipality_address" type="text" placeholder="Localidade" required>
+                                            <input id="municipality_address" type="text" placeholder="Localidade" required>
                                         </fieldset>
                                     </div>                                                    
                                     <div class="col-md-2 col-sm-2 col-xs-12 pd-r5">
                                         <fieldset>
-                                            <input id="client_ticket_bank_state_address" type="text" placeholder="UF" required>
+                                            <input id="state_address" type="text" placeholder="UF" required>
                                         </fieldset>
                                     </div>                                                    
                                 </div>
                                 <div class="text-center">
-                                    <button id = "btn_send_client_ticket_bank" type="button" style="border-radius:20px" class="btn-primary m-t30 ladda-button" data-style="expand-left" data-spinner-color="#ffffff">
+                                    <button id = "btn_update_client_ticket_bank" type="button" style="border-radius:20px" class="btn-primary m-t30 ladda-button" data-style="expand-left" data-spinner-color="#ffffff">
                                         <span class="ladda-label"><div style="color:white; font-weight:bold"><?php echo $CI->T("CONFERIR", array(), $language); ?></div></span>
                                     </button>
                                 </div>

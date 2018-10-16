@@ -592,21 +592,15 @@ class Admin extends CI_Controller {
         return $my_daily_work;
     }
     
-    public function dumbu_statistics_view() {        
+    public function dumbu_statistics_view() {
         $this->load->model('class/user_role');
         $this->load->model('class/user_status');
         $this->load->model('class/admin_model');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
         if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
-            $datas['ACTIVE'] = $this->admin_model->get_dumbu_statistic(user_status::ACTIVE);
-            $datas['BLOCKED_BY_PAYMENT'] = $this->admin_model->get_dumbu_statistic(user_status::BLOCKED_BY_PAYMENT);
-            $datas['BLOCKED_BY_INSTA'] = $this->admin_model->get_dumbu_statistic(user_status::BLOCKED_BY_INSTA);
-            $datas['DELETED'] = $this->admin_model->get_dumbu_statistic(user_status::DELETED);
-            $datas['UNFOLLOW'] = $this->admin_model->get_dumbu_statistic(user_status::UNFOLLOW);
-            $datas['VERIFY_ACCOUNT'] = $this->admin_model->get_dumbu_statistic(user_status::VERIFY_ACCOUNT);
-            $datas['BLOCKED_BY_TIME'] = $this->admin_model->get_dumbu_statistic(user_status::BLOCKED_BY_TIME);
-            
+            $param = $this->input->post();
+            $datas['DATAS'] = $this->admin_model->get_dumbu_statistic($param);
             $data['section1'] = $this->load->view('responsive_views/admin/admin_header_painel', '', true);
             $data['section2'] = $this->load->view('responsive_views/admin/admin_body_painel_dumbu_statistics', $datas, true);
             $data['section3'] = $this->load->view('responsive_views/admin/users_end_painel', '', true);

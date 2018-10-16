@@ -256,6 +256,27 @@ class External_services{
         return json_decode($response); 
     }
     
+    function send_link_ticket_bank_in_update($username, $useremail, $ticket_url){
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
+        $worker_server_name = $database_config['server']['worker_server_name'];
+        $postData = array(
+            'username'=>urlencode($username),
+            'useremail'=>urlencode($useremail),
+            'ticket_link'=>urlencode($ticket_link)
+        );
+        $url = "http://$worker_server_name/follows-worker/src/index.php/gmail/send_link_ticket_bank_in_update";
+        $handler = curl_init();
+        curl_setopt($handler, CURLOPT_URL, $url);  
+        curl_setopt($handler, CURLOPT_POST,true);
+        curl_setopt($handler, CURLOPT_RETURNTRANSFER,true);  
+        curl_setopt($handler, CURLOPT_POSTFIELDS, $postData);  
+        $response = curl_exec($handler);
+        $info = curl_getinfo($handler);
+        $string = curl_error($handler);
+        curl_close($handler);
+        return json_decode($response); 
+    }
+    
     function send_client_contact_form($username, $useremail, $usermsg, $usercompany, $userphone){
         $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
@@ -451,7 +472,7 @@ class External_services{
         $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
-            'payment_data'=>urlencode($payment_data)
+            'payment_data'=>urlencode(json_encode($payment_data))
         );
         $url = "http://$worker_server_name/follows-worker/src/index.php/payment/mundi_create_boleto_payment";
         $handler = curl_init();
@@ -463,7 +484,7 @@ class External_services{
         $info = curl_getinfo($handler);
         $string = curl_error($handler);
         curl_close($handler);
-        return json_decode($response); 
+        return (array)json_decode($response); 
     }
     
     
