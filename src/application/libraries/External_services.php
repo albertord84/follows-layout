@@ -256,7 +256,7 @@ class External_services{
         return json_decode($response); 
     }
     
-    function send_link_ticket_bank_in_update($username, $useremail, $ticket_url){
+    function send_link_ticket_bank_in_update($username, $useremail, $ticket_link){
         $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
@@ -274,7 +274,7 @@ class External_services{
         $info = curl_getinfo($handler);
         $string = curl_error($handler);
         curl_close($handler);
-        return json_decode($response); 
+        return (array)json_decode($response); 
     }
     
     function send_client_contact_form($username, $useremail, $usermsg, $usercompany, $userphone){

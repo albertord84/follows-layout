@@ -1337,7 +1337,7 @@ class Welcome extends CI_Controller {
                     //3. enviar email com link do boleto e o link da success_purchase com access token encriptada com md5            
                     $email = $this->external_services->send_link_ticket_bank_in_update(
                         $this->session->userdata('login'), 
-                        $datas['ticket_bank_client_name'],
+                        $datas['email'],
                         $ticket_url);
                     //4. retornar response e tomar decisão no cliente
                     if ($email['success']) {
