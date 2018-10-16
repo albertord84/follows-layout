@@ -403,7 +403,7 @@
         }
         
         public function delete_client_from_client_payment_table($user_id) {
-            try {    
+            try {
                 $this->db->where('dumbu_client_id', $user_id);
                 return $this->db->delete('client_payment');
             } catch (Exception $exc) {
