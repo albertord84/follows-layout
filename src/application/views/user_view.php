@@ -919,7 +919,15 @@
 				</div>
 				<div class="col-md-3 col-sm-3 col-xs-12"><br></div>
 
-				<footer class="text-center fleft100 m-t30 m-b10"><div class="container"><img src="<?php echo base_url() . 'assets/images/logo-footer.png'; ?>" class="wauto" alt=""> <span class="fleft100 text-center">DUMBU - <?php echo date('Y'); echo $CI->T(" - TODOS OS DIREITOS RESERVADOS", array(), $language); ?></span></div></footer>
+				<footer class="text-center fleft100 m-t30 m-b10">
+                                    <div class="container">
+                                        <img src="<?php echo base_url() . 'assets/images/logo-footer.png'; ?>" class="wauto" alt=""> 
+                                        <span class="fleft100 text-center">
+                                            DUMBU - <?php echo date('Y'); echo $CI->T(" - TODOS OS DIREITOS RESERVADOS", array(), $language); ?>
+                                            <br>CNPJ 24.252.762/0001-43
+                                        </span>
+                                    </div>
+                                </footer>
 			</div>
 		</section>
             
