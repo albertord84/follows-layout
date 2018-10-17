@@ -55,7 +55,9 @@
                 <!--Start of Zendesk Chat Script-->
                 <?php
                     if ($SERVER_NAME == "PRO") { ?>
-                        <script type="text/javascript" src="<?php echo base_url() . 'assets/js/zendesk_chat_home.js'; ?>"></script>
+                        <!-- Start of dumbu Zendesk Widget script -->
+                        <script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=c28ec1dd-02f4-4c37-808f-87833fcf6c97"> </script>
+                        <!-- End of dumbu Zendesk Widget script -->
                 <?php } ?>
                 <!--End of Zendesk Chat Script-->
 	</head>
