@@ -498,9 +498,9 @@
                                         echo '<b>CC number: </b>'.substr($result[$i]['credit_card_number'], 0, 3).'***'.substr($result[$i]['credit_card_number'], -3).'<br>';
                                     else
                                         echo '<b>CC number: </b>'.$result[$i]['credit_card_number'].'<br>';
-                                    echo '<b>CC name: </b>'.$result[$i]['credit_card_name'].'<br>';
-                                    echo '<b>CC exp month: </b>'.$result[$i]['credit_card_exp_month'].'<br>';
-                                    echo '<b>CC exp year: </b>'.$result[$i]['credit_card_exp_year'].'<br><br>';
+//                                    echo '<b>CC name: </b>'.$result[$i]['credit_card_name'].'<br>';
+//                                    echo '<b>CC exp month: </b>'.$result[$i]['credit_card_exp_month'].'<br>';
+//                                    echo '<b>CC exp year: </b>'.$result[$i]['credit_card_exp_year'].'<br><br>';
                                     if($result[$i]['pay_day']!=NULL && $result[$i]['pay_day']!=='null' && $result[$i]['pay_day']!=='NULL')
                                         echo '<b>Payment day: </b>'.date('d-m-Y h:i:sa',$result[$i]['pay_day']).'<br>';                                    
                                     else
