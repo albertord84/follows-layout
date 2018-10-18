@@ -540,6 +540,20 @@ class Admin extends CI_Controller {
         echo json_encode($response);
     }
     
+    public function update_observation() {
+        $this->load->model('class/client_model');                
+        $id = $this->input->post()['user_id'];
+        $datas['observation'] = $this->input->post()['observation'];        
+        if($this->client_model->update_client($id, $datas)){
+            $response['success'] = true;
+            $response['message'] = "Observação atualizada com sucesso";
+        }else{
+            $response['success'] = false;
+            $response['message'] = "Erro atualizando observação";
+        }
+        echo json_encode($response);
+    }
+    
     //---- Functions auxiliars-----------------------------
     public function T($token, $array_params=NULL, $lang=NULL) {
         if(!$lang){

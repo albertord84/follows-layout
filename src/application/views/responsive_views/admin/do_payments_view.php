@@ -123,7 +123,7 @@
                 </div>
                 <div class="col-md-3 col-sm-3 col-xs-12"> 
                     <br>
-                    <input id="vindi_update" class="btn btn-primary" type="button" value="Modificiar data" style="margin-top:19px">                    
+                    <input id="vindi_update" class="btn btn-primary" type="button" value="Modificiar" style="margin-top:19px">                    
                 </div>
         </div>
         <div class="col-md-2 col-sm-2 col-xs-12"></div>  
@@ -145,7 +145,30 @@
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-3 col-xs-12"> 
-                    <input id="change_proxy" class="btn btn-primary" type="button" value="Modificiar data" style="margin-top:19px">                    
+                    <input id="change_proxy" class="btn btn-primary" type="button" value="Modificiar" style="margin-top:19px">                    
+                </div>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-12"></div>  
+    </section>
+    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12"><br><br><hr></section>
+        
+    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12"><br><br><hr></section>
+    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12">
+        <div  class="col-md-2 col-sm-2 col-xs-12"></div>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+                <h3>Atualizar observação</h3>
+                <div class="col-md-3 col-sm-3 col-xs-12"> 
+                    <b>ID do cliente</b>
+                    <input id="obs_user_id" type="text" placeholder="ID do cliente">
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12"> 
+                    <b>Observação</b>
+                    <div >
+                        <input id="new_obs" type="text" placeholder="Observação">
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12"> 
+                    <input id="change_obs" class="btn btn-primary" type="button" value="Modificiar" style="margin-top:19px">                    
                 </div>
         </div>
         <div class="col-md-2 col-sm-2 col-xs-12"></div>  
