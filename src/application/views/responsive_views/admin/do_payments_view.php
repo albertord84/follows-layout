@@ -101,7 +101,7 @@
     </section>
     
     <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12"><br><br><hr></section>
-        <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12">
+    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12">
         <div  class="col-md-2 col-sm-2 col-xs-12"></div>
         <div class="col-md-8 col-sm-8 col-xs-12">
                 <h3>Sinconizar dados da Vindi no sistema (válido para assinantes de FU):</h3>
@@ -130,7 +130,7 @@
     </section>
 
     <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12"><br><br><hr></section>
-        <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12">
+    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12">
         <div  class="col-md-2 col-sm-2 col-xs-12"></div>
         <div class="col-md-8 col-sm-8 col-xs-12">
                 <h3>Trocar proxy de um usuário:</h3>

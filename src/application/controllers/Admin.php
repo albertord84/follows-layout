@@ -507,7 +507,7 @@ class Admin extends CI_Controller {
         if(isset($this->input->post()['signature_id']) && $this->input->post()['signature_id']!="")
             $datas['payment_key'] = $this->input->post()['signature_id'];
         try {
-            if(count($this->client_model->get_vindi_payment($this->input->post()['customer_id']))){
+            if(count($this->client_model->get_vindi_payment($this->input->post()['user_id']))){
                 if($this->client_model->update_client_payment($this->input->post()['user_id'], $datas)){
                     $response['success'] = true;
                     $response['message'] = "Dados atualizados com sucesso";
