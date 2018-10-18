@@ -10,9 +10,7 @@ class Welcome extends CI_Controller {
 
     public function test() {
         $t = date("Y-m-d H:00:00");
-        
         echo $t;
-        
         $b = strtotime($a);
     }
     
