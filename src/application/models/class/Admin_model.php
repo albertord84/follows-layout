@@ -17,17 +17,17 @@
                 $this->db->select('*');
                 $this->db->from('clients');
                 $this->db->join('users', 'clients.user_id = users.id');
-                $this->db->join('plane', 'clients.plane_id = plane.id');
-                $this->db->join('Proxy', 'clients.proxy = Proxy.idProxy');
+                $this->db->join('plane', 'clients.plane_id = plane.id','left outer');
+                $this->db->join('Proxy', 'clients.proxy = Proxy.idProxy','left outer');
+                $this->db->join('client_payment', 'client_payment.dumbu_client_id = clients.user_id','left outer');
             }
             else {
                 $this->db->distinct();
                 $this->db->select('email');
                 $this->db->from('users');
                 $this->db->join('clients', 'clients.user_id = users.id');
-                $this->db->join('plane', 'clients.plane_id = plane.id');
+                $this->db->join('plane', 'clients.plane_id = plane.id','left outer');
             }
-             
             if($form_filter['cod_promocional']!='--SELECT--'){
                 if($form_filter['cod_promocional']==='PEIXE URBANO'){
                     $this->db->where('ticket_peixe_urbano !=', 'BACKTODUMBU');

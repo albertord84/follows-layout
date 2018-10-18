@@ -23,8 +23,6 @@
                 </div>
                 <div class="col-md-4">
                     <div class="center filters">
-                    <!--<b>Assinatura (inic)</b>
-                        <input id = "signin_initial_date" type="text" class="form-control"  placeholder="MM/DD/YYYY" >-->
                         <b>Data da assinatura</b>
                     </div>
                     <div class="col-xs-1">
@@ -39,46 +37,7 @@
                     <div class="col-xs-5">
                         <input type="text" id="date_to" name="date_to" placeholder="mm/dd/yyyy" class="form-control">
                     </div>
-                    <!-- <div class="center">
-                        <input type="text" id="date_from" name="date_from" placeholder="mm/dd/yyyy" class="form-control" style="max-width:160px">
-                        <label for="date_to">até</label>
-                        <input type="text" id="date_to" name="date_to" placeholder="mm/dd/yyyy" class="form-control" style="max-width:160px">
-                    </div> -->
-                        <!-- <table>
-                            <tr>
-                                <th class="center filters" colspan="5">Data da assinatura</th>
-                                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-                                <th class="center filters">Observações</th>
-                            </tr>
-                            <tr>
-                                <td><select id="day" class="form-control" style="min-width: 60px">
-                                    <option value="0">Dia</option>
-                                    <?php //for ($day = 1; $day <= 31; $day++) { ?>
-                                    <option value="<?php //echo strlen($day)==1 ? '0'.$day : $day; ?>"><?php //echo strlen($day)==1 ? '0'.$day : $day; ?></option>
-                                    <?php //} ?>
-                                    </select></td>
-                                    <td>&nbsp;<b>/</b>&nbsp;</td>
-                                <td><select id="month" class="form-control" style="min-width: 70px">
-                                    <option value="0">Mês</option>
-                                    <?php //for ($month = 1; $month <= 12; $month++) { ?>
-                                    <option value="<?php //echo strlen($month)==1 ? '0'.$month : $month; ?>"><?php //echo strlen($month)==1 ? '0'.$month : $month; ?></option>
-                                    <?php //} ?>
-                                    </select></td>
-                                <td>&nbsp;<b>/</b>&nbsp;</td>
-                                <td><select id="year" class="form-control" style="min-width: 75px">
-                                    <option value="0">Ano</option>
-                                    <?php //for ($year = 2016; $year <= date('Y'); $year++) { ?>
-                                    <option value="<?php //echo $year; ?>"><?php //echo $year; ?></option>
-                                    <?php //} ?>
-                                    </select></td>
-                                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                <td><select id="observations" class="form-control" >                            
-                                    <option>NAO</option>
-                                    <option>SIM</option>
-                                </select></td>
-                            </tr>
-                        </table>
-                    </div> -->
+                    
                 </div>
                 <div class="col-md-4">
                     <div class="center filters">
@@ -324,23 +283,23 @@
             </div>
             <div class="col-xs-1"></div>
         </div>
-        <?php if (isset($form_filter) && $form_filter['query'] == 1) {
-        echo '<div class="row">
-            <div class="col-xs-1"></div>
-            <div class="col-xs-10">
-                <table class="table">
-                    <tr class="list-group-item-success">
-                        <td style="max-width:240px; padding:5px"><b>No.</b></td>
-                        <td style="max-width:240px; padding:5px"><b>Dados pessoais</b></td>
-                        <td style="max-width:240px; padding:5px"><b>Dados de Instagram</b></td>
-                        <td style="max-width:240px; padding:5px"><b>Dados bancários</b></td>
-                        <td style="max-width:240px; padding:5px"><b>Operações</b></td>
-                    </tr>
-                </table>
+        <?php if (isset($form_filter) && $form_filter['query'] == 1) {?>
+            <div class="row">
+                <div class="col-xs-1"></div>
+                <div class="col-xs-10">
+                    <table class="table">
+                        <tr class="list-group-item-success">
+                            <td style="max-width:240px; padding:5px"><b>No.</b></td>
+                            <td style="max-width:240px; padding:5px"><b>Dados pessoais</b></td>
+                            <td style="max-width:240px; padding:5px"><b>Dados de Instagram</b></td>
+                            <td style="max-width:240px; padding:5px"><b>Dados bancários</b></td>
+                            <td style="max-width:240px; padding:5px"><b>Operações</b></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-xs-1"></div>
             </div>
-            <div class="col-xs-1"></div>
-        </div>';
-        } ?>
+        <?php } ?>
         <?php 
             function get_name_status($val){
                 switch ($val){
@@ -555,7 +514,9 @@
                                     else
                                         echo '<b>Actual payment value: </b>'.$result[$i]['normal_val'].'<br>';
                                     
-                                    echo '<b>Recurrency order key: </b><a href="https://dashboard.mundipagg.com/#/9d0703f8-98a6-4f61-a28f-6be3771f3510/live/transactions?currentTab=creditCardTransactions&pageNumber=1&sortField=CreateDate&sortMode=DESC&pageSize=20&identifier='.$result[$i]['order_key'].'" target="_blank">'.$result[$i]['order_key'].'</a><br>';
+                                    echo '<br><b>Mundi order_key: </b><a href="https://dashboard.mundipagg.com/#/9d0703f8-98a6-4f61-a28f-6be3771f3510/live/transactions?currentTab=creditCardTransactions&pageNumber=1&sortField=CreateDate&sortMode=DESC&pageSize=20&identifier='.$result[$i]['order_key'].'" target="_blank">'.$result[$i]['order_key'].'</a><br>';
+                                    echo '<b>Vindi customer_id: </b><a href="https://app.vindi.com.br/admin/customers/'.$result[$i]['gateway_client_id'].'" target="_blank">'.$result[$i]['gateway_client_id'].'</a><br>';
+                                    echo '<b>Vindi signature_id: </b><a href="https://app.vindi.com.br/admin/subscriptions/'.$result[$i]['payment_key'].'" target="_blank">'.$result[$i]['payment_key'].'</a><br>';
                                     
                                     echo '<br><b>Proxy: </b><br>';
                                     echo '<b>ID: </b>'.$result[$i]['idProxy'].'</a><br>';

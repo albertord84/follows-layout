@@ -55,7 +55,9 @@
                 <!--Start of Zendesk Chat Script-->
                 <?php
                     if ($SERVER_NAME == "PRO") { ?>
-                        <script type="text/javascript" src="<?php echo base_url() . 'assets/js/zendesk_chat_home.js'; ?>"></script>
+                        <!-- Start of dumbu Zendesk Widget script -->
+                        <script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=c28ec1dd-02f4-4c37-808f-87833fcf6c97"> </script>
+                        <!-- End of dumbu Zendesk Widget script -->
                 <?php } ?>
                 <!--End of Zendesk Chat Script-->
 	</head>
@@ -917,7 +919,15 @@
 				</div>
 				<div class="col-md-3 col-sm-3 col-xs-12"><br></div>
 
-				<footer class="text-center fleft100 m-t30 m-b10"><div class="container"><img src="<?php echo base_url() . 'assets/images/logo-footer.png'; ?>" class="wauto" alt=""> <span class="fleft100 text-center">DUMBU - <?php echo date('Y'); echo $CI->T(" - TODOS OS DIREITOS RESERVADOS", array(), $language); ?></span></div></footer>
+				<footer class="text-center fleft100 m-t30 m-b10">
+                                    <div class="container">
+                                        <img src="<?php echo base_url() . 'assets/images/logo-footer.png'; ?>" class="wauto" alt=""> 
+                                        <span class="fleft100 text-center">
+                                            DUMBU - <?php echo date('Y'); echo $CI->T(" - TODOS OS DIREITOS RESERVADOS", array(), $language); ?>
+                                            <br>CNPJ 24.333.984/000190
+                                        </span>
+                                    </div>
+                                </footer>
 			</div>
 		</section>
             

@@ -63,7 +63,6 @@
         
         <!--Start of Zendesk Chat Script-->
         <?php if ($SERVER_NAME == "PRO") { ?>
-                <script type="text/javascript" src="<?php echo base_url() . 'assets/js/zendesk_chat_client.js'; ?>"></script>
         <?php } ?>
         <!--End of Zendesk Chat Script-->
     </head>
