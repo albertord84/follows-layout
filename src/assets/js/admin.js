@@ -741,6 +741,82 @@ $(document).ready(function () {
         $("#change_status_button").attr("disabled", false);
     });
     
+    $("#vindi_update").click(function () {
+        if($("#user_id").val().trim()){
+            if(confirm('Confirma atualizar dados da vindi para esse cliente?')) {
+                $.ajax({
+                    url: base_url + 'index.php/admin/update_vindi_datas',
+                    data: {
+                        'user_id': $("#user_id").val().trim(),
+                        'customer_id': $("#customer_id").val().trim(),
+                        'signature_id': $("#signature_id").val().trim(),
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    async: false,
+                    success: function (response) {
+                        modal_alert_message(response['message']);
+                    },
+                    error: function (xhr, status) {
+                        modal_alert_message('Não foi possível comunicar com o Instagram. Confira sua conexão com Internet e tente novamente');
+                    }
+                });
+            }
+        }else{
+            modal_alert_message('Usurário inválido');
+        }
+    });
+    
+    $("#change_proxy").click(function () {
+        if($("#proxy_user_id").val().trim()){
+            if(confirm('Confirma trocar o proxy?')) {
+                $.ajax({
+                    url: base_url + 'index.php/admin/update_proxy',
+                    data: {
+                        'user_id': $("#proxy_user_id").val().trim(),
+                        'new_proxy': $("#new_proxy").val().trim(),                        
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    async: false,
+                    success: function (response) {
+                        modal_alert_message(response['message']);
+                    },
+                    error: function (xhr, status) {
+                        modal_alert_message('Não foi possível comunicar com o Instagram. Confira sua conexão com Internet e tente novamente');
+                    }
+                });
+            }
+        }else{
+            modal_alert_message('Usurário inválido');
+        }
+    });
+    
+    $("#change_obs").click(function () {
+        if($("#obs_user_id").val().trim()){
+            if(confirm('Confirma atualizar Observação?')) {
+                $.ajax({
+                    url: base_url + 'index.php/admin/update_observation',
+                    data: {
+                        'user_id': $("#obs_user_id").val().trim(),
+                        'observation': $("#new_obs").val().trim(),                        
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    async: false,
+                    success: function (response) {
+                        modal_alert_message(response['message']);
+                    },
+                    error: function (xhr, status) {
+                        modal_alert_message('Não foi possível comunicar com o Instagram. Confira sua conexão com Internet e tente novamente');
+                    }
+                });
+            }
+        }else{
+            modal_alert_message('Usurário inválido');
+        }
+    });
+    
     
     function validate_element(element_selector,pattern){
         if(!$(element_selector).val().match(pattern)){

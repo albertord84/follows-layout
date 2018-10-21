@@ -1,8 +1,8 @@
     <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12">
         <div  class="col-md-2 col-sm-2 col-xs-12"></div>
         <div class="col-md-8 col-sm-8 col-xs-12">
-                <h3>O cliente é Peixe Urbano? Faça o seguinte:</h3>
-                <h5> 1) Estorne o primeiro pagamento do cliente, caso já ter sido cobrado</h5>
+                <h3>Trocar data de pagamento:</h3>
+                <h5> 1)Se o cliente é Peixe Urbano estorne o primeiro pagamento (caso já ter sido cobrado)</h5>
                 <h5> 2) Mude a data de pagamento para o dia do próximo pagamento:</h5>
                 <div class="col-md-3 col-sm-3 col-xs-12"> 
                     <b>ID do cliente</b>
@@ -21,7 +21,7 @@
         <div class="col-md-2 col-sm-2 col-xs-12"></div>  
     </section>
 
-    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12"><br><br><hr><br><br></section>
+<!--    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12"><br><br><hr><br><br></section>
     
     <section id="Cobrança na hora" class="col-md-12 col-sm-12 col-xs-12">
         <div  class="col-md-2 col-sm-2 col-xs-12"></div>
@@ -68,10 +68,9 @@
                 </div>
         </div>
         <div class="col-md-2 col-sm-2 col-xs-12"></div>  
-    </section>
+    </section>-->
     
-    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12"><br><br><hr><br><br></section>
-    
+    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12"><br><br><hr></section>
     <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12">
         <div  class="col-md-2 col-sm-2 col-xs-12"></div>
         <div class="col-md-8 col-sm-8 col-xs-12">
@@ -100,3 +99,83 @@
         </div>
         <div class="col-md-2 col-sm-2 col-xs-12"></div>
     </section>
+    
+    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12"><br><br><hr></section>
+    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12">
+        <div  class="col-md-2 col-sm-2 col-xs-12"></div>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+                <h3>Sinconizar dados da Vindi no sistema (válido para assinantes de FU):</h3>
+                <div class="col-md-3 col-sm-3 col-xs-12"> 
+                    <b>ID do <br> cliente</b>
+                    <input id="user_id" type="text" placeholder="ID do cliente">
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12"> 
+                    <b>Customer_id (id do cliente na vindi)</b>
+                    <div >
+                        <input id="customer_id" type="text" placeholder="Customer_id">
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12"> 
+                    <b>Signature_id (id da assinatura ativa)</b>
+                    <div >
+                        <input id="signature_id" type="text" placeholder="Signature_id">
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12"> 
+                    <br>
+                    <input id="vindi_update" class="btn btn-primary" type="button" value="Modificiar" style="margin-top:19px">                    
+                </div>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-12"></div>  
+    </section>
+
+    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12"><br><br><hr></section>
+    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12">
+        <div  class="col-md-2 col-sm-2 col-xs-12"></div>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+                <h3>Trocar proxy de um usuário:</h3>
+                <div class="col-md-3 col-sm-3 col-xs-12"> 
+                    <b>ID do cliente</b>
+                    <input id="proxy_user_id" type="text" placeholder="ID do cliente">
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12"> 
+                    <b>Novo proxy</b>
+                    <div >
+                        <input id="new_proxy" type="text" placeholder="Novo proxy">
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12"> 
+                    <input id="change_proxy" class="btn btn-primary" type="button" value="Modificiar" style="margin-top:19px">                    
+                </div>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-12"></div>  
+    </section>
+    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12"><br><br><hr></section>
+        
+    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12"><br><br><hr></section>
+    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12">
+        <div  class="col-md-2 col-sm-2 col-xs-12"></div>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+                <h3>Atualizar observação</h3>
+                <div class="col-md-3 col-sm-3 col-xs-12"> 
+                    <b>ID do cliente</b>
+                    <input id="obs_user_id" type="text" placeholder="ID do cliente">
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12"> 
+                    <b>Observação</b>
+                    <div >
+                        <input id="new_obs" type="text" placeholder="Observação">
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12"> 
+                    <input id="change_obs" class="btn btn-primary" type="button" value="Modificiar" style="margin-top:19px">                    
+                </div>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-12"></div>  
+    </section>
+    <section id="Peixe_urbano" class="col-md-12 col-sm-12 col-xs-12"><br><br><hr></section>
+        
+        
+        
+        
+    

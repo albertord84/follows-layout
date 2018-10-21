@@ -274,44 +274,6 @@ class Admin extends CI_Controller {
         }
     }
     
-    //---- Functions to peixe urbano-----------------------------
-    public function change_ticket_peixe_urbano_status_id() {
-        $this->load->model('class/user_role');
-        if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN){
-            $this->load->model('class/client_model');
-            $datas=$this->input->post();
-            if($this->client_model->update_cupom_peixe_urbano_status($datas)){
-                $result['success'] = true;
-                $result['message'] = 'Stauts de Cupom atualizado corretamente';
-            } else{
-                $result['success'] = false;
-                $result['message'] = 'Erro actualizando status do Cupom';
-            }
-            echo json_encode($result);
-        } else{
-            echo "Não pode acessar a esse recurso, deve fazer login!!";
-        }
-    }
-    
-    public function change_pay_day_peixe_urbano(){
-        $this->load->model('class/admin_model');
-        $datas = $this->input->post();
-        list ($mes, $dia, $ano) = explode ('/', $datas['pu_new_date']);
-        $pay_day = strtotime($mes."/".$dia."/".$ano." 14:00:00");
-        $client_id = $datas['client_id'];
-        $resp = $this->admin_model->change_pay_day($client_id, $pay_day);
-        
-        if ($resp) {
-            $response['success'] = true;
-            $response['message'] = "Data modificada corretamente";
-        } else {
-            $response['success'] = false;
-            $response['message'] = "Erro, não foi possível alterar a data de pagamento do cliente, contate ao grupo de desenvolvimento";
-        }
-        
-        echo json_encode($response);
-    }
-    
     //---- Functions to watchdog-----------------------------
     public function watchdog() {
         $this->load->model('class/user_role');
@@ -371,6 +333,43 @@ class Admin extends CI_Controller {
     }
     
     //---- Functions to basic operations-----------------------------
+    public function change_ticket_peixe_urbano_status_id() {
+        $this->load->model('class/user_role');
+        if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN){
+            $this->load->model('class/client_model');
+            $datas=$this->input->post();
+            if($this->client_model->update_cupom_peixe_urbano_status($datas)){
+                $result['success'] = true;
+                $result['message'] = 'Stauts de Cupom atualizado corretamente';
+            } else{
+                $result['success'] = false;
+                $result['message'] = 'Erro actualizando status do Cupom';
+            }
+            echo json_encode($result);
+        } else{
+            echo "Não pode acessar a esse recurso, deve fazer login!!";
+        }
+    }
+    
+    public function change_pay_day_peixe_urbano(){
+        $this->load->model('class/admin_model');
+        $datas = $this->input->post();
+        list ($mes, $dia, $ano) = explode ('/', $datas['pu_new_date']);
+        $pay_day = strtotime($mes."/".$dia."/".$ano." 14:00:00");
+        $client_id = $datas['client_id'];
+        $resp = $this->admin_model->change_pay_day($client_id, $pay_day);
+        
+        if ($resp) {
+            $response['success'] = true;
+            $response['message'] = "Data modificada corretamente";
+        } else {
+            $response['success'] = false;
+            $response['message'] = "Erro, não foi possível alterar a data de pagamento do cliente, contate ao grupo de desenvolvimento";
+        }
+        
+        echo json_encode($response);
+    }
+    
     public function do_payments() {
         $this->load->model('class/user_role');
         if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
@@ -501,6 +500,60 @@ class Admin extends CI_Controller {
         echo json_encode($response);
     }
     
+    public function update_vindi_datas() {
+        $this->load->model('class/client_model');
+        if(isset($this->input->post()['customer_id']) && $this->input->post()['customer_id']!="")
+            $datas['gateway_client_id'] = $this->input->post()['customer_id'];
+        if(isset($this->input->post()['signature_id']) && $this->input->post()['signature_id']!="")
+            $datas['payment_key'] = $this->input->post()['signature_id'];
+        try {
+            if(count($this->client_model->get_vindi_payment($this->input->post()['user_id']))){
+                if($this->client_model->update_client_payment($this->input->post()['user_id'], $datas)){
+                    $response['success'] = true;
+                    $response['message'] = "Dados atualizados com sucesso";
+                }else{
+                    $response['success'] = false;
+                    $response['message'] = "Erro ao atualizar dados da Vindi para esse usuário";
+                }                
+            }else{
+                $response['success'] = false;
+                $response['message'] = "Esse usuário não possui dados na tabela client_payment do banco de dados. Informe ao desenvolvimento inserir manualmente esses dados";
+            }            
+        } catch (Exception $exc) {
+            $response['success'] = false;
+            $response['message'] = "Erro acessando ao banco de dados. Informe ao grupo de desnvolvimento";
+        }
+        echo json_encode($response);
+    }
+    
+    public function update_proxy() {
+        $this->load->model('class/client_model');                
+        $id = $this->input->post()['user_id'];
+        $datas['proxy'] = $this->input->post()['new_proxy'];        
+        if($this->client_model->update_client($id, $datas)){
+            $response['success'] = true;
+            $response['message'] = "Proxy atualizado com sucesso";
+        }else{
+            $response['success'] = false;
+            $response['message'] = "Erro atualizando proxy";
+        }
+        echo json_encode($response);
+    }
+    
+    public function update_observation() {
+        $this->load->model('class/client_model');                
+        $id = $this->input->post()['user_id'];
+        $datas['observation'] = $this->input->post()['observation'];        
+        if($this->client_model->update_client($id, $datas)){
+            $response['success'] = true;
+            $response['message'] = "Observação atualizada com sucesso";
+        }else{
+            $response['success'] = false;
+            $response['message'] = "Erro atualizando observação";
+        }
+        echo json_encode($response);
+    }
+    
     //---- Functions auxiliars-----------------------------
     public function T($token, $array_params=NULL, $lang=NULL) {
         if(!$lang){
@@ -609,5 +662,7 @@ class Admin extends CI_Controller {
             echo "Não pode acessar a esse recurso, deve fazer login!!";
         }
     }
+    
+    
     
 }
