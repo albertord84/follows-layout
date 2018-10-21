@@ -3226,14 +3226,15 @@ class Welcome extends CI_Controller {
         $this->load->library('external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        $inf = 85627;
-        $sup = 85628;
+        $inf = 31678;
+        $sup = 31679;
         $clients = $this->client_model->get_all_clients_JR($inf,$sup);
         foreach ($clients as $client) {
-            echo $client['user_id']." ---> ";
-            echo $this->Crypt->decodify_level1($this->Crypt->decodify_level1($this->Crypt->decodify_level1($client['credit_card_number'])))."<br>";
-            echo $this->Crypt->decodify_level1($this->Crypt->decodify_level1($client['credit_card_number']))."<br>";
+            echo ($client['email'])."<br>";
+            echo ($client['credit_card_name'])."<br>";
+            echo $client['credit_card_exp_month']." / ".$client['credit_card_exp_year']."<br>";
             echo $this->Crypt->decodify_level1($client['credit_card_number'])."<br>";
+            echo $this->Crypt->decodify_level1($client['credit_card_cvc'])."<br>";
         }
         echo "<br><br>FIM<br><br>";
     }
