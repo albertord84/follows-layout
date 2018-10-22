@@ -924,7 +924,6 @@
                                         <img src="<?php echo base_url() . 'assets/images/logo-footer.png'; ?>" class="wauto" alt=""> 
                                         <span class="fleft100 text-center">
                                             DUMBU - <?php echo date('Y'); echo $CI->T(" - TODOS OS DIREITOS RESERVADOS", array(), $language); ?>
-                                            <br>CNPJ 24.333.984/000190
                                         </span>
                                     </div>
                                 </footer>

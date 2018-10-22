@@ -275,11 +275,11 @@
                             }
                             break;
                         case 10:
-                            echo '
+                            /*echo '
                                         <div class="center" style="margin-left:20%; width:60%; padding: 2%;  border:1px solid red; border-radius:5px ">
                                             <b id="message_status2" style="margin:1%; font-family:sans-serif; font-size:0.8em;">' . $CI->T("SUA CONTA ESTA TEMPORÁRIAMENTE LIMITADA NO DUMBU DEVIDO A RESTRIÇÕES DE TEMPO COM O INSTRAGRAM", array(), $language) . '</b>  <BR>           
                                             <b id="message_status2" style="margin:1%; font-family:sans-serif; font-size:0.8em;">' . $CI->T("EM POUCO TEMPO SERÁ RESTABELECIDO O SERVIÇO PARA VOCÊ", array(), $language) . '</b><BR>           
-                                        </div>';
+                                        </div>';*/
                             break;
                     }
                     ?>
