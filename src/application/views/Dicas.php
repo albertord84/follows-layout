@@ -59,6 +59,8 @@
                background: whitesmoke;        
              }
         </style>
+        <?php include_once("pixel_facebook.php") ?>
+        
     </head>
 <body>
     
