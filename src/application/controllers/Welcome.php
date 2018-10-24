@@ -984,8 +984,20 @@ class Welcome extends CI_Controller {
                                     //2.2. crear carton en la vindi
                                     $resp1 = $this->external_services->addClientPayment($datas['pk'], $datas);
                                     if ($resp1->success) {
-                                        //2.3. crear recurrencia segun plano-producto
-                                        $resp2 = $this->external_services->create_recurrency_payment($datas['pk'], $datas['pay_day'], $datas["plane_type"]);
+                                        //2.3. crear recurrencia segun plano-producto ou segundo cupom
+                                        if($ticket==="PROMO60OFF"){
+                                            //2.3.1 criar cobrança na hora com 60% de desconto
+                                            $plane_datas = $this->user_model->execute_sql_query('SELECT * FROM plane WHERE id='.$datas['plane_type'])[0];
+                                            $amount = intval(($plane_datas['normal_val']*4)/1000);
+                                            $resp2 = $this->external_services->create_payment($datas['pk'],$GLOBALS['sistem_config']->prod_1real_id, $amount);
+                                            //2.3.2 criar a recorrência um mês ppara frente
+                                            if($resp2->success && ($resp2->status == 'active' || $resp2->status =='paid')){
+                                                $new_pay_day = strtotime("+1 month", $datas['pay_day']);
+                                                $resp2 = $this->external_services->create_recurrency_payment($datas['pk'], $new_pay_day, $datas["plane_type"]);
+                                            }
+                                        }else
+                                            $resp2 = $this->external_services->create_recurrency_payment($datas['pk'], $datas['pay_day'], $datas["plane_type"]);
+                                        
                                         if ($resp2->success) {
                                             //2.4 salvar payment_key (order_key)
                                             $this->client_model->update_client_payment($datas['pk'], array('payment_key' => $resp2->payment_key));
@@ -1165,7 +1177,7 @@ class Welcome extends CI_Controller {
                         $amount = (int) ($pay_now_value / 100);
                         //$resp = $this->Vindi->create_payment($this->session->userdata('id'), \follows\cls\Payment\Vindi::prod_1real_id, $amount);
                         $resp = $this->external_services->create_payment($this->session->userdata('id'), $GLOBALS['sistem_config']->prod_1real_id, $amount);
-                        if ($resp->success && $resp->status == 'active')
+                        if ($resp->success && ($resp->status == 'active'|| $resp2->status =='paid'))
                             $flag_pay_now = true;
                     }
                     //5. recurrencia
