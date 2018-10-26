@@ -487,6 +487,26 @@ class External_services{
         return (array)json_decode($response); 
     }
     
+    function delete_dir($profile){
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
+        $worker_server_name = $database_config['server']['worker_server_name'];
+        $postData = array(
+            'profile'=>urlencode($profile),
+            'acctok'=>urlencode(md5(date("d", time()).'6p44mkv'))
+        );
+        $url = "http://$worker_server_name/follows-worker/src/index.php/admin/delete_dir";
+        $handler = curl_init();
+        curl_setopt($handler, CURLOPT_URL, $url);  
+        curl_setopt($handler, CURLOPT_POST,true);
+        curl_setopt($handler, CURLOPT_RETURNTRANSFER,true);  
+        curl_setopt($handler, CURLOPT_POSTFIELDS, $postData);  
+        $response = curl_exec($handler);
+        $info = curl_getinfo($handler);
+        $string = curl_error($handler);
+        curl_close($handler);
+        return (array)json_decode($response); 
+    }
+    
     
     
     
