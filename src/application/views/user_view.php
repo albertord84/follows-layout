@@ -479,14 +479,13 @@
                 <section id="assinar" class="fleft100">
                         <A name="lnk_sign_in_now"></A>
 			<div class="container">
-				<!--<spam style="color:black; font-size:1.6em" class="fleft100 text-center m-tb30"><?php //echo $CI->T("ASSINAR", array(),$language);?><small class="fleft100"><?php //echo $CI->T("Plano mensal sem multa de rescisão", array(),$language);?>.</small></spam>-->
 				<spam style="color:black; font-size:1.6em" class="fleft100 text-center m-tb30"><?php echo $CI->T("ASSINAR", array(),$language);?><small class="fleft100"><?php echo $CI->T("PLANO MENSAL", array(),$language);?></small></spam>
                                 
-                                <div class="titulo fleft100 text-center m-tb30">
+<!--                                <div class="titulo fleft100 text-center m-tb30">
                                      <div style="background-color:#2CC38F;margin-left:12%;margin-right:12%;margin-bottom:3%; padding:1%;border-radius:15px">
                                         <b style="color:white;font-size:1.4em"><?php echo $CI->T("Assine e ganhe 2 dias de teste grátis", array(),$language);?>!</b>
                                     </div>
-                                </div>
+                                </div>-->
 				<div class="col-md-4 col-sm-4 col-xs-12">
 					<div id="container_plane_9_90" class="plano text-center fleft100">
                                             <img style="width:60%" src="<?php echo base_url().'assets/images/velocimetro02.png'?>" alt="velocimetro-4"/>
