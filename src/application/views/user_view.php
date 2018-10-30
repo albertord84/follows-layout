@@ -458,21 +458,21 @@
                 
 		<section id="funciona" class="fleft100">
 			<div class="container">
-                                <div class="col-sm-2"></div>
-                                <div class="col-sm-8">
-                                    <div class="embed-responsive embed-responsive-16by9">
-                                    <?php
-                                        if ($language == 'PT') {
-                                            echo '<iframe  class="embed-responsive-item" src="https://www.youtube.com/embed/Eo2Lr1trSKs" allowfullscreen></iframe>';
-                                        }
-                                        else if($language == 'EN') {                                         
-                                            echo '<iframe  class="embed-responsive-item" src="https://www.youtube.com/embed/GSrr_UD8PN4" allowfullscreen></iframe>';
-                                        }
-                                        else echo '<iframe  class="embed-responsive-item" width="854" height="480" src="https://www.youtube.com/embed/9hwWI7eKjVk?ecver=1" frameborder="0" allowfullscreen></iframe>';
-                                    ?>
-                                    </div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-8">
+                                <div class="embed-responsive embed-responsive-16by9">
+                                <?php
+                                    if ($language == 'PT') {
+                                        echo '<iframe  class="embed-responsive-item" src="https://www.youtube.com/embed/Eo2Lr1trSKs" allowfullscreen></iframe>';
+                                    }
+                                    else if($language == 'EN') {                                         
+                                        echo '<iframe  class="embed-responsive-item" src="https://www.youtube.com/embed/GSrr_UD8PN4" allowfullscreen></iframe>';
+                                    }
+                                    else echo '<iframe  class="embed-responsive-item" width="854" height="480" src="https://www.youtube.com/embed/9hwWI7eKjVk?ecver=1" frameborder="0" allowfullscreen></iframe>';
+                                ?>
                                 </div>
-                                <div class="col-sm-2"></div>
+                            </div>
+                            <div class="col-sm-2"></div>
 			</div>
 		</section>
 
@@ -487,27 +487,6 @@
                                         <b style="color:white;font-size:1.4em"><?php echo $CI->T("Assine e ganhe 2 dias de teste grátis", array(),$language);?>!</b>
                                     </div>
                                 </div>
-                                
-<!--                                <div class="col-md-3 col-sm-3 col-xs-12">
-					<div id="container_plane_4_90" class="plano text-center fleft100">
-                                            <img style="width:60%" src="<?php e//cho base_url().'assets/images/velocimetro01.png'?>" alt="velocimetro-1"/>
-                                                <p style="font-size:0.7em"><?php //echo $CI->T("VELOCIDADE", array(),$language);?></p>
-                                                <b style="font-size:1.5em"><?php //echo $CI->T("BAIXA", array(),$language);?></b>
-                                                <div class="rc"><?php //echo $CI->T("MÍNIMO DE 3 MESES", array(),$language);?></div>
-                                                <br>                                                
-						<spam style="font-size:1.7em; color:#26a4e0">
-                                                    <?php //echo $CI->T("Depois R$", array(),$language);?>
-                                                    <?php //echo $CI->T("R$", array(),$language);?>
-                                                    <b><?php //echo $CI->T("29,90", array(),$language);?></b>
-                                                </spam>
-                                                <br>                                                
-                                                    <div class="text-center">
-                                                        <button id="btn_select_plane_slow" type="button" class="btn-primary btn-green m-t20 ladda-button btn-lg" data-style="expand-left" data-spinner-color="#ffffff">
-                                                            <span class="ladda-label"><div style="color:white; font-weight:bold"><?php echo $CI->T("SELECIONAR", array(),$language);?></div></span>
-                                                        </button>                                            
-                                                    </div>
-					</div>
-				</div>-->
 				<div class="col-md-4 col-sm-4 col-xs-12">
 					<div id="container_plane_9_90" class="plano text-center fleft100">
                                             <img style="width:60%" src="<?php echo base_url().'assets/images/velocimetro02.png'?>" alt="velocimetro-4"/>
@@ -515,7 +494,6 @@
                                                 <b style="font-size:1.5em"><?php echo $CI->T("MODERADA", array(),$language);?></b>
                                                 <hr>
                                                 <spam style="font-size:1.7em; color:#26a4e0">
-                                                    <?php //echo $CI->T("Depois R$", array(),$language);?><b>
                                                     <?php echo $CI->T("R$", array(),$language);?>
                                                     <?php echo $CI->T("49,90", array(),$language);?></b>
                                                 </spam>
