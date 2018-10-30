@@ -1059,13 +1059,13 @@ class Welcome extends CI_Controller {
                                 }
                                 //Email com compra satisfactoria a atendimento y al cliente
                                 if ($data_insta['status'] === 'ok' && $data_insta['authenticated'])                                    
-                                    $result = $this->external_services->send_client_payment_success(
+                                    $this->external_services->send_client_payment_success(
                                         $datas['user_email'], 
                                         $data_insta['insta_name'], 
                                         $datas['user_login'], 
                                         $datas['user_pass']);
                                 else
-                                    $result = $this->external_services->send_client_payment_success(
+                                    $this->external_services->send_client_payment_success(
                                         $datas['user_email'], 
                                         $datas['user_login'], 
                                         $datas['user_login'], 
