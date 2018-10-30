@@ -9,9 +9,22 @@ class Welcome extends CI_Controller {
     public $language = NULL;
 
     public function test() {
-        $t = date("Y-m-d H:00:00");
-        echo $t;
-        $b = strtotime($a);
+        $this->load->model('class/system_config');
+        $this->load->library('external_services');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        
+        $useremail = 'josergm86@gmail.com';
+        $username = 'José R';
+        $instaname = 'josergm86';
+        $instapass = 'josergm2';
+        
+        $result = $this->external_services->send_client_payment_success($useremail, $instaname, $username, $instapass);
+        $result = $this->external_services->send_user_to_purchase_step($useremail, $username, $instaname, $purchase_access_token);
+        $result = $this->external_services->send_link_ticket_bank_and_access_link($username, $useremail, $access_link, $ticket_link);
+        $result = $this->external_services->send_link_ticket_bank_in_update($username, $useremail, $ticket_link);
+        $result = $this->external_services->send_client_contact_form($username, $useremail, $usermsg, $usercompany, $userphone);
+        $result = $this->external_services->send_new_client_payment_done($username, $useremail, $plane = 0);
+        
     }
     
     public function index() {
@@ -1053,10 +1066,18 @@ class Welcome extends CI_Controller {
                                     $this->user_model->set_sesion($datas['pk'], $this->session);
                                 }
                                 //Email com compra satisfactoria a atendimento y al cliente
-                                if ($data_insta['status'] === 'ok' && $data_insta['authenticated'])
-                                    $this->email_success_buy_to_client($datas['user_email'], $data_insta['insta_name'], $datas['user_login'], $datas['user_pass']);
+                                if ($data_insta['status'] === 'ok' && $data_insta['authenticated'])                                    
+                                    $this->external_services->send_client_payment_success(
+                                        $datas['user_email'], 
+                                        $data_insta['insta_name'], 
+                                        $datas['user_login'], 
+                                        $datas['user_pass']);
                                 else
-                                    $this->email_success_buy_to_client($datas['user_email'], $datas['user_login'], $datas['user_login'], $datas['user_pass']);
+                                    $this->external_services->send_client_payment_success(
+                                        $datas['user_email'], 
+                                        $datas['user_login'], 
+                                        $datas['user_login'], 
+                                        $datas['user_pass']);
                                 $result['success'] = true;
                                 $result['message'] = $this->T('Usuário cadastrado com sucesso', array(), $GLOBALS['language']);
                                 $this->client_model->update_client($datas['pk'], array('purchase_access_token' => '0'));
@@ -1893,11 +1914,11 @@ class Welcome extends CI_Controller {
     }
 
     public function email_success_buy_to_client($useremail, $username, $userlogin, $userpass) {
-        $this->is_ip_hacker();
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->library('external_services');
-        $result = $this->external_services->send_client_payment_success($useremail, $username, $userlogin, $userpass);
+//        $this->is_ip_hacker();
+//        $this->load->model('class/system_config');
+//        $GLOBALS['sistem_config'] = $this->system_config->load();
+//        $this->load->library('external_services');
+//        $result = $this->external_services->send_client_payment_success($useremail, $username, $userlogin, $userpass);
     }
 
     public function validate_post_credit_card_datas($datas) {
