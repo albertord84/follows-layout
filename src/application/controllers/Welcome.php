@@ -11,12 +11,20 @@ class Welcome extends CI_Controller {
     public function test() {
         $this->load->model('class/system_config');
         $this->load->library('external_services');
-        $GLOBALS['sistem_config'] = $this->system_config->load(); 
-        $result = $this->external_services->send_client_payment_success(
-            'josergm86@gmail.com', 
-            'josergm86', 
-            'josergm86', 
-            'josergm2');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        
+        $useremail = 'josergm86@gmail.com';
+        $username = 'José R';
+        $instaname = 'josergm86';
+        $instapass = 'josergm2';
+        
+        $result = $this->external_services->send_client_payment_success($useremail, $instaname, $username, $instapass);
+        $result = $this->external_services->send_user_to_purchase_step($useremail, $username, $instaname, $purchase_access_token);
+        $result = $this->external_services->send_link_ticket_bank_and_access_link($username, $useremail, $access_link, $ticket_link);
+        $result = $this->external_services->send_link_ticket_bank_in_update($username, $useremail, $ticket_link);
+        $result = $this->external_services->send_client_contact_form($username, $useremail, $usermsg, $usercompany, $userphone);
+        $result = $this->external_services->send_new_client_payment_done($username, $useremail, $plane = 0);
+        
     }
     
     public function index() {
