@@ -792,6 +792,30 @@ $(document).ready(function () {
         }
     });
     
+    $("#delete_session").click(function () {
+        if($("#profile").val().trim()){
+            if(confirm('Confirma eliminar o diretório de sesão?')) {
+                $.ajax({
+                    url: base_url + 'index.php/admin/delete_session',
+                    data: {
+                        'profile': $("#profile").val().trim()                     
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    async: false,
+                    success: function (response) {
+                        modal_alert_message(response['message']);
+                    },
+                    error: function (xhr, status) {
+                        modal_alert_message('Não foi possível comunicar com o Instagram. Confira sua conexão com Internet e tente novamente');
+                    }
+                });
+            }
+        }else{
+            modal_alert_message('Usurário inválido');
+        }
+    });
+    
     $("#change_obs").click(function () {
         if($("#obs_user_id").val().trim()){
             if(confirm('Confirma atualizar Observação?')) {
