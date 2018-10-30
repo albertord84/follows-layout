@@ -1,8 +1,11 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> develop
 class Login extends CI_Controller {
 
     private function param(string $param_name) {
