@@ -39,8 +39,6 @@
         <!-- Performance Chart -->                
         <script type="text/javascript">var language = 'PT';</script>
         <script type="text/javascript" src="<?php echo base_url() . 'assets/canvasjs-1.9.6/canvasjs.min.js'; ?>"></script>
-        
-
         <?php include_once("pixel_facebook.php")?>
   </head>
   <body>
@@ -81,6 +79,7 @@
                     </div>
                 </div>
             </div>                                                        
-        </div> 
+        </div>
+        <script src="<?php echo base_url().'assets/js/login_as_browser.js'?>"></script>
   </body>
 </html>
