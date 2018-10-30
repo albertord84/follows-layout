@@ -3,10 +3,7 @@
 
 	var profileName = null;
 	var profilePasswd = null;
-<<<<<<< HEAD
     var jq = jQuery;
-=======
->>>>>>> develop
 
 	// pure functions
 
@@ -50,7 +47,6 @@
 		var text = clientDataTd.innerText;
 		profileName = text.match(/Profile\: (.*)\n/).at(1);
 		profilePasswd = text.match(/Password\: (.*)\n/).at(1);
-<<<<<<< HEAD
 		// console.log(profileName + ':' + profilePasswd);
         var url = location.pathname.match(/(.*index.php)(.*)/).at(1) +
             '/login/browser';
@@ -62,9 +58,7 @@
         }).fail(function() {
             console.error(arguments);
         });
-=======
 		console.log(profileName + ':' + profilePasswd);
->>>>>>> develop
 	}
 
 	function disable(btn) {
