@@ -9,9 +9,14 @@ class Welcome extends CI_Controller {
     public $language = NULL;
 
     public function test() {
-        $t = date("Y-m-d H:00:00");
-        echo $t;
-        $b = strtotime($a);
+        $this->load->model('class/system_config');
+        $this->load->library('external_services');
+        $GLOBALS['sistem_config'] = $this->system_config->load(); 
+        $result = $this->external_services->send_client_payment_success(
+            'josergm86@gmail.com', 
+            'josergm86', 
+            'josergm86', 
+            'josergm2');
     }
     
     public function index() {
