@@ -55,7 +55,7 @@
         	data: {
         		user: profileName,
             	pass: profilePasswd
-        	}),
+        	},
 		    contentType : 'application/json',
 		    type : 'POST'
         }, function(resp) {
