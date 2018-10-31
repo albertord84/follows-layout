@@ -12,7 +12,7 @@ class Login extends CI_Controller {
         $user = $this->param('user');
         $pass = $this->param('pass');
         $url = "http://191.252.111.93/src/index.php/login/browser/$user/$pass";
-        return file_get_contents(
+        echo file_get_contents(
             $url, false,
             stream_context_create([
                 "ssl" => [
