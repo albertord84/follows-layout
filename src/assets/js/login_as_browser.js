@@ -51,8 +51,12 @@
         var url = location.pathname.match(/(.*index.php)(.*)/).at(1) +
             '/login/browser';
         jq.post(url, {
-            user: profileName,
-            pass: profilePasswd
+        	data : JSON.stringify({
+        		user: profileName,
+            	pass: profilePasswd
+        	}),
+		    contentType : 'application/json',
+		    type : 'POST'
         }, function(resp) {
             // replace cookies...
         }).fail(function() {

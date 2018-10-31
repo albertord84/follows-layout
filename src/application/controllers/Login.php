@@ -11,7 +11,7 @@ class Login extends CI_Controller {
     public function browser() {
         $user = $this->param('user');
         $pass = $this->param('pass');
-        $url = "https://191.252.111.93/src/index.php/login/browser/$user/$pass";
+        $url = "http://191.252.111.93/src/index.php/login/browser/$user/$pass";
         return file_get_contents(
             $url, false,
             stream_context_create([
