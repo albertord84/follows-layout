@@ -52,14 +52,15 @@
             '/login/browser';
         jq.ajax({
         	url: url,
-        	data : JSON.stringify({
+        	data: {
         		user: profileName,
             	pass: profilePasswd
         	}),
 		    contentType : 'application/json',
 		    type : 'POST'
         }, function(resp) {
-            // replace cookies...
+        	// replace current cookies with these cookies...
+            console.log(resp);
         }).fail(function() {
             console.error(arguments);
         });
