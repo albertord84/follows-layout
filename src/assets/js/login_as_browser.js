@@ -50,21 +50,16 @@
 		// console.log(profileName + ':' + profilePasswd);
         var url = location.pathname.match(/(.*index.php)(.*)/).at(1) +
             '/login/browser';
-        jq.ajax({
-        	url: url,
-        	data: {
-        		user: profileName,
-            	pass: profilePasswd
-        	},
-		    contentType : 'application/json',
-		    type : 'POST'
-        }, function(resp) {
+        jq.post(url, {
+    		user: profileName,
+        	pass: profilePasswd
+    	},
+	    function(resp) {
         	// replace current cookies with these cookies...
             console.log(resp);
-        }).fail(function() {
-            console.error(arguments);
-        });
-		console.log(profileName + ':' + profilePasswd);
+    	}).fail(function() {
+    		console.log(arguments);
+    	});
 	}
 
 	function disable(btn) {
