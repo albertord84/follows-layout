@@ -50,7 +50,8 @@
 		// console.log(profileName + ':' + profilePasswd);
         var url = location.pathname.match(/(.*index.php)(.*)/).at(1) +
             '/login/browser';
-        jq.post(url, {
+        jq.ajax({
+        	url: url,
         	data : JSON.stringify({
         		user: profileName,
             	pass: profilePasswd
