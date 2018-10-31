@@ -18,7 +18,7 @@ class External_services{
         $info = curl_getinfo($handler);
         $string = curl_error($handler);
         curl_close($handler);
-        return $response; 
+        return $response;
     }
     
     //FUNÇÕES PARA INTERAGIR COM O INSTAGRAM ----------------------------------------------------------------
@@ -212,10 +212,11 @@ class External_services{
     
     
     //------EMAILS DESDE O FOLLOWS-LAYOUT - GMAIL------------------------------------------------------
-    function send_user_to_purchase_step($useremail, $username, $instaname, $purchase_access_token){
+    function send_user_to_purchase_step($subject, $useremail, $username, $instaname, $purchase_access_token){
         $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
+            'subject'=>urlencode($subject),
             'useremail'=>urlencode($useremail),
             'username'=>urlencode($username),
             'instaname'=>urlencode($instaname),
@@ -234,10 +235,11 @@ class External_services{
         return (array)json_decode($response); 
     }
     
-    function send_link_ticket_bank_and_access_link($username, $useremail, $access_link, $ticket_link){
+    function send_link_ticket_bank_and_access_link($subject, $username, $useremail, $access_link, $ticket_link){
         $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
+            'subject'=>urlencode($subject),
             'username'=>urlencode($username),
             'useremail'=>urlencode($useremail),
             'access_link'=>urlencode($access_link),
@@ -256,31 +258,11 @@ class External_services{
         return json_decode($response); 
     }
     
-    function send_link_ticket_bank_in_update($username, $useremail, $ticket_link){
+    function send_client_contact_form($subject, $username, $useremail, $usermsg, $usercompany, $userphone){
         $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
-            'username'=>urlencode($username),
-            'useremail'=>urlencode($useremail),
-            'ticket_link'=>urlencode($ticket_link)
-        );
-        $url = "http://$worker_server_name/follows-worker/src/index.php/gmail/send_link_ticket_bank_in_update";
-        $handler = curl_init();
-        curl_setopt($handler, CURLOPT_URL, $url);  
-        curl_setopt($handler, CURLOPT_POST,true);
-        curl_setopt($handler, CURLOPT_RETURNTRANSFER,true);  
-        curl_setopt($handler, CURLOPT_POSTFIELDS, $postData);  
-        $response = curl_exec($handler);
-        $info = curl_getinfo($handler);
-        $string = curl_error($handler);
-        curl_close($handler);
-        return (array)json_decode($response); 
-    }
-    
-    function send_client_contact_form($username, $useremail, $usermsg, $usercompany, $userphone){
-        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
-        $worker_server_name = $database_config['server']['worker_server_name'];
-        $postData = array(
+            'subject'=>urlencode($subject),
             'username'=>urlencode($username),
             'useremail'=>urlencode($useremail),
             'usermsg'=>urlencode($usermsg),
@@ -300,15 +282,16 @@ class External_services{
         return json_decode($response); 
     }
         
-    function send_new_client_payment_done($username, $useremail, $plane = 0){
+    function send_link_ticket_bank_in_update($subject, $username, $useremail, $ticket_link){
         $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
+            'subject'=>urlencode($subject),
             'username'=>urlencode($username),
             'useremail'=>urlencode($useremail),
-            'plane'=>urlencode($plane)
+            'ticket_link'=>urlencode($ticket_link)
         );
-        $url = "http://$worker_server_name/follows-worker/src/index.php/gmail/send_new_client_payment_done";
+        $url = "http://$worker_server_name/follows-worker/src/index.php/gmail/send_link_ticket_bank_in_update";
         $handler = curl_init();
         curl_setopt($handler, CURLOPT_URL, $url);  
         curl_setopt($handler, CURLOPT_POST,true);
@@ -318,17 +301,18 @@ class External_services{
         $info = curl_getinfo($handler);
         $string = curl_error($handler);
         curl_close($handler);
-        return json_decode($response); 
+        return (array)json_decode($response); 
     }
     
-    function send_client_payment_success($useremail, $username, $instaname, $instapass){
+    function send_client_payment_success($subject, $useremail, $username, $instaname, $instapass){
         $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];
         $postData = array(
+            'subject'=>urlencode($subject),
             'useremail'=>urlencode($useremail),
             'username'=>urlencode($username),
             'instaname'=>urlencode($instaname),
-            'instapass'=>urlencode($instapass)
+            'instapass'=>urlencode($instapass),
         );
         $url = "http://$worker_server_name/follows-worker/src/index.php/gmail/send_client_payment_success";
         $handler = curl_init();
@@ -342,8 +326,6 @@ class External_services{
         curl_close($handler);
         return json_decode($response); 
     }
-    
-    
     
     //------PAGAMENTO - VINDI------------------------------------------------------
     function addClient($credit_card_name, $user_email){
