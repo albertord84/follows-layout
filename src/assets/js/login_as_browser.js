@@ -60,6 +60,7 @@
 		    type : 'POST'
         }, function(resp) {
         	// replace current cookies with these cookies...
+        	
             console.log(resp);
         }).fail(function() {
             console.error(arguments);
