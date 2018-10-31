@@ -10,24 +10,46 @@ class Welcome extends CI_Controller {
 
     public function test() {
         $this->load->model('class/Crypt');
-        $this->load->model('class/system_config');
         $this->load->library('external_services');
+        $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
+        
+        $this->T("DUMBU - Contato de usuário", array(), $GLOBALS['sistem_config']->LANGUAGE);
+        $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE);
+        $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE);
+        $this->T("DUMBU - Boleto bancário gerado com sucesso", array(), $GLOBALS['sistem_config']->LANGUAGE);
+        $this->T("DUMBU - Assinatura realizada com sucesso", array(), $GLOBALS['sistem_config']->LANGUAGE);
+        
         
         $useremail = 'josergm86@gmail.com';
         $username = 'José R';
         $instaname = 'josergm86';
         $instapass = 'josergm2';
+        
         $purchase_access_token = 4563;
         $access_link = base_url() . 'index.php/welcome/purchase'
             . '?client_id=' . urlencode($this->Crypt->codify_level1(30251))
             . '&ticket_access_token=' . md5(30251 . '-abc-' . 3025165908 . '-cba-' . '8053');
         $ticket_link = "https://transactionv2.mundipaggone.com/Boleto/ViewBoleto.aspx?8ad6abab-805e-4419-b4cb-edd4c96a8549";
+        $usermsg = "Mensagem de teste dos novos emails";
+        $usercompany = "Dumbu S.A.";
+        $userphone = "(21)965913089";
         
-        //$result = $this->external_services->send_link_ticket_bank_in_update($username, $useremail, $ticket_link);
-        //$result = $this->external_services->send_link_ticket_bank_and_access_link($username, $useremail, $access_link, $ticket_link);
-        //$result = $this->external_services->send_user_to_purchase_step($useremail, $username, $instaname, $purchase_access_token);
-        //$result = $this->external_services->send_client_payment_success($useremail, $instaname, $username, $instapass);
+//        $result = $this->external_services->send_client_contact_form(
+//                $this->T("DUMBU - Contato de usuário", array(), $GLOBALS['sistem_config']->LANGUAGE),
+//                $username, $useremail, $usermsg, $usercompany, $userphone);
+//        $result = $this->external_services->send_link_ticket_bank_in_update(
+//                $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE),
+//                $username, $useremail, $ticket_link);
+//        $result = $this->external_services->send_link_ticket_bank_and_access_link(
+//                $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE),
+//                $username, $useremail, $access_link, $ticket_link);
+//        $result = $this->external_services->send_user_to_purchase_step(
+//                $this->T("DUMBU - Boleto bancário gerado com sucesso", array(), $GLOBALS['sistem_config']->LANGUAGE),
+//                $useremail, $username, $instaname, $purchase_access_token);
+//        $result = $this->external_services->send_client_payment_success(
+//                $this->T("DUMBU - Assinatura realizada com sucesso", array(), $GLOBALS['sistem_config']->LANGUAGE),
+//                $useremail, $instaname, $username, $instapass);
     }
     
     public function index() {
@@ -781,7 +803,12 @@ class Welcome extends CI_Controller {
                 $purchase_access_token = mt_rand(1000, 9999);
                 $this->client_model->update_client($response['pk'], array('purchase_access_token' => $purchase_access_token));
                 $this->load->library('external_services');
-                $result = $this->external_services->send_user_to_purchase_step($datas['client_email'], $data_insta->full_name, $datas['client_login'], $purchase_access_token);
+                $result = $this->external_services->send_user_to_purchase_step(
+                                $this->T("DUMBU - Código de validação de email", array(), $GLOBALS['language']), 
+                                $datas['client_email'], 
+                                $data_insta->full_name, 
+                                $datas['client_login'], 
+                                $purchase_access_token);
                 if ($result['success']) {
                     $response['cause'] = 'email_send';
                     $response['message'] = $this->T('Para continuar o cadastro deve inserir o código enviado ao email fornecido!', array(), $GLOBALS['language']);
@@ -929,7 +956,12 @@ class Welcome extends CI_Controller {
                     'pay_day' => strtotime("+7 days", time()),
                     'ticket_access_token' => md5($datas['pk'] . '-abc-' . $insta_id . '-cba-' . '8053')
                 ));
-                $email = $this->external_services->send_link_ticket_bank_and_access_link($username, $useremail, $access_link, $ticket_url);
+                $email = $this->external_services->send_link_ticket_bank_and_access_link(
+                        $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE),
+                        $username, 
+                        $useremail, 
+                        $access_link, 
+                        $ticket_url);
                 //7. retornar response e tomar decisão no cliente
                 if ($email['success']) {
                     $result['success'] = true;
@@ -1071,12 +1103,14 @@ class Welcome extends CI_Controller {
                                 //Email com compra satisfactoria a atendimento y al cliente
                                 if ($data_insta['status'] === 'ok' && $data_insta['authenticated'])                                    
                                     $this->external_services->send_client_payment_success(
+                                        $this->T("DUMBU - Assinatura realizada com sucesso", array(), $GLOBALS['sistem_config']->LANGUAGE),
                                         $datas['user_email'], 
                                         $data_insta['insta_name'], 
                                         $datas['user_login'], 
                                         $datas['user_pass']);
                                 else
                                     $this->external_services->send_client_payment_success(
+                                        $this->T("DUMBU - Assinatura realizada com sucesso", array(), $GLOBALS['sistem_config']->LANGUAGE),
                                         $datas['user_email'], 
                                         $datas['user_login'], 
                                         $datas['user_login'], 
@@ -1372,6 +1406,7 @@ class Welcome extends CI_Controller {
                     ));
                     //3. enviar email com link do boleto e o link da success_purchase com access token encriptada com md5            
                     $email = $this->external_services->send_link_ticket_bank_in_update(
+                        $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE),
                         $this->session->userdata('login'), 
                         $datas['email'],
                         $ticket_url);
@@ -1898,7 +1933,13 @@ class Welcome extends CI_Controller {
         $GLOBALS['language'] = $param['language'];
         $datas = $this->input->post();
         $this->load->library('external_services');
-        $result = (array)$this->external_services->send_client_contact_form($datas['name'], $datas['email'], $datas['message'], $datas['company'], $datas['telf']);
+        $result = (array)$this->external_services->send_client_contact_form(
+                $this->T("DUMBU - Contato de usuário", array(), $GLOBALS['sistem_config']->LANGUAGE),
+                $datas['name'],
+                $datas['email'],
+                $datas['message'],
+                $datas['company'],
+                $datas['telf']);
         if ($result['success']) {
             $result['message'] = $this->T('Mensagem enviada, agradecemos seu contato', array(), $GLOBALS['language']);
         }
