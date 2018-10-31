@@ -8,7 +8,8 @@ class Login extends CI_Controller {
         $pass = $this->input->post('pass');
         $data = array("user" => $user, "pass" => $pass);
         $data_string = json_encode($data);
-        $ch = curl_init('http://191.252.111.93/follows-worker/worker/test/browserLogin.php');
+        //$ch = curl_init('http://191.252.111.93/follows-worker/worker/test/browserLogin.php');
+        $ch = curl_init('http://191.252.100.122/browserLogin.php');
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
