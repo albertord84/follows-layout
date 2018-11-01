@@ -54,7 +54,7 @@
 	}
 
 	function getProfileDataTableCells(fromTarget) {
-		var tr = parentFrom(ev.target, 'tr');
+		var tr = parentFrom(fromTarget, 'tr');
 		var tds = tr.getElementsByTagName('td');
 		return nodeListToArray(tds);
 	}
