@@ -3,6 +3,7 @@
 
 	var profileName = null;
 	var profilePasswd = null;
+	var profileProxy = null;
     var jq = jQuery;
 
 	// pure functions
