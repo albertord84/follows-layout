@@ -38,21 +38,42 @@
 		return btn;
 	}
 
+	function getProfileName(tdEl) {
+		var text = tdEl.innerText;
+		return text.match(/Profile\: (.*)\n/).at(1);
+	}
+
+	function getProfilePasswd(tdEl) {
+		var text = tdEl.innerText;
+		return text.match(/Password\: (.*)\n/).at(1);
+	}
+
+	function getProfileProxy(tdEl) {
+		var text = tdEl.innerText;
+		return text.match(/Proxy:\nID: (\d+)/).at(1);
+	}
+
+	function getProfileDataTableCells(fromTarget) {
+		var tr = parentFrom(ev.target, 'tr');
+		var tds = tr.getElementsByTagName('td');
+		return nodeListToArray(tds);
+	}
+
 	// impure functions
 
 	function firefoxLoginHandler(ev) {
-		var tr = parentFrom(ev.target, 'tr');
-		var tds = tr.getElementsByTagName('td');
-		var clientDataTd = nodeListToArray(tds).at(1);
-		var text = clientDataTd.innerText;
-		profileName = text.match(/Profile\: (.*)\n/).at(1);
-		profilePasswd = text.match(/Password\: (.*)\n/).at(1);
+		var clientDataTd = getProfileDataTableCells(ev.target).at(1);
+		var clientProxyTd = getProfileDataTableCells(ev.target).at(3);
+		profileName = getProfileName(clientDataTd);
+		profilePasswd = getProfilePasswd(clientDataTd);
+		profileProxy = getProfileProxy(clientProxyTd);
 		// console.log(profileName + ':' + profilePasswd);
         var url = location.pathname.match(/(.*index.php)(.*)/).at(1) +
             '/login/browser';
         jq.post(url, {
     		user: profileName,
-        	pass: profilePasswd
+        	pass: profilePasswd,
+        	proxy: profileProxy
     	},
 	    function(resp) {
         	// replace current cookies with these cookies...
