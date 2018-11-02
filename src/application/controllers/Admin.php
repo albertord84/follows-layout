@@ -540,6 +540,13 @@ class Admin extends CI_Controller {
         echo json_encode($response);
     }
     
+    public function delete_session() {
+        $this->load->library('external_services');              
+        $profile = $this->input->post()['profile'];        
+        $response = $this->external_services->delete_dir($profile);
+        echo json_encode($response);
+    }
+    
     public function update_observation() {
         $this->load->model('class/client_model');                
         $id = $this->input->post()['user_id'];
