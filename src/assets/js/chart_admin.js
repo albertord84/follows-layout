@@ -1,6 +1,5 @@
 
 $(document).ready(function () {
-    
     var ACTIVE=[];
     var BLOCKED_BY_PAYMENT=[];
     var BLOCKED_BY_INSTA=[];
@@ -15,9 +14,9 @@ $(document).ready(function () {
         BLOCKED_BY_TIME.push({'x':date, 'y':parseInt(DATAS[i]['BLOCKED_BY_TIME'])});
     }
         
-    chart = new CanvasJS.Chart("chartContainer", {
+    chart2 = new CanvasJS.Chart("chartContainer", {
         title: {
-         text: "Estatísticas Dumbu",
+         text: "Estatísticas Dumbu (N+1)",
          fontSize: 30
          },
         zoomEnabled: true, 
@@ -95,11 +94,10 @@ $(document).ready(function () {
                 } else {
                     e.dataSeries.visible = true;
                 }
-                chart.render();
+                chart2.render();
             }
         }
     });
-
-    chart.render();
-
+    
+    chart2.render();
 });

@@ -287,5 +287,75 @@
                 echo $exc->getTraceAsString();
             }
         }
+        
+        public function get_recent_statistics() {
+            try {
+                $this->db->select('status_id,count(*) as cnt');
+                $this->db->from('dumbudb.users');
+                $this->db->group_by('status_id');
+                $this->db->order_by('status_id','ASC');
+                $datas=$this->db->get()->result_array();
+                $resp=array(
+                    'id' =>0,
+                    'ACTIVE' => 0,
+                    'BLOCKED_BY_PAYMENT' => 0,
+                    'BLOCKED_BY_INSTA' => 0,
+                    'DELETED' => 0,
+                    'INACTIVE' => 0,
+                    'PENDING' => 0,
+                    'UNFOLLOW' => 0,
+                    'BEGINNER' => 0,
+                    'VERIFY_ACCOUNT' => 0,
+                    'BLOCKED_BY_TIME' => 0,
+                    'DONT_DISTURB' => 0
+                );
+                foreach ($datas as $value) {
+                    switch ($value['status_id']) {
+                        case "1":
+                            $resp['ACTIVE'] = $value['cnt'];
+                            break;
+                        case "2":
+                            $resp['BLOCKED_BY_PAYMENT'] =$value['cnt'];
+                            break;
+                        case "3":
+                            $resp['BLOCKED_BY_INSTA'] =$value['cnt'];
+                            break;
+                        case "4":
+                            $resp['DELETED'] =$value['cnt'];
+                            break;
+                        case "5":
+                            $resp['INACTIVE'] =$value['cnt'];
+                            break;
+                        case "6":
+                            $resp['PENDING'] =$value['cnt'];
+                            break;
+                        case "7":
+                            $resp['UNFOLLOW'] =$value['cnt'];
+                            break;
+                        case "8":
+                            $resp['BEGINNER'] =$value['cnt'];
+                            break;
+                        case "9":
+                            $resp['VERIFY_ACCOUNT'] =$value['cnt'];
+                            break;
+                        case "10":
+                            $resp['BLOCKED_BY_TIME'] =$value['cnt'];
+                            break;
+                        case "11":
+                            $resp['DONT_DISTURB'] =$value['cnt'];
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            $resp['date']=(string) time();
+            return $resp;
+            } catch (Exception $exc) {
+                echo $exc->getTraceAsString();
+            }
+        }
+        
+        
+        
     }
 ?>
