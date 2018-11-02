@@ -660,7 +660,10 @@ class Admin extends CI_Controller {
         $GLOBALS['sistem_config'] = $this->system_config->load();
         if ($this->session->userdata('id') && $this->session->userdata('role_id')==user_role::ADMIN) {
             $param = $this->input->post();
-            $datas['DATAS'] = $this->admin_model->get_dumbu_statistic($param);
+            $a = $this->admin_model->get_dumbu_statistic($param);
+            $b = $this->admin_model->get_recent_statistics();
+            $datas['DATAS']= $a;
+            $datas['DATAS'][count($a)]=$b;
             $data['section1'] = $this->load->view('responsive_views/admin/admin_header_painel', '', true);
             $data['section2'] = $this->load->view('responsive_views/admin/admin_body_painel_dumbu_statistics', $datas, true);
             $data['section3'] = $this->load->view('responsive_views/admin/users_end_painel', '', true);

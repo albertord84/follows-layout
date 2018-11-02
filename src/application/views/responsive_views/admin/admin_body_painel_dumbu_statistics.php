@@ -1,4 +1,5 @@
 <script type="text/javascript"> var DATAS= JSON.parse('<?php echo json_encode($DATAS)?>');</script>
+<script type="text/javascript" src="<?php echo base_url() . 'assets/canvasjs-1.9.6/canvasjs.min.js'; ?>"></script>
 <script type="text/javascript" src="<?php echo base_url() . 'assets/js/chart_admin.js?'.$SCRIPT_VERSION; ?>"></script>
     <br><br>    
     <div class="row">
