@@ -657,6 +657,7 @@
                                                 </div>
                                                 <div class="col-md-4 col-sm-4 col-xs-12 no-pd"></div>
                                                 <br>
+                                                <br>
                                                 <div id="container_sigin_code_message" class="text-center" style="margin-top:7%; visibility:hidden; font-family:sans-serif; font-size:0.9em">                                                        
                                                 </div>
                                                 <div class="text-center">
