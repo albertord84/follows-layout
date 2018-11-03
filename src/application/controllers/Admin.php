@@ -664,6 +664,7 @@ class Admin extends CI_Controller {
             $b = $this->admin_model->get_recent_statistics();
             $datas['DATAS']= $a;
             $datas['DATAS'][count($a)]=$b;
+            $datas['recent_activity'] = $this->admin_model->get_recent_activities();;
             $data['section1'] = $this->load->view('responsive_views/admin/admin_header_painel', '', true);
             $data['section2'] = $this->load->view('responsive_views/admin/admin_body_painel_dumbu_statistics', $datas, true);
             $data['section3'] = $this->load->view('responsive_views/admin/users_end_painel', '', true);

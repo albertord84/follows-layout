@@ -9,31 +9,28 @@ class Welcome extends CI_Controller {
     public $language = NULL;
 
     public function test() {
-        $this->load->model('class/Crypt');
-        $this->load->library('external_services');
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        
-        $this->T("DUMBU - Contato de usuário", array(), $GLOBALS['sistem_config']->LANGUAGE);
-        $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE);
-        $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE);
-        $this->T("DUMBU - Boleto bancário gerado com sucesso", array(), $GLOBALS['sistem_config']->LANGUAGE);
-        $this->T("DUMBU - Assinatura realizada com sucesso", array(), $GLOBALS['sistem_config']->LANGUAGE);
-        
-        
-        $useremail = 'josergm86@gmail.com';
-        $username = 'José R';
-        $instaname = 'josergm86';
-        $instapass = 'josergm2';
-        
-        $purchase_access_token = 4563;
-        $access_link = base_url() . 'index.php/welcome/purchase'
-            . '?client_id=' . urlencode($this->Crypt->codify_level1(30251))
-            . '&ticket_access_token=' . md5(30251 . '-abc-' . 3025165908 . '-cba-' . '8053');
-        $ticket_link = "https://transactionv2.mundipaggone.com/Boleto/ViewBoleto.aspx?8ad6abab-805e-4419-b4cb-edd4c96a8549";
-        $usermsg = "Mensagem de teste dos novos emails";
-        $usercompany = "Dumbu S.A.";
-        $userphone = "(21)965913089";
+        echo date("Y/m/d G:i:s",time()-30*24*60*60);
+//        $this->load->model('class/Crypt');
+//        $this->load->library('external_services');
+//        $this->load->model('class/system_config');
+//        $GLOBALS['sistem_config'] = $this->system_config->load();        
+//        $this->T("DUMBU - Contato de usuário", array(), $GLOBALS['sistem_config']->LANGUAGE);
+//        $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE);
+//        $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE);
+//        $this->T("DUMBU - Boleto bancário gerado com sucesso", array(), $GLOBALS['sistem_config']->LANGUAGE);
+//        $this->T("DUMBU - Assinatura realizada com sucesso", array(), $GLOBALS['sistem_config']->LANGUAGE);
+//        $useremail = 'josergm86@gmail.com';
+//        $username = 'José R';
+//        $instaname = 'josergm86';
+//        $instapass = 'josergm2';        
+//        $purchase_access_token = 4563;
+//        $access_link = base_url() . 'index.php/welcome/purchase'
+//            . '?client_id=' . urlencode($this->Crypt->codify_level1(30251))
+//            . '&ticket_access_token=' . md5(30251 . '-abc-' . 3025165908 . '-cba-' . '8053');
+//        $ticket_link = "https://transactionv2.mundipaggone.com/Boleto/ViewBoleto.aspx?8ad6abab-805e-4419-b4cb-edd4c96a8549";
+//        $usermsg = "Mensagem de teste dos novos emails";
+//        $usercompany = "Dumbu S.A.";
+//        $userphone = "(21)965913089";
         
 //        $result = $this->external_services->send_client_contact_form(
 //                $this->T("DUMBU - Contato de usuário", array(), $GLOBALS['sistem_config']->LANGUAGE),

@@ -5,6 +5,7 @@ $(document).ready(function () {
     var BLOCKED_BY_INSTA=[];
     var VERIFY_ACCOUNT=[];
     var BLOCKED_BY_TIME=[];
+    var PAYING_CUSTOMERS=[];
     for(i=0;i<DATAS.length;i++) {
         date = new Date(DATAS[i]['date']*1000);
         ACTIVE.push({'x':date, 'y':parseInt(DATAS[i]['ACTIVE'])});
@@ -12,11 +13,13 @@ $(document).ready(function () {
         BLOCKED_BY_INSTA.push({'x':date, 'y':parseInt(DATAS[i]['BLOCKED_BY_INSTA'])});
         VERIFY_ACCOUNT.push({'x':date, 'y':parseInt(DATAS[i]['VERIFY_ACCOUNT'])});
         BLOCKED_BY_TIME.push({'x':date, 'y':parseInt(DATAS[i]['BLOCKED_BY_TIME'])});
+        if(parseInt(DATAS[i]['PAYING_CUSTOMERS']))
+            PAYING_CUSTOMERS.push({'x':date, 'y':parseInt(DATAS[i]['PAYING_CUSTOMERS'])});
     }
         
-    chart2 = new CanvasJS.Chart("chartContainer", {
+    chart1 = new CanvasJS.Chart("chartContainer", {
         title: {
-         text: "Estatísticas Dumbu (N+1)",
+         text: "Quantidade diária por Status",
          fontSize: 30
          },
         zoomEnabled: true, 
@@ -85,6 +88,67 @@ $(document).ready(function () {
                 lineThickness: 2,
                 dataPoints: BLOCKED_BY_TIME                
             },
+            {
+                type: "line",
+                showInLegend: true,                
+                name: 'PAYING_CUSTOMERS',
+                color: "purple",
+                lineThickness: 6,
+                dataPoints: PAYING_CUSTOMERS                
+            },
+        ],
+        legend: {
+            cursor: "pointer",
+            itemclick: function (e) {
+                if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                    e.dataSeries.visible = false;
+                } else {
+                    e.dataSeries.visible = true;
+                }
+                chart1.render();
+            }
+        }
+    });    
+    chart1.render();
+    
+    chart2 = new CanvasJS.Chart("chartContainer2", {
+        title: {
+         text: "Crescimento (Clientes pagantes)",
+         fontSize: 30
+         },
+        zoomEnabled: true, 
+        animationEnabled: true,
+        animationDuration: 2500,
+        axisX: {
+            gridThickness: 0.5,
+            gridColor: "Silver",
+            tickThickness: 5,
+            tickColor: "silver",
+	    valueFormatString: "DD/MM/YY"
+         },
+        toolTip: {
+            shared: true
+        },
+        theme: "theme2",
+        axisY: {
+            gridThickness: 0.5,
+            tickThickness: 5,
+            gridColor: "Silver",
+            tickColor: "silver"
+        },
+        legend: {
+            verticalAlign: "center",
+            horizontalAlign: "right"
+        },
+        data: [            
+            {
+                type: "column",
+                showInLegend: true,                
+                name: 'PAYING_CUSTOMERS',
+                color: "purple",
+                lineThickness: 6,
+                dataPoints: PAYING_CUSTOMERS                
+            },
         ],
         legend: {
             cursor: "pointer",
@@ -97,7 +161,6 @@ $(document).ready(function () {
                 chart2.render();
             }
         }
-    });
-    
+    });    
     chart2.render();
 });

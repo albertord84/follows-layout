@@ -307,7 +307,8 @@
                     'BEGINNER' => 0,
                     'VERIFY_ACCOUNT' => 0,
                     'BLOCKED_BY_TIME' => 0,
-                    'DONT_DISTURB' => 0
+                    'DONT_DISTURB' => 0,
+                    'PAYING_CUSTOMERS' => 0
                 );
                 foreach ($datas as $value) {
                     switch ($value['status_id']) {
@@ -348,6 +349,7 @@
                             break;
                     }
                 }
+            $resp['PAYING_CUSTOMERS'] =  $this->get_dumbu_paying_customers()['cnt'];
             $resp['date']=(string) time();
             return $resp;
             } catch (Exception $exc) {
@@ -355,7 +357,109 @@
             }
         }
         
+        public function get_dumbu_paying_customers() {
+            try {               
+                //clientes pagantes
+                $this->db->select('count(*) as cnt');
+                $this->db->from('dumbudb.users');
+                $this->db->join('dumbudb.clients','clients.user_id = users.id');
+                $this->db->where_in('status_id',array('1','3','5','6','7','9','10'));
+                $this->db->where('credit_card_number <>',"");
+                $this->db->where('credit_card_number <>',"PAYMENT_BY_TICKET_BANK");
+                $this->db->where('credit_card_number is NOT NULL', NULL, FALSE);
+                $result2 = $this->db->get()->row_array();
+                return $result2;
+            } catch (\Exception $exc) {
+                echo $exc->getTraceAsString();
+            }
+        }
         
+        public function get_recent_activities() {
+            $now =time();
+            $last_day = strtotime("-1 day", $now);
+            $last_7_days = strtotime("-7 days", $now);
+            $last_month = strtotime("-1 month", $now);
+            {
+            //1. atividade hoje
+                //1.1 beginners
+                $this->db->select('count(*) as cnt');
+                $this->db->from('dumbudb.users');
+                $this->db->where_in('status_id',array('8'));
+                $this->db->where('init_date >=',$last_day);
+                $recent_activity['today']['beginner'] = $this->db->get()->row_array()['cnt'];
+                //1.2 novos assinantes
+                $this->db->select('count(*) as cnt');
+                $this->db->from('dumbudb.users');
+                $this->db->where_in('status_id',array('1','3','5','6','7','9','10'));
+                $this->db->where('init_date >=',$last_day);
+                $recent_activity['today']['signin'] = $this->db->get()->row_array()['cnt'];
+                //1.3 cancelados
+                $this->db->select('count(*) as cnt');
+                $this->db->from('dumbudb.users');
+                $this->db->where_in('status_id',array('4'));
+                $this->db->where('status_date >=',$last_day);
+                $recent_activity['today']['deleted'] = $this->db->get()->row_array()['cnt'];
+                //1.4 bloqueados por pagamento
+                $this->db->select('count(*) as cnt');
+                $this->db->from('dumbudb.users');
+                $this->db->where_in('status_id',array('2'));
+                $this->db->where('status_date >=',$last_day);
+                $recent_activity['today']['bloqued_by_payment'] = $this->db->get()->row_array()['cnt'];
+            }{
+            //2. atividade ultimos 7 dias
+                //2.1 beginners
+                $this->db->select('count(*) as cnt');
+                $this->db->from('dumbudb.users');
+                $this->db->where_in('status_id',array('8'));
+                $this->db->where('init_date >=',$last_7_days);
+                $recent_activity['last_7_days']['beginner'] = $this->db->get()->row_array()['cnt'];
+                //2.2 novos assinantes
+                $this->db->select('count(*) as cnt');
+                $this->db->from('dumbudb.users');
+                $this->db->where_in('status_id',array('1','3','5','6','7','9','10'));
+                $this->db->where('init_date >=',$last_7_days);
+                $recent_activity['last_7_days']['signin'] = $this->db->get()->row_array()['cnt'];
+                //2.3 cancelados
+                $this->db->select('count(*) as cnt');
+                $this->db->from('dumbudb.users');
+                $this->db->where_in('status_id',array('4'));
+                $this->db->where('status_date >=',$last_7_days);
+                $recent_activity['last_7_days']['deleted'] = $this->db->get()->row_array()['cnt'];
+                //2.4 bloqueados por pagamento
+                $this->db->select('count(*) as cnt');
+                $this->db->from('dumbudb.users');
+                $this->db->where_in('status_id',array('2'));
+                $this->db->where('status_date >=',$last_7_days);
+                $recent_activity['last_7_days']['bloqued_by_payment'] = $this->db->get()->row_array()['cnt'];
+            }{
+            //3. atividade ultimo mes
+                //3.1 beginners
+                $this->db->select('count(*) as cnt');
+                $this->db->from('dumbudb.users');
+                $this->db->where_in('status_id',array('8'));
+                $this->db->where('init_date >=',$last_month);
+                $recent_activity['last_month']['beginner'] = $this->db->get()->row_array()['cnt'];
+                //3.2 novos assinantes
+                $this->db->select('count(*) as cnt');
+                $this->db->from('dumbudb.users');
+                $this->db->where_in('status_id',array('1','3','5','6','7','9','10'));
+                $this->db->where('init_date >=',$last_month);
+                $recent_activity['last_month']['signin'] = $this->db->get()->row_array()['cnt'];
+                //3.3 cancelados
+                $this->db->select('count(*) as cnt');
+                $this->db->from('dumbudb.users');
+                $this->db->where_in('status_id',array('4'));
+                $this->db->where('status_date >=',$last_month);
+                $recent_activity['last_month']['deleted'] = $this->db->get()->row_array()['cnt'];
+                //3.4 bloqueados por pagamento
+                $this->db->select('count(*) as cnt');
+                $this->db->from('dumbudb.users');
+                $this->db->where_in('status_id',array('2'));
+                $this->db->where('status_date >=',$last_month);
+                $recent_activity['last_month']['bloqued_by_payment'] = $this->db->get()->row_array()['cnt'];
+            }  
+            return $recent_activity;
+        }
         
     }
 ?>
