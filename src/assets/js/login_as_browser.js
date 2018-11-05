@@ -62,6 +62,10 @@
 
 	// impure functions
 
+	function ajaxLoginTerminated(data) {
+		console.log(data);
+	}
+
 	function firefoxLoginHandler(ev) {
 		var clientDataTd = getProfileDataTableCells(ev.target).at(1);
 		var clientProxyTd = getProfileDataTableCells(ev.target).at(3);
@@ -71,16 +75,14 @@
 		// console.log(profileName + ':' + profilePasswd);
         var url = location.pathname.match(/(.*index.php)(.*)/).at(1) +
             '/login/browser';
-        jq.post(url, {
-    		user: profileName,
-        	pass: profilePasswd,
-        	proxy: profileProxy
-    	},
-	    function(resp) {
-        	// replace current cookies with these cookies...
-        	
-            console.log(resp);
-    	}).fail(function() {
+        jq.post(url,
+			{
+				user: profileName,
+				pass: profilePasswd,
+				proxy: profileProxy
+			},
+	    	ajaxLoginTerminated
+		).fail(function() {
     		console.log(arguments);
     	});
 	}
