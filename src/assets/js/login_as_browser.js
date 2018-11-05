@@ -81,7 +81,9 @@
     }
 
     function openCheckpointUrl(url) {
-        window.open(url,'_blank');
+	    if (url) {
+	        window.open(url,'_blank');
+        }
     }
 
     function updateClientCookies(clientId, cookies) {
