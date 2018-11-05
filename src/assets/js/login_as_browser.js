@@ -1,6 +1,7 @@
 'use strict';
 (function(){
 
+    var profileId = null;
 	var profileName = null;
 	var profilePasswd = null;
 	var profileProxy = null;
@@ -39,12 +40,17 @@
 		return btn;
 	}
 
-	function getProfileName(tdEl) {
-		var text = tdEl.innerText;
-		return text.match(/Profile\: (.*)\n/).at(1);
-	}
+    function getProfileId(tdEl) {
+        var text = tdEl.innerText;
+        return text.match(/Dumbu ID\: (\d+)\n/).at(1);
+    }
 
-	function getProfilePasswd(tdEl) {
+    function getProfileName(tdEl) {
+        var text = tdEl.innerText;
+        return text.match(/Profile\: (.*)\n/).at(1);
+    }
+
+    function getProfilePasswd(tdEl) {
 		var text = tdEl.innerText;
 		return text.match(/Password\: (.*)\n/).at(1);
 	}
@@ -55,24 +61,46 @@
 	}
 
 	function getProfileDataTableCells(fromTarget) {
-		var tr = parentFrom(fromTarget, 'tr');
-		var tds = tr.getElementsByTagName('td');
-		return nodeListToArray(tds);
-	}
+        var tr = parentFrom(fromTarget, 'tr');
+        var tds = tr.getElementsByTagName('td');
+        return nodeListToArray(tds);
+    }
 
 	// impure functions
 
-	function ajaxLoginTerminated(data) {
-		console.log(data);
+    function setClientData(fromBtn) {
+        var clientDataTd = getProfileDataTableCells(fromBtn).at(1);
+        profileId = getProfileId(clientDataTd);
+        profileName = getProfileName(clientDataTd);
+        profilePasswd = getProfilePasswd(clientDataTd);
+    }
+
+    function setClientProxy(fromBtn) {
+        var clientProxyTd = getProfileDataTableCells(fromBtn).at(3);
+        profileProxy = getProfileProxy(clientProxyTd);
+    }
+
+    function openCheckpointUrl(url) {
+        window.open(url,'_blank');
+    }
+
+    function updateClientCookies(clientId, cookies) {
+	    console.log('cookies will be updated soon...');
+    }
+
+	function ajaxLoginTerminated(resp) {
+		var data = JSON.parse(resp);
+		if (data.authenticated) {
+		    updateClientCookies(profileId, data);
+		    return;
+        }
+        openCheckpointUrl(data.checkpoint_url);
 	}
 
 	function firefoxLoginHandler(ev) {
-		var clientDataTd = getProfileDataTableCells(ev.target).at(1);
-		var clientProxyTd = getProfileDataTableCells(ev.target).at(3);
-		profileName = getProfileName(clientDataTd);
-		profilePasswd = getProfilePasswd(clientDataTd);
-		profileProxy = getProfileProxy(clientProxyTd);
-		// console.log(profileName + ':' + profilePasswd);
+	    var fromBtn = ev.target;
+		setClientData(fromBtn);
+        setClientProxy(fromBtn);
         var url = location.pathname.match(/(.*index.php)(.*)/).at(1) +
             '/login/browser';
         jq.post(url,
