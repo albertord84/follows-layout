@@ -102,9 +102,11 @@
 
     function openCheckpointUrl(url) {
         log('client login failed, going to checkpoint...');
-	    if (url) {
-	        window.open(url,'_blank');
-        }
+        setTimeout(function () {
+            if (url) {
+                window.open(url,'_blank');
+            }
+        }, 1000);
     }
 
     function updateClientCookies(clientId, cookies) {
