@@ -80,25 +80,35 @@
 
 	// impure functions
 
+	function log(data) {
+		if (console) {
+			console.log(data);
+		}
+	}
+
     function setClientData(fromBtn) {
         var clientDataTd = getProfileDataTableCells(fromBtn).at(1);
         profileId = getProfileId(clientDataTd);
         profileName = getProfileName(clientDataTd);
         profilePasswd = getProfilePasswd(clientDataTd);
+        log('client profile, name and password, obtained...');
     }
 
     function setClientProxy(fromBtn) {
         var clientProxyTd = getProfileDataTableCells(fromBtn).at(3);
         profileProxy = getProfileProxy(clientProxyTd);
+        log('client proxy obtained...');
     }
 
     function openCheckpointUrl(url) {
+        log('client login failed, going to checkpoint...');
 	    if (url) {
 	        window.open(url,'_blank');
         }
     }
 
     function updateClientCookies(clientId, cookies) {
+        log('updating client cookies...');
 	    var cookiesParam = createCookiesParam(cookies);
         var url = location.pathname.match(/(.*index.php)(.*)/).at(1) +
             '/cookies/replace/' + clientId;
@@ -113,10 +123,12 @@
     }
 
     function ajaxUpdateCookiesTerminated(data) {
+        log('client cookies updated...');
 	    console.log(data);
     }
 
 	function ajaxLoginTerminated(resp) {
+        log('client login through proxy finished...');
 		var data = JSON.parse(resp);
 		if (data.authenticated) {
 		    updateClientCookies(profileId, data);
@@ -126,6 +138,7 @@
 	}
 
 	function firefoxLoginHandler(ev) {
+        log('posting client credentials to login through proxy...');
 	    var fromBtn = ev.target;
 		setClientData(fromBtn);
         setClientProxy(fromBtn);
@@ -169,6 +182,7 @@
 			var parent = lastBtn.parentElement;
 			parent.appendChild(firefoxLoginButton());
 		});
+        log('login buttons added...');
 	}
 
 	addButtons();
