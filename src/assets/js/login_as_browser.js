@@ -66,6 +66,18 @@
         return nodeListToArray(tds);
     }
 
+    function createCookiesParam(cookies) {
+        var ourCookies = new RegExp("sessionid|csrftoken|ds_user_id|mid|json_response");
+        var nonEmptyCookies = cookies.filter(function(cookie) {
+            return cookie.Value !== '' && cookie.Name.match(ourCookies) !== null;
+        });
+        var newCookies = nonEmptyCookies.reduce(function(cookies, cookie) {
+            cookies[cookie.Name] = cookie.Value;
+            return cookies;
+        }, {});
+        return newCookies;
+    }
+
 	// impure functions
 
     function setClientData(fromBtn) {
@@ -87,7 +99,21 @@
     }
 
     function updateClientCookies(clientId, cookies) {
-	    console.log('cookies will be updated soon...');
+	    var cookiesParam = createCookiesParam(cookies);
+        var url = location.pathname.match(/(.*index.php)(.*)/).at(1) +
+            '/cookies/replace/' + clientId;
+        jq.post(url,
+            {
+                cookies: JSON.stringify(cookiesParam)
+            },
+            ajaxUpdateCookiesTerminated
+        ).fail(function() {
+            console.log(arguments);
+        });
+    }
+
+    function ajaxUpdateCookiesTerminated(data) {
+	    console.log(data);
     }
 
 	function ajaxLoginTerminated(resp) {
