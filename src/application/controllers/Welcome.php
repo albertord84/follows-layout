@@ -1159,8 +1159,6 @@ class Welcome extends CI_Controller {
         $this->load->library('external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        //require_once $_SERVER['DOCUMENT_ROOT'] . '/follows/worker/class/PaymentVindi.php';
-        //$this->Vindi = new \follows\cls\Payment\Vindi();
         $language = $this->input->get();
         $datas = $this->input->post();
         if ($this->session->userdata('id')) {
