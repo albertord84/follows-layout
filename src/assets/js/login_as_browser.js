@@ -26,14 +26,14 @@
 		return parentFrom(el.parentElement, parentTagName);
 	}
 
-	function firefoxLoginButton() {
+	function browserLoginButton() {
 		var btn = document.createElement('button');
 		var spanBadge = document.createElement('span');
-		btn.innerHTML = 'Firefox Login&nbsp;';
+		btn.innerHTML = 'Browser Login&nbsp;';
 		btn.className = 'btn btn-secondary';
 		btn.style.width = '160px';
 		btn.type = 'button';
-		btn.onclick = firefoxLoginHandler;
+		btn.onclick = browserLoginHandler;
 		spanBadge.className = 'badge badge-primary';
 		spanBadge.innerHTML = 'new';
 		btn.appendChild(spanBadge);
@@ -139,7 +139,7 @@
         openCheckpointUrl(data.checkpoint_url);
 	}
 
-	function firefoxLoginHandler(ev) {
+	function browserLoginHandler(ev) {
         log('posting client credentials to login through proxy...');
 	    var fromBtn = ev.target;
 		setClientData(fromBtn);
@@ -182,7 +182,7 @@
 		
 		lastBtns.forEach(function(lastBtn) {
 			var parent = lastBtn.parentElement;
-			parent.appendChild(firefoxLoginButton());
+			parent.appendChild(browserLoginButton());
 		});
         log('login buttons added...');
 	}
