@@ -2040,6 +2040,144 @@ class Welcome extends CI_Controller {
             $GLOBALS['sistem_config'] = $this->system_config->load();
             $this->load->library('external_services');
             $this->load->model('class/client_model');
+            
+            $array_profiles = array();
+            $array_geolocalization = array();
+            $array_hashtag = array();
+            $cnt_ref_prof = 0;
+            $cnt_geolocalization = 0;
+            $cnt_hashtag = 0;
+            //1. load datas from each reference profile
+            $client_active_profiles = $this->client_model->get_client_active_profiles($this->session->userdata('id'));
+            foreach ($client_active_profiles as $profile) {
+                $cnt_ref_prof = $cnt_ref_prof + 1;
+                $data = array(
+                  'login_profile' => $profile['insta_name'],
+                  'follows_from_profile' => $profile['follows'],
+                );
+                switch ((int)$profile['status_id']) {
+                    case 1:
+                        $data['status_profile'] = 'active';
+                        $data['img_profile'] = '';
+                        break;
+                    case 2:
+                        $data['status_profile'] = 'privated';
+                        $data['img_profile'] = '';
+                        break;
+
+                    default:
+                        break;
+                }
+                array_push($array_profiles, $data);
+            }
+            
+            if ($N > 0) {
+                for ($i = 0; $i < $N; $i++) {
+                    $name_profile = $client_active_profiles[$i]['insta_name'];
+                    $id_profile = $client_active_profiles[$i]['id'];
+                    if ($client_active_profiles[$i]['type'] === '0') { //es un perfil de referencia
+                        $datas_of_profile = $this->external_services->get_insta_ref_prof_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
+                        if ($datas_of_profile != NULL) {
+                            $array_profiles[$cnt_ref_prof]['login_profile'] = $name_profile;
+                            $array_profiles[$cnt_ref_prof]['follows_from_profile'] = $datas_of_profile->follows;
+                            
+                            if (!$datas_of_profile) { //perfil existia pero fue eliminado de IG
+                                $array_profiles[$cnt_ref_prof]['status_profile'] = 'deleted';
+                                $array_profiles[$cnt_ref_prof]['img_profile'] = base_url() . 'assets/images/profile_deleted.jpg';
+                            } else
+                            if ($client_active_profiles[$i]['end_date']) { //perfil
+                                $array_profiles[$cnt_ref_prof]['status_profile'] = 'ended';
+                                $array_profiles[$cnt_ref_prof]['img_profile'] = $datas_of_profile->profile_pic_url;
+                            } else
+                            if ($datas_of_profile->is_private) { //perfil paso a ser privado
+                                $array_profiles[$cnt_ref_prof]['status_profile'] = '';
+                                $array_profiles[$cnt_ref_prof]['img_profile'] = base_url() . 'assets/images/profile_privated.jpg';
+                            } 
+                            
+                            
+                        } else {
+                            $array_profiles[$cnt_ref_prof]['status_profile'] = 'blocked';
+                            $array_profiles[$cnt_ref_prof]['img_profile'] = base_url() . 'assets/images/profile_privated.jpg';
+                            $array_profiles[$cnt_ref_prof]['login_profile'] = $name_profile;
+                            $array_profiles[$cnt_ref_prof]['follows_from_profile'] = '-+-';
+                            $cnt_ref_prof = $cnt_ref_prof + 1;
+                        }
+                    } else 
+                    if ($client_active_profiles[$i]['type'] === '1') { //es una geolocalizacion      
+                        $datas_of_profile = $this->external_services->get_insta_geolocalization_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
+                        $array_geolocalization[$cnt_geolocalization]['login_geolocalization'] = $name_profile;
+                        $array_geolocalization[$cnt_geolocalization]['geolocalization_pk'] = $client_active_profiles[$i]['insta_id'];
+                        if ($datas_of_profile)
+                            $array_geolocalization[$cnt_geolocalization]['follows_from_geolocalization'] = $datas_of_profile->follows;
+                        $array_geolocalization[$cnt_geolocalization]['img_geolocalization'] = base_url() . 'assets/images/avatar_geolocalization_present.jpg';
+                        if (!$datas_of_profile) {
+                            $array_geolocalization[$cnt_geolocalization]['img_geolocalization'] = base_url() . 'assets/images/avatar_geolocalization_deleted.jpg';
+                            $array_geolocalization[$cnt_geolocalization]['status_geolocalization'] = 'deleted';
+                        } else
+                        if ($client_active_profiles[$i]['end_date']) { //perfil
+                            $array_geolocalization[$cnt_geolocalization]['status_geolocalization'] = 'ended';
+                        } else {
+                            $array_geolocalization[$cnt_geolocalization]['status_geolocalization'] = 'active';
+                        }
+                        $cnt_geolocalization = $cnt_geolocalization + 1;
+                    } else 
+                    if ($client_active_profiles[$i]['type'] === '2'){ //es un hashtag    
+                        $datas_of_profile = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
+
+                        $array_hashtag[$cnt_hashtag]['login_hashtag'] = $name_profile;
+                        $array_hashtag[$cnt_hashtag]['hashtag_pk'] = $client_active_profiles[$i]['insta_id'];
+                        if ($datas_of_profile)
+                            $array_hashtag[$cnt_hashtag]['follows_from_hashtag'] = $datas_of_profile->follows;
+                        $array_hashtag[$cnt_hashtag]['img_hashtag'] = base_url() . 'assets/images/avatar_hashtag_present.png';
+                        if (!$datas_of_profile) {
+                            $array_hashtag[$cnt_hashtag]['img_hashtag'] = base_url() . 'assets/images/avatar_hashtag_deleted.png';
+                            $array_hashtag[$cnt_hashtag]['status_hashtag'] = 'deleted';
+                        } else
+                        if ($client_active_profiles[$i]['end_date']) { //perfil
+                            $array_hashtag[$cnt_hashtag]['status_hashtag'] = 'ended';
+                        } else {
+                            $array_hashtag[$cnt_hashtag]['status_hashtag'] = 'active';
+                        }
+                        $cnt_hashtag = $cnt_hashtag + 1;
+                    }
+                }
+                if ($cnt_ref_prof)
+                    $response['array_profiles'] = $array_profiles;
+                else
+                    $response['array_profiles'] = array();
+                $response['N'] = $cnt_ref_prof;
+                if ($cnt_geolocalization)
+                    $response['array_geolocalization'] = $array_geolocalization;
+                else
+                    $response['array_geolocalization'] = array();
+                $response['N_geolocalization'] = $cnt_geolocalization;
+                if ($cnt_hashtag)
+                    $response['array_hashtag'] = $array_hashtag;
+                else
+                    $response['array_hashtag'] = array();
+                $response['N_hashtag'] = $cnt_hashtag;
+                $response['message'] = 'Profiles loaded';
+            } else {
+                $response['N'] = 0;
+                $response['N_geolocalization'] = 0;
+                $response['N_hashtag'] = 0;
+                $response['array_profiles'] = NULL;
+                $response['array_geolocalization'] = NULL;
+                $response['array_hashtag'] = NULL;
+                $response['message'] = 'Profiles unloaded';
+            }
+            return json_encode($response);
+        } else {
+            $this->display_access_error();
+        }
+    }
+    public function create_profiles_datas_to_display_old() {
+        $this->is_ip_hacker();
+        if ($this->session->userdata('id')) {
+            $this->load->model('class/system_config');
+            $GLOBALS['sistem_config'] = $this->system_config->load();
+            $this->load->library('external_services');
+            $this->load->model('class/client_model');
             $array_profiles = array();
             $array_geolocalization = array();
             $array_hashtag = array();
@@ -2080,7 +2218,8 @@ class Welcome extends CI_Controller {
                             $array_profiles[$cnt_ref_prof]['follows_from_profile'] = '-+-';
                             $cnt_ref_prof = $cnt_ref_prof + 1;
                         }
-                    } else if ($client_active_profiles[$i]['type'] === '1') { //es una geolocalizacion      
+                    } else 
+                    if ($client_active_profiles[$i]['type'] === '1') { //es una geolocalizacion      
                         $datas_of_profile = $this->external_services->get_insta_geolocalization_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
                         $array_geolocalization[$cnt_geolocalization]['login_geolocalization'] = $name_profile;
                         $array_geolocalization[$cnt_geolocalization]['geolocalization_pk'] = $client_active_profiles[$i]['insta_id'];
@@ -2097,7 +2236,8 @@ class Welcome extends CI_Controller {
                             $array_geolocalization[$cnt_geolocalization]['status_geolocalization'] = 'active';
                         }
                         $cnt_geolocalization = $cnt_geolocalization + 1;
-                    } else { //es un hashtag    
+                    } else 
+                    if ($client_active_profiles[$i]['type'] === '2'){ //es un hashtag    
                         $datas_of_profile = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
 
                         $array_hashtag[$cnt_hashtag]['login_hashtag'] = $name_profile;
