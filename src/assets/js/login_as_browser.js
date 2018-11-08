@@ -132,7 +132,7 @@
 	function ajaxLoginTerminated(resp) {
         log('client login through proxy finished...');
 		var data = JSON.parse(resp);
-		if (data.authenticated) {
+		if (data.sessionid) {
 		    updateClientCookies(profileId, data);
 		    return;
         }
