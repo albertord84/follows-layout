@@ -400,7 +400,7 @@ class Welcome extends CI_Controller {
 //                                    'cookies' => json_encode($data_insta['insta_login_response'])));
                     }
                     $this->user_model->set_sesion($user[$index]['id'], $this->session, $data_insta['insta_login_response']);
-                    if ($st != user_status::ACTIVE)
+                    if ($st != user_status::ACTIVE && $st != user_status::BLOCKED_BY_PAYMENT)
                         $this->user_model->insert_washdog($this->session->userdata('id'), 'FOR STATUS ' . $cad);
                     $result['resource'] = 'client';
                     $result['message'] = $this->T('Usuário @1 logueado', array(0 => $datas['user_login']), $GLOBALS['language']);
