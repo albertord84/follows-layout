@@ -192,7 +192,7 @@ class Welcome extends CI_Controller {
             $datas1['followings'] = $daily_report['followings'];
             $datas1['followers'] = $daily_report['followers'];
             $datas_get = $this->input->get();
-            if (($this->session->userdata('status_id') == user_status::VERIFY_ACCOUNT || $this->session->userdata('status_id') == user_status::BLOCKED_BY_INSTA)) {
+            if (($this->session->userdata('status_id') == user_status::VERIFY_ACCOUNT || $this->session->userdata('status_id') == user_status::BLOCKED_BY_INSTA || $this->session->userdata('status_id') == user_status::BLOCKED_BY_PAYMENT)) {
                 $insta_login = $this->is_insta_user($this->session->userdata('login'), $this->session->userdata('pass'), 'false');
                 if ($insta_login['status'] === 'ok') {
                     if ($insta_login['authenticated']) {
