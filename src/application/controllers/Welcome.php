@@ -1245,7 +1245,6 @@ class Welcome extends CI_Controller {
                     //5. recurrencia
                     $resp_recurrency = $this->external_services->create_recurrency_payment($this->session->userdata('id'), $recurrency_date, $datas['client_update_plane']);
                     if ($resp_recurrency->success) {
-                        $flag_pay_day = true;
                         //5.1 cancelar recurrencia antigua 
                         if (count($client_vindi_payment))
                             //$this->Vindi->cancel_recurrency_payment($client_vindi_payment['payment_key']);
@@ -1265,7 +1264,9 @@ class Welcome extends CI_Controller {
                             $result['message'] = $this->T('Dados bancários atualizados corretamente. Sua conta será ativada assim que seja registrado o pagamento.', array(), $GLOBALS['language']);
                         } else{
                             $result['message'] = $this->T('Dados bancários atualizados corretamente', array(), $GLOBALS['language']);
-                        }                            
+                        }
+                        //5.5 atualizando plano na sessão
+                        $this->session->set_userdata('plane_id', $datas['client_update_plane']);                        
                         //5.6 fin
                         $result['success'] = true;
                         $result['resource'] = 'client';
