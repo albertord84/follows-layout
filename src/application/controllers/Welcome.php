@@ -307,9 +307,6 @@ class Welcome extends CI_Controller {
         ($datas['force_login'] == 'true') ? $force_login = TRUE : $force_login = FALSE;
         $data_insta = $this->is_insta_user($datas['user_login'], $datas['user_pass'], $force_login);
         if ($data_insta == NULL) {
-            /* $result['message'] = $this->T('Não foi possível conferir suas credencias com o Instagram', array(), $GLOBALS['language']);
-              $result['cause'] = 'error_login';
-              $result['authenticated'] = false; */
             $result['message'] = $this->T('Credenciais erradas', array(), $GLOBALS['language']);
             $result['message_force_login'] = $this->T('Seguro que são suas credencias de IG', array(), $GLOBALS['language']);
             $result['cause'] = 'force_login_required';
@@ -330,8 +327,6 @@ class Welcome extends CI_Controller {
                         'pass' => $datas['user_pass'],
                         'status_id' => user_status::ACTIVE));
                     if ($data_insta['insta_login_response']) {
-                        //$this->client_model->update_client($user[$index]['id'], array(
-                        //    'cookies' => json_encode($data_insta['insta_login_response'])));
                         $this->user_model->set_sesion($user[$index]['id'], $this->session, $data_insta['insta_login_response']);
                     }
                     if ($st != user_status::ACTIVE)
@@ -346,7 +341,6 @@ class Welcome extends CI_Controller {
                         }
                     }
                     //crearle trabajo si ya tenia perfiles de referencia y si todavia no tenia trabajo insertado
-                    //$active_profiles = $this->client_model->get_client_workable_profiles($this->session->userdata('id'));                                
                     if ($data_insta['insta_login_response']) {
                         $N = count($active_profiles);
                         for ($i = 0; $i < $N; $i++) {
@@ -467,24 +461,13 @@ class Welcome extends CI_Controller {
                     $real_status = $this->get_real_status_of_user($query, $user, $index);
                     if ($real_status > 0) {
                         //perfil exite en instagram y en la base de datos, senha incorrecta           
-                        /* $result['message'] = $this->T('Senha incorreta!. Entre com sua senha de Instagram.', array(), $GLOBALS['language']);
-                          $result['cause'] = 'error_login';
-                          $result['authenticated'] = false; */
                         $result['message'] = $this->T('Credenciais erradas', array(), $GLOBALS['language']);
                         $result['message_force_login'] = $this->T('Seguro que são suas credencias de IG', array(), $GLOBALS['language']);
                         $result['cause'] = 'force_login_required';
                         $result['authenticated'] = false;
                     } else {
-                        //el perfil existe en instagram pero no en la base de datos
-                        /* $result['message'] = $this->T('Falha no login! Certifique-se de que possui uma assinatura antes de entrar.', array(), $GLOBALS['language']);
-                          $result['cause'] = 'error_login';
-                          $result['authenticated'] = false; */
                     }
                 } else {
-                    //nombre de usuario informado no existe en instagram
-                    /* $result['message'] = $this->T('Falha no login! O nome de usuário fornecido não existe no Instagram.', array(), $GLOBALS['language']);
-                      $result['cause'] = 'error_login';
-                      $result['authenticated'] = false; */
                     $result['message'] = $this->T('Credenciais erradas', array(), $GLOBALS['language']);
                     $result['message_force_login'] = $this->T('Seguro que são suas credencias de IG', array(), $GLOBALS['language']);
                     $result['cause'] = 'force_login_required';
@@ -524,10 +507,6 @@ class Welcome extends CI_Controller {
                 $this->client_model->Create_Followed($this->session->userdata('id'));
                 $result['authenticated'] = true;
             } else {
-                //usuario informado no es usuario de dumbu y lo bloquearon por mongolico
-                /* $result['message'] = $this->T('Falha no login! Certifique-se de que possui uma assinatura antes de entrar.', array(), $GLOBALS['language']);
-                  $result['cause'] = 'error_login';
-                  $result['authenticated'] = false; */
                 $result['message'] = $this->T('Credenciais erradas', array(), $GLOBALS['language']);
                 $result['message_force_login'] = $this->T('Seguro que são suas credencias de IG', array(), $GLOBALS['language']);
                 $result['cause'] = 'force_login_required';
@@ -561,10 +540,6 @@ class Welcome extends CI_Controller {
                     $result['obfuscated_phone_number'] = $data_insta['obfuscated_phone_number'];
                     $result['authenticated'] = false;
                 } else {
-                    //usuario informado no es usuario de dumbu y lo bloquearon por mongolico
-                    /* $result['message'] = $this->T('Falha no login! Certifique-se de que possui uma assinatura antes de entrar.', array(), $GLOBALS['language']);
-                      $result['cause'] = 'error_login';
-                      $result['authenticated'] = false; */
                     $result['message'] = $this->T('Credenciais erradas', array(), $GLOBALS['language']);
                     $result['message_force_login'] = $this->T('Seguro que são suas credencias de IG', array(), $GLOBALS['language']);
                     $result['cause'] = 'force_login_required';
@@ -597,10 +572,6 @@ class Welcome extends CI_Controller {
                     $result['cause'] = 'empty_message';
                     $result['authenticated'] = false;
                 } else {
-                    //usuario informado no es usuario de dumbu y lo bloquearon por mongolico
-                    /* $result['message'] = $this->T('Falha no login! Certifique-se de que possui uma assinatura antes de entrar.', array(), $GLOBALS['language']);
-                      $result['cause'] = 'error_login';
-                      $result['authenticated'] = false; */
                     $result['message'] = $this->T('Credenciais erradas', array(), $GLOBALS['language']);
                     $result['message_force_login'] = $this->T('Seguro que são suas credencias de IG', array(), $GLOBALS['language']);
                     $result['cause'] = 'force_login_required';
@@ -633,10 +604,6 @@ class Welcome extends CI_Controller {
                     $result['cause'] = 'unknow_message';
                     $result['authenticated'] = false;
                 } else {
-                    //usuario informado no es usuario de dumbu y lo bloquearon por mongolico
-                    /* $result['message'] = $this->T('Falha no login! Certifique-se de que possui uma assinatura antes de entrar.', array(), $GLOBALS['language']);
-                      $result['cause'] = 'error_login';
-                      $result['authenticated'] = false; */
                     $result['message'] = $this->T('Credenciais erradas', array(), $GLOBALS['language']);
                     $result['message_force_login'] = $this->T('Seguro que são suas credencias de IG', array(), $GLOBALS['language']);
                     $result['cause'] = 'force_login_required';
@@ -644,9 +611,6 @@ class Welcome extends CI_Controller {
                 }
             }
         } else {
-            /* $result['message'] = $this->T('Se o problema no login continua, por favor entre em contato com o Atendimento', array(), $GLOBALS['language']);
-              $result['cause'] = 'error_login';
-              $result['authenticated'] = false; */
             $result['message'] = $this->T('Credenciais erradas', array(), $GLOBALS['language']);
             $result['message_force_login'] = $this->T('Seguro que são suas credencias de IG', array(), $GLOBALS['language']);
             $result['cause'] = 'force_login_required';
@@ -1247,7 +1211,6 @@ class Welcome extends CI_Controller {
                     if ($resp_recurrency->success) {
                         //5.1 cancelar recurrencia antigua 
                         if (count($client_vindi_payment))
-                            //$this->Vindi->cancel_recurrency_payment($client_vindi_payment['payment_key']);
                             $this->external_services->cancel_recurrency_payment($client_vindi_payment['payment_key']);
                         //5.2 salvar nuevo order_key (payment_key)
                         $this->client_model->update_client_payment(
@@ -1260,7 +1223,7 @@ class Welcome extends CI_Controller {
                         $this->client_model->update_client($this->session->userdata('id'), array(
                             'plane_id' => $datas['client_update_plane']));
                         //5.4 crear mensagem segundo pay_day no BD e now
-                        if(!($BLOCKED_BY_PAYMENT || $PENDING)) {
+                        if(($BLOCKED_BY_PAYMENT || $PENDING)) {
                             $result['message'] = $this->T('Dados bancários atualizados corretamente. Sua conta será ativada assim que seja registrado o pagamento.', array(), $GLOBALS['language']);
                         } else{
                             $result['message'] = $this->T('Dados bancários atualizados corretamente', array(), $GLOBALS['language']);
@@ -2027,7 +1990,7 @@ class Welcome extends CI_Controller {
             $GLOBALS['sistem_config'] = $this->system_config->load();
             $this->load->library('external_services');
             $this->load->model('class/client_model');
-            
+            $this->load->model('class/reference_profile_status');
             $array_profiles = array();
             $array_geolocalization = array();
             $array_hashtag = array();
@@ -2037,127 +2000,106 @@ class Welcome extends CI_Controller {
             //1. load datas from each reference profile
             $client_active_profiles = $this->client_model->get_client_active_profiles($this->session->userdata('id'));
             foreach ($client_active_profiles as $profile) {
-                $cnt_ref_prof = $cnt_ref_prof + 1;
-                $data = array(
-                  'login_profile' => $profile['insta_name'],
-                  'follows_from_profile' => $profile['follows'],
-                );
-                switch ((int)$profile['status_id']) {
-                    case 1:
-                        $data['status_profile'] = 'active';
-                        $data['img_profile'] = '';
-                        break;
-                    case 2:
-                        $data['status_profile'] = 'privated';
-                        $data['img_profile'] = '';
-                        break;
-
-                    default:
-                        break;
-                }
-                array_push($array_profiles, $data);
-            }
-            
-            if ($N > 0) {
-                for ($i = 0; $i < $N; $i++) {
-                    $name_profile = $client_active_profiles[$i]['insta_name'];
-                    $id_profile = $client_active_profiles[$i]['id'];
-                    if ($client_active_profiles[$i]['type'] === '0') { //es un perfil de referencia
-                        $datas_of_profile = $this->external_services->get_insta_ref_prof_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
-                        if ($datas_of_profile != NULL) {
-                            $array_profiles[$cnt_ref_prof]['login_profile'] = $name_profile;
-                            $array_profiles[$cnt_ref_prof]['follows_from_profile'] = $datas_of_profile->follows;
-                            
-                            if (!$datas_of_profile) { //perfil existia pero fue eliminado de IG
-                                $array_profiles[$cnt_ref_prof]['status_profile'] = 'deleted';
-                                $array_profiles[$cnt_ref_prof]['img_profile'] = base_url() . 'assets/images/profile_deleted.jpg';
-                            } else
-                            if ($client_active_profiles[$i]['end_date']) { //perfil
-                                $array_profiles[$cnt_ref_prof]['status_profile'] = 'ended';
-                                $array_profiles[$cnt_ref_prof]['img_profile'] = $datas_of_profile->profile_pic_url;
-                            } else
-                            if ($datas_of_profile->is_private) { //perfil paso a ser privado
-                                $array_profiles[$cnt_ref_prof]['status_profile'] = '';
-                                $array_profiles[$cnt_ref_prof]['img_profile'] = base_url() . 'assets/images/profile_privated.jpg';
-                            } 
-                            
-                            
-                        } else {
-                            $array_profiles[$cnt_ref_prof]['status_profile'] = 'blocked';
-                            $array_profiles[$cnt_ref_prof]['img_profile'] = base_url() . 'assets/images/profile_privated.jpg';
-                            $array_profiles[$cnt_ref_prof]['login_profile'] = $name_profile;
-                            $array_profiles[$cnt_ref_prof]['follows_from_profile'] = '-+-';
-                            $cnt_ref_prof = $cnt_ref_prof + 1;
-                        }
-                    } else 
-                    if ($client_active_profiles[$i]['type'] === '1') { //es una geolocalizacion      
-                        $datas_of_profile = $this->external_services->get_insta_geolocalization_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
-                        $array_geolocalization[$cnt_geolocalization]['login_geolocalization'] = $name_profile;
-                        $array_geolocalization[$cnt_geolocalization]['geolocalization_pk'] = $client_active_profiles[$i]['insta_id'];
-                        if ($datas_of_profile)
-                            $array_geolocalization[$cnt_geolocalization]['follows_from_geolocalization'] = $datas_of_profile->follows;
-                        $array_geolocalization[$cnt_geolocalization]['img_geolocalization'] = base_url() . 'assets/images/avatar_geolocalization_present.jpg';
-                        if (!$datas_of_profile) {
-                            $array_geolocalization[$cnt_geolocalization]['img_geolocalization'] = base_url() . 'assets/images/avatar_geolocalization_deleted.jpg';
-                            $array_geolocalization[$cnt_geolocalization]['status_geolocalization'] = 'deleted';
-                        } else
-                        if ($client_active_profiles[$i]['end_date']) { //perfil
-                            $array_geolocalization[$cnt_geolocalization]['status_geolocalization'] = 'ended';
-                        } else {
-                            $array_geolocalization[$cnt_geolocalization]['status_geolocalization'] = 'active';
-                        }
-                        $cnt_geolocalization = $cnt_geolocalization + 1;
-                    } else 
-                    if ($client_active_profiles[$i]['type'] === '2'){ //es un hashtag    
-                        $datas_of_profile = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
-
-                        $array_hashtag[$cnt_hashtag]['login_hashtag'] = $name_profile;
-                        $array_hashtag[$cnt_hashtag]['hashtag_pk'] = $client_active_profiles[$i]['insta_id'];
-                        if ($datas_of_profile)
-                            $array_hashtag[$cnt_hashtag]['follows_from_hashtag'] = $datas_of_profile->follows;
-                        $array_hashtag[$cnt_hashtag]['img_hashtag'] = base_url() . 'assets/images/avatar_hashtag_present.png';
-                        if (!$datas_of_profile) {
-                            $array_hashtag[$cnt_hashtag]['img_hashtag'] = base_url() . 'assets/images/avatar_hashtag_deleted.png';
-                            $array_hashtag[$cnt_hashtag]['status_hashtag'] = 'deleted';
-                        } else
-                        if ($client_active_profiles[$i]['end_date']) { //perfil
-                            $array_hashtag[$cnt_hashtag]['status_hashtag'] = 'ended';
-                        } else {
-                            $array_hashtag[$cnt_hashtag]['status_hashtag'] = 'active';
-                        }
-                        $cnt_hashtag = $cnt_hashtag + 1;
+                //1.1 Perfil de Referencia
+                if($profile['type'] === '0') {
+                    $cnt_ref_prof = $cnt_ref_prof + 1;
+                    $data = array(
+                      'login_profile' => $profile['insta_name'],
+                      'login_pk' => $profile['insta_id'],
+                      'follows_from_profile' => $profile['follows'],
+                    );
+                    switch ((int)$profile['status_id']) {
+                        case reference_profile_status::ACTIVE:
+                            $data['status_profile'] = 'active';
+                            $data['img_profile'] = '';
+                        case reference_profile_status::LOCKED:
+                            $data['status_profile'] = 'blocked';
+                            $data['img_profile'] = base_url().'assets/images/profile_privated.jpg';;                            
+                            break;
+                            break;
+                        case reference_profile_status::ENDED:
+                            $data['status_profile'] = 'ended';
+                            $data['img_profile'] = '';
+                            break;
+                        case reference_profile_status::PRIVATED:
+                            $data['status_profile'] = 'privated';
+                            $data['img_profile'] = base_url().'assets/images/profile_privated.jpg';
+                            break;
+                        case reference_profile_status::MISSING:
+                            $data['status_profile'] = 'deleted';
+                            $data['img_profile'] = base_url().'assets/images/profile_deleted.jpg';
+                            break;
+                        default:
+                            break;
                     }
+                    array_push($array_profiles, $data);                        
+                } 
+                //1.2 é uma geolocalização
+                elseif($profile['type'] === '1') {
+                    $cnt_geolocalization = $cnt_geolocalization + 1;
+                    $data = array(
+                      'login_geolocalization' => $profile['insta_name'],
+                      'geolocalization_pk' => $profile['insta_id'],
+                      'follows_from_profile' => $profile['follows'],
+                    );
+                    switch ((int)$profile['status_id']) {
+                        case reference_profile_status::ACTIVE:
+                            $data['status_geolocalization'] = 'active';
+                            $data['img_geolocalization'] = base_url().'assets/images/avatar_geolocalization_present.jpg';
+                            break;
+                        case reference_profile_status::ENDED:
+                            $data['status_geolocalization'] = 'ended';
+                            $data['img_geolocalization'] =  base_url().'assets/images/avatar_geolocalization_deleted.jpg';
+                            break;
+                        case reference_profile_status::MISSING:
+                            $data['status_geolocalization'] = 'deleted';
+                            $data['img_geolocalization'] = base_url().'assets/images/avatar_geolocalization_deleted.jpg';
+                            break;
+                        default:
+                            break;
+                    }
+                    array_push($array_geolocalization, $data);
                 }
-                if ($cnt_ref_prof)
-                    $response['array_profiles'] = $array_profiles;
-                else
-                    $response['array_profiles'] = array();
-                $response['N'] = $cnt_ref_prof;
-                if ($cnt_geolocalization)
-                    $response['array_geolocalization'] = $array_geolocalization;
-                else
-                    $response['array_geolocalization'] = array();
-                $response['N_geolocalization'] = $cnt_geolocalization;
-                if ($cnt_hashtag)
-                    $response['array_hashtag'] = $array_hashtag;
-                else
-                    $response['array_hashtag'] = array();
-                $response['N_hashtag'] = $cnt_hashtag;
-                $response['message'] = 'Profiles loaded';
-            } else {
-                $response['N'] = 0;
-                $response['N_geolocalization'] = 0;
-                $response['N_hashtag'] = 0;
-                $response['array_profiles'] = NULL;
-                $response['array_geolocalization'] = NULL;
-                $response['array_hashtag'] = NULL;
-                $response['message'] = 'Profiles unloaded';
+                //1.3 é um hastag
+                elseif($profile['type'] === '2') { 
+                    $cnt_hashtag = $cnt_hashtag + 1;
+                    $data = array(
+                      'login_hashtag' => $profile['insta_name'],
+                      'hashtag_pk' => $profile['insta_id'],
+                      'follows_from_hashtag' => $profile['follows'],
+                    );
+                    switch ((int)$profile['status_id']) {
+                        case reference_profile_status::ACTIVE:
+                            $data['status_geolocalization'] = 'active';
+                            $data['img_geolocalization'] = base_url().'assets/images/avatar_hashtag_present.png';
+                            break;
+                        case reference_profile_status::ENDED:
+                            $data['status_geolocalization'] = 'ended';
+                            $data['img_geolocalization'] =  base_url().'assets/images/avatar_hashtag_deleted.png';
+                            break;
+                        case reference_profile_status::MISSING:
+                            $data['status_geolocalization'] = 'deleted';
+                            $data['img_geolocalization'] = base_url().'assets/images/avatar_hashtag_deleted.png';
+                            break;
+                        default:
+                            break;
+                    }
+                    array_push($array_hashtag, $data);
+                }
             }
+            $response['array_profiles'] = $array_profiles;
+            $response['N'] = $cnt_ref_prof;
+            $response['array_geolocalization'] = $array_geolocalization;
+            $response['N_geolocalization'] = $cnt_geolocalization;
+            $response['array_hashtag'] = $array_hashtag;
+            $response['N_hashtag'] = $cnt_hashtag;
+            $response['message'] = 'Profiles loaded';
             return json_encode($response);
         } else {
             $this->display_access_error();
         }
     }
+    
     public function create_profiles_datas_to_display_old() {
         $this->is_ip_hacker();
         if ($this->session->userdata('id')) {
@@ -2313,11 +2255,6 @@ class Welcome extends CI_Controller {
         $this->user_model->insert_washdog($this->session->userdata('id'), 'LOOKING AT FAQ');
         $result['info'] = $cuestions;
         $this->load->view('FAQ', $result);
-    }
-
-    public function create_profiles_datas_to_display_as_json() {
-        $this->is_ip_hacker();
-        echo($this->create_profiles_datas_to_display());
     }
 
     public function display_access_error() {
@@ -2792,6 +2729,11 @@ class Welcome extends CI_Controller {
     }
     
     //DEVELOPERS, ADD NEW FUNCTION OS SYSTEM HERE ...
+    
+    
+    
+    
+    
     
     
     
