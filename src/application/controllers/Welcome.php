@@ -1232,7 +1232,6 @@ class Welcome extends CI_Controller {
                             $recurrency_value = $this->client_model->get_normal_pay_value($this->session->userdata('plane_id'));
                         }
                     }
-                    die();
                     //4. hacer un pagamento ahora si necesitara 
                     if ($pay_now_value) {
                         $flag_pay_now = false;
