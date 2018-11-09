@@ -1259,8 +1259,7 @@ class Welcome extends CI_Controller {
                         );
                         //5.3 actualizar nuevo plano y pay_day
                         $this->client_model->update_client($this->session->userdata('id'), array(
-                            'plane_id' => $datas['client_update_plane'],
-                            'pay_day' => $recurrency_date));
+                            'plane_id' => $datas['client_update_plane']));
                         //5.4 crear mensagem segundo pay_day no BD e now
                         if(!($BLOCKED_BY_PAYMENT || $PENDING)) {
                             $result['message'] = $this->T('Dados bancários atualizados corretamente. Sua conta será ativada assim que seja registrado o pagamento.', array(), $GLOBALS['language']);
