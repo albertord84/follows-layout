@@ -75,9 +75,5 @@ $(document).ready(function () {
     });
 
     chart.render();
-    console.log(followings_data);
-    //alert(chart.data[0].dataPoints[0].y);
-    //}
-    //alert(char.data);
 
 });

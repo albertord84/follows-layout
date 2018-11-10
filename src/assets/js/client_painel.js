@@ -515,22 +515,13 @@ $(document).ready(function () {
     function display_reference_profiles() {
         var reference_profiles_status = false;
         for (i = 0; i < MAX_NUM_PROFILES; i++) {
-            icons_profiles[i]['ptr_img_obj'].attr("src", icons_profiles[i]['img_profile']);
+            set_image_of_profile(icons_profiles[i]['ptr_img_obj'],icons_profiles[i]['login_profile']);
             icons_profiles[i]['ptr_img_obj'].prop('title', T('Click para eliminar ') + icons_profiles[i]['login_profile']);
             icons_profiles[i]['ptr_p_obj'].prop('title', T('Ver ') + icons_profiles[i]['login_profile'] + T(' no Instagram'));
             icons_profiles[i]['ptr_label_obj'].text(icons_profiles[i]['follows_from_profile']);
             $avatar = (icons_profiles[i]['login_profile']).match("avatar.png");
-            /*if($avatar){
-             //icons_profiles[i]['ptr_p_obj']
-             icons_profiles[i]['ptr_p_obj'].text((icons_profiles[i]['login_profile']).replace(/(^.{9}).*$/,'$1...'));
-             }    
-             else
-             icons_profiles[i]['ptr_p_obj'].text((icons_profiles[i]['login_profile']));
-             */
             icons_profiles[i]['ptr_p_obj'].text((icons_profiles[i]['login_profile']).replace(/(^.{9}).*$/, '$1...'));
-
             icons_profiles[i]['ptr_lnk_ref_prof'].attr("href", 'https://www.instagram.com/' + icons_profiles[i]['login_profile'] + '/');
-
             if (icons_profiles[i]['status_profile'] === 'ended') {
                 icons_profiles[i]['ptr_p_obj'].css({'color': 'red'});
                 $('#reference_profile_status_list').append('<li>' + T('O sistema já seguiu todos os seguidores do perfil de referência ') + '<b style="color:red">"' + icons_profiles[i]['login_profile'] + '"</b></li>');
@@ -607,7 +598,6 @@ $(document).ready(function () {
         icons_profiles[j]['ptr_lnk_ref_prof'].attr("href", "");
         num_profiles = num_profiles - 1;
         display_reference_profiles();
-
         if (num_profiles) {
             $('#container_present_profiles').css({"visibility": "visible", "display": "block"})
             $('#container_missing_profiles').css({"visibility": "hidden", "display": "none"});
@@ -615,6 +605,20 @@ $(document).ready(function () {
             $('#container_missing_profiles').css({"visibility": "visible", "display": "block"})
             $('#container_present_profiles').css({"visibility": "hidden", "display": "none"});
         }
+    }
+
+    function set_image_of_profile(ptr_img_obj, login_profile){
+        if(login_profile=='' || login_profile.match("perfilderef")) 
+            ptr_img_obj.attr("src", base_url + 'assets/images/avatar.png');            
+        $.get( "https://www.instagram.com/web/search/topsearch/?context=blended&query="+login_profile, function(profiles){
+            profiles=profiles['users'];
+            profiles.forEach(function(profile) {
+                if(profile['user']['username']==login_profile)
+                    ptr_img_obj.attr("src", profile['user']['profile_pic_url']);
+            });
+        });
+        
+            
     }
 
     function validate_element(element_selector, pattern) {
@@ -1244,6 +1248,7 @@ $(document).ready(function () {
        $(location).attr("href",base_url+"index.php/welcome/client?language="+$("#txt_language2").text());
         
     });
+    
     $("#lnk_language3").click(function () {
         $(location).attr("href",base_url+"index.php/welcome/client?language="+$("#txt_language3").text()); 
     });
@@ -1757,19 +1762,21 @@ $(document).ready(function () {
     
     
     
+    
 }); 
 
+
 function select_hashtag_from_search(tag_name) {
-    $('#login_hashtag').val(tag_name);
-    $("#table_search_hashtag").empty();
-}
+        $('#login_hashtag').val(tag_name);
+        $("#table_search_hashtag").empty();
+    }
 
-function select_geolocalization_from_search(geo_name) {
-    $('#login_geolocalization').val(geo_name);
-    $("#table_search_geolocalization").empty();
-}
+    function select_geolocalization_from_search(geo_name) {
+        $('#login_geolocalization').val(geo_name);
+        $("#table_search_geolocalization").empty();
+    }
 
-function select_profile_from_search(prof_name) {
-    $('#login_profile').val(prof_name);
-    $("#table_search_profile").empty();
-}
+    function select_profile_from_search(prof_name) {
+        $('#login_profile').val(prof_name);
+        $("#table_search_profile").empty();
+    }

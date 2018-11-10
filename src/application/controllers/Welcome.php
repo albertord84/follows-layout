@@ -743,11 +743,11 @@ class Welcome extends CI_Controller {
                     switch ((int)$profile['status_id']) {
                         case reference_profile_status::ACTIVE:
                             $data['status_profile'] = 'active';
-                            $data['img_profile'] = '';
+                            $data['img_profile'] = base_url().'assets/images/profile_deleted.jpg';
+                            break;
                         case reference_profile_status::LOCKED:
                             $data['status_profile'] = 'blocked';
                             $data['img_profile'] = base_url().'assets/images/profile_privated.jpg';;                            
-                            break;
                             break;
                         case reference_profile_status::ENDED:
                             $data['status_profile'] = 'ended';

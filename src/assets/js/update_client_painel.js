@@ -230,6 +230,5 @@ $(document).ready(function(){
           state = 'resume';
           $("#button_play i").attr('class', "fa fa-pause");        
         }
-        console.log("button play pressed, play was "+state);
     });
  }); 
