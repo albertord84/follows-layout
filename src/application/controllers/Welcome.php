@@ -9,6 +9,7 @@ class Welcome extends CI_Controller {
 
 //===========TEST FUNCTIONS=================================================================================
     public function test() {        
+    
     }
     
 //===========CONTROLERS FUNCTIONS TO LOAD VIEWS=================================================================================
