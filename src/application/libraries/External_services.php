@@ -469,6 +469,52 @@ class External_services{
         return (array)json_decode($response); 
     }
     
+    function mundi_create_recurrency_payment($payment_data, $recurrence , $paymentMethodCode){
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
+        $worker_server_name = $database_config['server']['worker_server_name'];
+        $postData = array(
+            'payment_data'=>urlencode(json_encode($payment_data)),
+            'recurrence'=>urlencode($recurrence),
+            'paymentMethodCode'=>urlencode($paymentMethodCode),
+        );
+        $url = "http://$worker_server_name/follows-worker/src/index.php/payment/mundi_create_recurrency_payment";
+        $handler = curl_init();
+        curl_setopt($handler, CURLOPT_URL, $url);
+        curl_setopt($handler, CURLOPT_POST,true);
+        curl_setopt($handler, CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($handler, CURLOPT_POSTFIELDS, $postData);  
+        $response = curl_exec($handler);
+        $info = curl_getinfo($handler);
+        $string = curl_error($handler);
+        curl_close($handler);
+        return (array)json_decode($response); 
+    }
+    
+    function mundi_create_payment($payment_data){
+        $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
+        $worker_server_name = $database_config['server']['worker_server_name'];
+        $postData = array(
+            'payment_data'=>urlencode(json_encode($payment_data))
+        );
+        $url = "http://$worker_server_name/follows-worker/src/index.php/payment/mundi_create_payment";
+        $handler = curl_init();
+        curl_setopt($handler, CURLOPT_URL, $url);
+        curl_setopt($handler, CURLOPT_POST,true);
+        curl_setopt($handler, CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($handler, CURLOPT_POSTFIELDS, $postData);  
+        $response = curl_exec($handler);
+        $info = curl_getinfo($handler);
+        $string = curl_error($handler);
+        curl_close($handler);
+        return (array)json_decode($response); 
+    }
+    
+    
+    
+    
+    
+    
+    //------OUTRAS FUNÇÕES------------------------------------------------------
     function delete_dir($profile){
         $database_config = parse_ini_file(dirname(__FILE__) . "/../../../../FOLLOWS.INI", true);
         $worker_server_name = $database_config['server']['worker_server_name'];

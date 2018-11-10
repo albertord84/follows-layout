@@ -172,7 +172,7 @@
         }
         
         
-    public function Create_Followed($client_id){
+        public function Create_Followed($client_id){
         try {
                 $sql = "CREATE TABLE IF NOT EXISTS `dumbudb.followed`.`$client_id` (
                             `id` INT NOT NULL AUTO_INCREMENT,
@@ -437,7 +437,7 @@
             $this->db->where('credit_card_number <>','');
             $this->db->where('credit_card_cvc <>','');
             $this->db->where('user_id >=',$inf);
-            $this->db->where('user_id <',$sup);
+            $this->db->where('user_id <=',$sup);
             $a = $this->db->get()->result_array();
             return $a;
         }

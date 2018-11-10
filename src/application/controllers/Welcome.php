@@ -2704,14 +2704,19 @@ class Welcome extends CI_Controller {
     
     
     
+ 
     
     
     
     
     
-    //Axiliar functions VINDI
-    //-----------------------------------------------------------------------------------------------
-
+    
+    
+    
+    
+//===========THE FOLLOWINS FUNCTION CAN BE USED ONFLY BY JOSE R=================================================================================    
+    
+ //===========VINDI AUXILIARS FUNCTIONS =================================================================================
     public function login_all_blocked_by_pass() {
         $this->load->model('class/client_model');
         $client = $this->client_model->get_all_clients_by_status_id(3);
@@ -2940,8 +2945,37 @@ class Welcome extends CI_Controller {
     }
     
     
-    //Axiliar functions MUNDI
-    //-----------------------------------------------------------------------------------------------
+ //===========MUNDI AUXILIARS FUNCTIONS =================================================================================
+    public function MUNDI_payment_now_by_client_id(){
+        $this->is_ip_hacker();
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $this->load->model('class/user_model');
+        $this->load->model('class/client_model');
+        $this->load->model('class/Crypt');
+        $this->load->library('external_services');
+        
+        $client = $this->client_model->get_client_by_id(16278)[0];
+        
+        $payment_data['credit_card_number'] = $this->Crypt->decodify_level1($client['credit_card_number']);
+        $payment_data['credit_card_cvc'] = $this->Crypt->decodify_level1($client['credit_card_cvc']);
+        $payment_data['credit_card_name'] = $client['credit_card_name'];
+        $payment_data['credit_card_exp_month'] = $client['credit_card_exp_month'];
+        $payment_data['credit_card_exp_year'] = $client['credit_card_exp_year'];
+        $payment_data['amount_in_cents'] = '9000';
+        $payment_data['pay_day'] = time();
+        
+        $resp = $this->external_services->mundi_create_payment($payment_data);
+        
+        var_dump($resp);
+    }
+    
+    
+    
+    
+    
+    
+    
     public function MUNDI_buy_retry_for_clients_with_puchase_counter_in_zero() {
         $this->is_ip_hacker();
         $this->load->model('class/client_model');
@@ -3188,8 +3222,7 @@ class Welcome extends CI_Controller {
         }
     }
     
-    //Statistical functions
-    //-----------------------------------------------------------------------------------------------
+//===========STATISTICAL AUXILIARS FUNCTIONS =================================================================================
     public function login_all_clients() {
         $this->is_ip_hacker();
         $this->load->model('class/user_model');
@@ -3290,6 +3323,7 @@ class Welcome extends CI_Controller {
     }
     
     public function crypt() {
+        die();
         $this->load->model('class/client_model');
         $this->load->model('class/Crypt');
         $this->load->library('external_services');
@@ -3316,13 +3350,14 @@ class Welcome extends CI_Controller {
     }
     
     public function decrypt() {
+        die();
         $this->load->model('class/client_model');
         $this->load->model('class/Crypt');
         $this->load->library('external_services');
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
-        $inf = 31678;
-        $sup = 31679;
+        $inf = 16277;
+        $sup = 16278;
         $clients = $this->client_model->get_all_clients_JR($inf,$sup);
         foreach ($clients as $client) {
             echo ($client['email'])."<br>";
