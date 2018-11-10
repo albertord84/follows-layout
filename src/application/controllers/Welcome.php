@@ -5,51 +5,14 @@ ini_set('xdebug.var_display_max_children', 256);
 ini_set('xdebug.var_display_max_data', 1024);
 
 class Welcome extends CI_Controller {
-
     public $language = NULL;
 
-    public function test() {
-        echo date("Y/m/d G:i:s",time()-30*24*60*60);
-//        $this->load->model('class/Crypt');
-//        $this->load->library('external_services');
-//        $this->load->model('class/system_config');
-//        $GLOBALS['sistem_config'] = $this->system_config->load();        
-//        $this->T("DUMBU - Contato de usuário", array(), $GLOBALS['sistem_config']->LANGUAGE);
-//        $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE);
-//        $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE);
-//        $this->T("DUMBU - Boleto bancário gerado com sucesso", array(), $GLOBALS['sistem_config']->LANGUAGE);
-//        $this->T("DUMBU - Assinatura realizada com sucesso", array(), $GLOBALS['sistem_config']->LANGUAGE);
-//        $useremail = 'josergm86@gmail.com';
-//        $username = 'José R';
-//        $instaname = 'josergm86';
-//        $instapass = 'josergm2';        
-//        $purchase_access_token = 4563;
-//        $access_link = base_url() . 'index.php/welcome/purchase'
-//            . '?client_id=' . urlencode($this->Crypt->codify_level1(30251))
-//            . '&ticket_access_token=' . md5(30251 . '-abc-' . 3025165908 . '-cba-' . '8053');
-//        $ticket_link = "https://transactionv2.mundipaggone.com/Boleto/ViewBoleto.aspx?8ad6abab-805e-4419-b4cb-edd4c96a8549";
-//        $usermsg = "Mensagem de teste dos novos emails";
-//        $usercompany = "Dumbu S.A.";
-//        $userphone = "(21)965913089";
-        
-//        $result = $this->external_services->send_client_contact_form(
-//                $this->T("DUMBU - Contato de usuário", array(), $GLOBALS['sistem_config']->LANGUAGE),
-//                $username, $useremail, $usermsg, $usercompany, $userphone);
-//        $result = $this->external_services->send_link_ticket_bank_in_update(
-//                $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE),
-//                $username, $useremail, $ticket_link);
-//        $result = $this->external_services->send_link_ticket_bank_and_access_link(
-//                $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE),
-//                $username, $useremail, $access_link, $ticket_link);
-//        $result = $this->external_services->send_user_to_purchase_step(
-//                $this->T("DUMBU - Boleto bancário gerado com sucesso", array(), $GLOBALS['sistem_config']->LANGUAGE),
-//                $useremail, $username, $instaname, $purchase_access_token);
-//        $result = $this->external_services->send_client_payment_success(
-//                $this->T("DUMBU - Assinatura realizada com sucesso", array(), $GLOBALS['sistem_config']->LANGUAGE),
-//                $useremail, $instaname, $username, $instapass);
+//===========TEST FUNCTIONS=================================================================================
+    public function test() {        
     }
     
-    public function index() {
+//===========CONTROLERS FUNCTIONS TO LOAD VIEWS=================================================================================
+    public function index() { //to display homepage view
         $this->is_ip_hacker();
         $language = $this->input->get();
         $this->load->model('class/system_config');
@@ -63,16 +26,8 @@ class Welcome extends CI_Controller {
         $GLOBALS['language'] = $param['language'];
         $this->load->view('user_view', $param);
     }
-
-    public function language() {
-        $this->is_ip_hacker();
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-        $this->load->view('user_view', $param);
-    }
-
-    public function purchase() {
+    
+    public function purchase() { //to display success signature view 
         $this->is_ip_hacker();
         $datas = $this->input->get();
         $this->load->model('class/user_model');
@@ -116,8 +71,8 @@ class Welcome extends CI_Controller {
         } else
             echo 'Access error';
     }
-
-    public function client() {
+    
+    public function client() {//to load client datas and its in client view
         $this->is_ip_hacker();
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
@@ -249,7 +204,54 @@ class Welcome extends CI_Controller {
             $this->display_access_error();
         }
     }
+    
+    public function FAQ_function($language) {
+        $this->is_ip_hacker();
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $result['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
+        $language = $this->input->get();
+        if (isset($language['language']))
+            $result['language'] = $language['language'];
+        else
+            $result['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+        $this->load->model('class/client_model');
+        $cuestions = $this->client_model->geting_FAQ($result);
+        $this->load->model('class/user_model');
+        $this->user_model->insert_washdog($this->session->userdata('id'), 'LOOKING AT FAQ');
+        $result['info'] = $cuestions;
+        $this->load->view('FAQ', $result);
+    }
+    
+    public function dicas_geoloc() {
+        $this->is_ip_hacker();
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+        $this->load->model('class/user_model');
+        $this->user_model->insert_washdog($this->session->userdata('id'), 'LOOKING AT GEOCALIZATION TIPS');
+        $this->load->view('dicas_geoloc', $param);
+    }
 
+    public function help() {
+        $this->is_ip_hacker();
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $language = $this->input->get();
+        if (isset($language['language']))
+            $param['language'] = $language['language'];
+        else
+            $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+        $this->load->view('Dicas', $param);
+    }
+    
+    public function display_access_error() {
+        $this->is_ip_hacker();
+        $this->session->sess_destroy();
+        header('Location: ' . base_url() . 'index.php/welcome/');
+    }
+    
+//===========CONTROLERS FUNCTIONS TO LOGIN=================================================================================
     public function user_do_login($datas = NULL) {
         $this->is_ip_hacker();
         $this->load->model('class/user_role');
@@ -646,24 +648,387 @@ class Welcome extends CI_Controller {
         return $real_status;
     }
     
-    public function check_ticket_peixe_urbano() {
+    public function is_insta_user($client_login, $client_pass, $force_login) {
         $this->is_ip_hacker();
-        $this->load->model('class/client_model');
-        $datas = $this->input->post();
-        if (true) {
-            $this->client_model->update_client($datas['pk'], array(
-                'ticket_peixe_urbano' => $datas['cupao_number']));
-            $result['success'] = true;
-            $result['message'] = 'CUPOM de desconto verificado corretamennte';
+        $data_insta = NULL;
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $this->load->library('external_services');
+        $login_data = $this->external_services->bot_login($client_login, $client_pass, $force_login);
+        if (isset($login_data->json_response->status) && $login_data->json_response->status === "ok") {
+            $data_insta['status'] = $login_data->json_response->status;
+            if ($login_data->json_response->authenticated) {
+                $data_insta['authenticated'] = true;
+                $data_insta['insta_id'] = $login_data->ds_user_id;
+                $user_data = $this->external_services->get_insta_ref_prof_data_from_client($login_data, $client_login);
+                if ($data_insta && isset($user_data->follower_count))
+                    $data_insta['insta_followers_ini'] = $user_data->follower_count;
+                else
+                    $data_insta['insta_followers_ini'] = 'Access denied';
+                if ($data_insta && isset($user_data->following))
+                    $data_insta['insta_following'] = $user_data->following;
+                else
+                    $data_insta['insta_following'] = 'Access denied';
+                if ($data_insta && isset($user_data->full_name))
+                    $data_insta['insta_name'] = $user_data->full_name;
+                else
+                    $data_insta['insta_name'] = 'Access denied';
+                if (is_object($login_data))
+                    $data_insta['insta_login_response'] = $login_data;
+                else
+                    $data_insta['insta_login_response'] = NULL;
+            } else {
+                $data_insta['authenticated'] = false;
+                $data_insta['message'] = $login_data->json_response->message;
+                if ($login_data->json_response->message === "checkpoint_required") {
+                    if (strpos($login_data->json_response->verify_link, 'challenge'))
+                        $data_insta['verify_account_url'] = 'https://www.instagram.com' . $login_data->json_response->verify_link;
+                    else
+                    if (strpos($login_data->json_response->verify_link, 'integrity'))
+                        $data_insta['verify_account_url'] = $login_data->json_response->verify_link;
+                    else
+                        $data_insta['verify_account_url'] = $login_data->json_response->verify_link;
+                } else
+                if ($login_data->json_response->message === "") {
+                    if (isset($login_data->json_response->phone_verification_settings) && is_object($login_data->json_response->phone_verification_settings)) {
+                        $data_insta['message'] = 'phone_verification_settings';
+                        $data_insta['obfuscated_phone_number'] = $login_data->json_response->two_factor_info->obfuscated_phone_number;
+                    } else {
+                        $data_insta['message'] = 'empty_message';
+                        $data_insta['cause'] = 'empty_message';
+                    }
+                } else
+                if ($login_data->json_response->message !== "incorrect_password") {
+                    $data_insta['message'] = 'unknow_message';
+                    $data_insta['unknow_message'] = $login_data->json_response->message;
+                }
+            }
         } else {
-            $result['success'] = false;
-            $result['message'] = 'CUPOM de desconto incorreto';
+            if (isset($login_data->json_response->status) && $login_data->json_response->status === "fail") {
+                $data_insta['status'] = $login_data->json_response->status;
+            } else
+            if (isset($login_data->json_response->status) && $login_data->json_response->status === "") {
+                ;
+            }
         }
-        echo json_encode($result);
+        return $data_insta;
+    }
+    
+    public function create_profiles_datas_to_display() {
+        $this->is_ip_hacker();
+        if ($this->session->userdata('id')) {
+            $this->load->model('class/system_config');
+            $GLOBALS['sistem_config'] = $this->system_config->load();
+            $this->load->library('external_services');
+            $this->load->model('class/client_model');
+            $this->load->model('class/reference_profile_status');
+            $array_profiles = array();
+            $array_geolocalization = array();
+            $array_hashtag = array();
+            $cnt_ref_prof = 0;
+            $cnt_geolocalization = 0;
+            $cnt_hashtag = 0;
+            //1. load datas from each reference profile
+            $client_active_profiles = $this->client_model->get_client_active_profiles($this->session->userdata('id'));
+            foreach ($client_active_profiles as $profile) {
+                //1.1 Perfil de Referencia
+                if($profile['type'] === '0') {
+                    $cnt_ref_prof = $cnt_ref_prof + 1;
+                    $data = array(
+                      'login_profile' => $profile['insta_name'],
+                      'login_pk' => $profile['insta_id'],
+                      'follows_from_profile' => $profile['follows'],
+                    );
+                    switch ((int)$profile['status_id']) {
+                        case reference_profile_status::ACTIVE:
+                            $data['status_profile'] = 'active';
+                            $data['img_profile'] = '';
+                        case reference_profile_status::LOCKED:
+                            $data['status_profile'] = 'blocked';
+                            $data['img_profile'] = base_url().'assets/images/profile_privated.jpg';;                            
+                            break;
+                            break;
+                        case reference_profile_status::ENDED:
+                            $data['status_profile'] = 'ended';
+                            $data['img_profile'] = '';
+                            break;
+                        case reference_profile_status::PRIVATED:
+                            $data['status_profile'] = 'privated';
+                            $data['img_profile'] = base_url().'assets/images/profile_privated.jpg';
+                            break;
+                        case reference_profile_status::MISSING:
+                            $data['status_profile'] = 'deleted';
+                            $data['img_profile'] = base_url().'assets/images/profile_deleted.jpg';
+                            break;
+                        default:
+                            break;
+                    }
+                    array_push($array_profiles, $data);                        
+                } 
+                //1.2 é uma geolocalização
+                elseif($profile['type'] === '1') {
+                    $cnt_geolocalization = $cnt_geolocalization + 1;
+                    $data = array(
+                      'login_geolocalization' => $profile['insta_name'],
+                      'geolocalization_pk' => $profile['insta_id'],
+                      'follows_from_geolocalization' => $profile['follows'],
+                    );
+                    switch ((int)$profile['status_id']) {
+                        case reference_profile_status::ACTIVE:
+                            $data['status_geolocalization'] = 'active';
+                            $data['img_geolocalization'] = base_url().'assets/images/avatar_geolocalization_present.jpg';
+                            break;
+                        case reference_profile_status::ENDED:
+                            $data['status_geolocalization'] = 'ended';
+                            $data['img_geolocalization'] =  base_url().'assets/images/avatar_geolocalization_deleted.jpg';
+                            break;
+                        case reference_profile_status::MISSING:
+                            $data['status_geolocalization'] = 'deleted';
+                            $data['img_geolocalization'] = base_url().'assets/images/avatar_geolocalization_deleted.jpg';
+                            break;
+                        default:
+                            break;
+                    }
+                    array_push($array_geolocalization, $data);
+                }
+                //1.3 é um hastag
+                elseif($profile['type'] === '2') { 
+                    $cnt_hashtag = $cnt_hashtag + 1;
+                    $data = array(
+                      'login_hashtag' => $profile['insta_name'],
+                      'hashtag_pk' => $profile['insta_id'],
+                      'follows_from_hashtag' => $profile['follows'],
+                    );
+                    switch ((int)$profile['status_id']) {
+                        case reference_profile_status::ACTIVE:
+                            $data['status_hashtag'] = 'active';
+                            $data['img_hashtag'] = base_url().'assets/images/avatar_hashtag_present.png';
+                            break;
+                        case reference_profile_status::ENDED:
+                            $data['status_hashtag'] = 'ended';
+                            $data['img_hashtag'] =  base_url().'assets/images/avatar_hashtag_deleted.png';
+                            break;
+                        case reference_profile_status::MISSING:
+                            $data['status_hashtag'] = 'deleted';
+                            $data['img_hashtag'] = base_url().'assets/images/avatar_hashtag_deleted.png';
+                            break;
+                        default:
+                            break;
+                    }
+                    array_push($array_hashtag, $data);
+                }
+            }
+            $response['array_profiles'] = $array_profiles;
+            $response['N'] = $cnt_ref_prof;
+            $response['array_geolocalization'] = $array_geolocalization;
+            $response['N_geolocalization'] = $cnt_geolocalization;
+            $response['array_hashtag'] = $array_hashtag;
+            $response['N_hashtag'] = $cnt_hashtag;
+            $response['message'] = 'Profiles loaded';
+            return json_encode($response);
+        } else {
+            $this->display_access_error();
+        }
+    }
+    
+    public function create_profiles_datas_to_display_old() {
+        $this->is_ip_hacker();
+        if ($this->session->userdata('id')) {
+            $this->load->model('class/system_config');
+            $GLOBALS['sistem_config'] = $this->system_config->load();
+            $this->load->library('external_services');
+            $this->load->model('class/client_model');
+            $array_profiles = array();
+            $array_geolocalization = array();
+            $array_hashtag = array();
+            $client_active_profiles = $this->client_model->get_client_active_profiles($this->session->userdata('id'));
+            $N = count($client_active_profiles);
+            $cnt_ref_prof = 0;
+            $cnt_geolocalization = 0;
+            $cnt_hashtag = 0;
+            if ($N > 0) {
+                for ($i = 0; $i < $N; $i++) {
+                    $name_profile = $client_active_profiles[$i]['insta_name'];
+                    $id_profile = $client_active_profiles[$i]['id'];
+                    if ($client_active_profiles[$i]['type'] === '0') { //es un perfil de referencia
+                        $datas_of_profile = $this->external_services->get_insta_ref_prof_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
+                        if ($datas_of_profile != NULL) {
+                            $array_profiles[$cnt_ref_prof]['login_profile'] = $name_profile;
+                            $array_profiles[$cnt_ref_prof]['follows_from_profile'] = $datas_of_profile->follows;
+                            if (!$datas_of_profile) { //perfil existia pero fue eliminado de IG
+                                $array_profiles[$cnt_ref_prof]['status_profile'] = 'deleted';
+                                $array_profiles[$cnt_ref_prof]['img_profile'] = base_url() . 'assets/images/profile_deleted.jpg';
+                            } else
+                            if ($client_active_profiles[$i]['end_date']) { //perfil
+                                $array_profiles[$cnt_ref_prof]['status_profile'] = 'ended';
+                                $array_profiles[$cnt_ref_prof]['img_profile'] = $datas_of_profile->profile_pic_url;
+                            } else
+                            if ($datas_of_profile->is_private) { //perfil paso a ser privado
+                                $array_profiles[$cnt_ref_prof]['status_profile'] = 'privated';
+                                $array_profiles[$cnt_ref_prof]['img_profile'] = base_url() . 'assets/images/profile_privated.jpg';
+                            } else {
+                                $array_profiles[$cnt_ref_prof]['status_profile'] = 'active';
+                                $array_profiles[$cnt_ref_prof]['img_profile'] = $datas_of_profile->profile_pic_url;
+                            }
+                            $cnt_ref_prof = $cnt_ref_prof + 1;
+                        } else {
+                            $array_profiles[$cnt_ref_prof]['status_profile'] = 'blocked';
+                            $array_profiles[$cnt_ref_prof]['img_profile'] = base_url() . 'assets/images/profile_privated.jpg';
+                            $array_profiles[$cnt_ref_prof]['login_profile'] = $name_profile;
+                            $array_profiles[$cnt_ref_prof]['follows_from_profile'] = '-+-';
+                            $cnt_ref_prof = $cnt_ref_prof + 1;
+                        }
+                    } else 
+                    if ($client_active_profiles[$i]['type'] === '1') { //es una geolocalizacion      
+                        $datas_of_profile = $this->external_services->get_insta_geolocalization_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
+                        $array_geolocalization[$cnt_geolocalization]['login_geolocalization'] = $name_profile;
+                        $array_geolocalization[$cnt_geolocalization]['geolocalization_pk'] = $client_active_profiles[$i]['insta_id'];
+                        if ($datas_of_profile)
+                            $array_geolocalization[$cnt_geolocalization]['follows_from_geolocalization'] = $datas_of_profile->follows;
+                        $array_geolocalization[$cnt_geolocalization]['img_geolocalization'] = base_url() . 'assets/images/avatar_geolocalization_present.jpg';
+                        if (!$datas_of_profile) {
+                            $array_geolocalization[$cnt_geolocalization]['img_geolocalization'] = base_url() . 'assets/images/avatar_geolocalization_deleted.jpg';
+                            $array_geolocalization[$cnt_geolocalization]['status_geolocalization'] = 'deleted';
+                        } else
+                        if ($client_active_profiles[$i]['end_date']) { //perfil
+                            $array_geolocalization[$cnt_geolocalization]['status_geolocalization'] = 'ended';
+                        } else {
+                            $array_geolocalization[$cnt_geolocalization]['status_geolocalization'] = 'active';
+                        }
+                        $cnt_geolocalization = $cnt_geolocalization + 1;
+                    } else 
+                    if ($client_active_profiles[$i]['type'] === '2'){ //es un hashtag    
+                        $datas_of_profile = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
+
+                        $array_hashtag[$cnt_hashtag]['login_hashtag'] = $name_profile;
+                        $array_hashtag[$cnt_hashtag]['hashtag_pk'] = $client_active_profiles[$i]['insta_id'];
+                        if ($datas_of_profile)
+                            $array_hashtag[$cnt_hashtag]['follows_from_hashtag'] = $datas_of_profile->follows;
+                        $array_hashtag[$cnt_hashtag]['img_hashtag'] = base_url() . 'assets/images/avatar_hashtag_present.png';
+                        if (!$datas_of_profile) {
+                            $array_hashtag[$cnt_hashtag]['img_hashtag'] = base_url() . 'assets/images/avatar_hashtag_deleted.png';
+                            $array_hashtag[$cnt_hashtag]['status_hashtag'] = 'deleted';
+                        } else
+                        if ($client_active_profiles[$i]['end_date']) { //perfil
+                            $array_hashtag[$cnt_hashtag]['status_hashtag'] = 'ended';
+                        } else {
+                            $array_hashtag[$cnt_hashtag]['status_hashtag'] = 'active';
+                        }
+                        $cnt_hashtag = $cnt_hashtag + 1;
+                    }
+                }
+                if ($cnt_ref_prof)
+                    $response['array_profiles'] = $array_profiles;
+                else
+                    $response['array_profiles'] = array();
+                $response['N'] = $cnt_ref_prof;
+                if ($cnt_geolocalization)
+                    $response['array_geolocalization'] = $array_geolocalization;
+                else
+                    $response['array_geolocalization'] = array();
+                $response['N_geolocalization'] = $cnt_geolocalization;
+                if ($cnt_hashtag)
+                    $response['array_hashtag'] = $array_hashtag;
+                else
+                    $response['array_hashtag'] = array();
+                $response['N_hashtag'] = $cnt_hashtag;
+                $response['message'] = 'Profiles loaded';
+            } else {
+                $response['N'] = 0;
+                $response['N_geolocalization'] = 0;
+                $response['N_hashtag'] = 0;
+                $response['array_profiles'] = NULL;
+                $response['array_geolocalization'] = NULL;
+                $response['array_hashtag'] = NULL;
+                $response['message'] = 'Profiles unloaded';
+            }
+            return json_encode($response);
+        } else {
+            $this->display_access_error();
+        }
+    }
+    
+    public function security_code_request() {
+        $this->is_ip_hacker();
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $this->load->library('external_services');
+        $this->load->model('class/user_role');
+        $this->load->model('class/user_model');
+        if ($this->session->userdata('role_id') == user_role::CLIENT) {
+            try {
+                $checkpoint_data = $this->external_services->checkpoint_requested($this->session->userdata('login'), $this->session->userdata('pass'));
+            } catch (Exception $ex) {
+                $result['success'] = false;
+                $result['message'] = $this->T('Erro ao solicitar código de segurança', array(), $this->session->userdata('language'));
+                $this->user_model->insert_washdog($this->session->userdata('id'), 'ERROR #4 IN SECURITY CODE REQUEST');
+                $this->user_model->insert_washdog($this->session->userdata('id'), 'Exception message: ' . $ex->getMessage());
+                $this->user_model->insert_washdog($this->session->userdata('id'), 'Exception stack trace: ' . $ex->getTraceAsString());
+                echo json_encode($result);
+                return;
+            }
+            if ($checkpoint_data && $checkpoint_data->status == "ok") {
+                if ($checkpoint_data->type == "CHALLENGE") {
+                    $result['success'] = true;
+                    $result['message'] = $this->T('Código de segurança solicitado corretamente', array(), $this->session->userdata('language'));
+                    $this->user_model->insert_washdog($this->session->userdata('id'), 'SECURITY CODE REQUESTED');
+                } else if ($checkpoint_data->type == "CHALLENGE_REDIRECTION") {
+                    $result['success'] = false;
+                    $result['message'] = $this->T('Por favor, entre no seu Instagram e confirme FUI EU. Depois saia do seu Instagram e volte ao Passo 1 nesta página.', array(), $this->session->userdata('language'));
+                    $this->user_model->insert_washdog($this->session->userdata('id'), 'ERROR #1 IN SECURITY CODE REQUEST');
+                } else {
+                    $result['success'] = false;
+                    $result['message'] = $this->T('Erro ao solicitar código de segurança', array(), $this->session->userdata('language'));
+                    $this->user_model->insert_washdog($this->session->userdata('id'), 'ERROR #2 IN SECURITY CODE REQUEST');
+                }
+            } else {
+                $result['success'] = false;
+                $result['message'] = $this->T('Erro ao solicitar código de segurança', array(), $this->session->userdata('language'));
+                $this->user_model->insert_washdog($this->session->userdata('id'), 'ERROR #3 IN SECURITY CODE REQUEST');
+            }
+            echo json_encode($result);
+        } else {
+            $this->display_access_error();
+        }
     }
 
-    //Passo 1. Chequeando usuario em IG y enviando email al usuario con código para entrar al paso 2
-    public function check_user_for_sing_in($datas = NULL) { //sign in with passive instagram profile verification
+    public function security_code_confirmation() {
+        $this->is_ip_hacker();
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $this->load->library('external_services');
+        $this->load->model('class/user_role');
+        if ($this->session->userdata('role_id') == user_role::CLIENT) {
+            $security_code = $this->input->post()['security_code'];
+            $checkpoint_data = $this->external_services->make_checkpoint($this->session->userdata('login'), $security_code);
+            $this->load->model('class/user_model');
+            if ($checkpoint_data && $checkpoint_data->json_response->status === 'ok' && $checkpoint_data->sessionid !== null && $checkpoint_data->ds_user_id !== null) {
+                $result['success'] = true;
+                $result['message'] = 'Código de segurança confirmado corretamente';
+                $this->user_model->insert_washdog($this->session->userdata('id'), 'SECURITY CODE CONFIRMATED');
+            } else {
+                $result['success'] = false;
+                $result['message'] = 'Erro ao confirmar código de segurança';
+                $this->user_model->insert_washdog($this->session->userdata('id'), 'ERROR IN SECURITY CODE CONFIRMATION');
+            }
+            echo json_encode($result);
+        } else {
+            $this->display_access_error();
+        }
+    }
+    
+    public function log_out() {
+        $this->is_ip_hacker();
+        $data['user_active'] = false;
+        $this->load->model('class/user_model');
+        $this->user_model->insert_washdog($this->session->userdata('id'), 'CLOSING SESSION');
+        $this->session->sess_destroy();
+        header('Location: ' . base_url());
+    }
+
+//===========CONTROLERS FUNCTIONS TO SIGNATURE=================================================================================
+    public function check_user_for_sing_in($datas = NULL) {//first steep of signature
+        //Passo 1. Chequeando usuario em IG y enviando email al usuario con código para entrar al paso 2
         $this->is_ip_hacker();
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
@@ -788,155 +1153,9 @@ class Welcome extends CI_Controller {
         else
             return $response;
     }
-
-    //Passo 2.1 Pagamento por boleto bancario
-    public function check_client_ticket_bank($datas = NULL) {
-        //OBS: o cliente ainda continua em BEGINNER, quem ativa é a notificação da mindipagg de boleto pago
-        $this->is_ip_hacker();
-        //0. Carregar librarias e datas vindo do navegador        
-        $this->load->model('class/client_model');
-        $this->load->model('class/Crypt');
-        $this->load->model('class/system_config');
-        $this->load->library('external_services');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $origin_datas = $datas;
-        $datas = $this->input->post();
-        $datas['plane_id'] = intval($datas['plane_type']);
-        $datas['ticket_bank_option'] = intval($datas['ticket_bank_option']);
-        $client_datas = $this->client_model->get_all_data_of_client($datas['pk'])[0];
-        //1. analisar se é possivel gerar boleto para esse cliente
-        $purchase_counter = (int) $client_datas['purchase_counter'];
-        $elapsed_time = strtotime('-2 days', time());
-        $amount_unpayed_tickets = $this->client_model->get_unpayed_tickets($datas['pk'], $elapsed_time);
-        if (count($amount_unpayed_tickets) >= 2) {
-            $result['success'] = false;
-            $result['message'] = 'Tem excedido a quantidade máxima de boletos gerados';
-        } else
-        if (!$purchase_counter > 0) {
-            $result['success'] = false;
-            $result['message'] = 'Número de tentativas esgotadas. Contate nosso atendimento';
-        } else
-        //2. analisar o código de verificação recebido no passo 1 da assinatura
-        if ($datas['purchase_access_token'] != $client_datas['purchase_access_token']) {
-            $this->client_model->decrement_purchase_retry($datas['pk'], 0);
-            $result['success'] = false;
-            $result['message'] = 'Sorry!! Not possible violate our security protections.';
-        } else
-        //3. conferir los datos recebidos
-        if (!$this->validaCPF($datas['cpf'])) {
-            $value['purchase_counter'] = $purchase_counter - 1;
-            $this->client_model->decrement_purchase_retry($datas['pk'], $value);
-            $result['success'] = false;
-            $result['message'] = 'CPF incorreto';
-        } else
-        if (!( $datas['plane_id'] > 1 && $datas['plane_id'] <= 5 )) {
-            $value['purchase_counter'] = $purchase_counter - 1;
-            $this->client_model->decrement_purchase_retry($datas['pk'], $value);
-            $result['success'] = false;
-            $result['message'] = 'Plano informado incorreto';
-        } else
-        if (!( $datas['ticket_bank_option'] >= 1 && $datas['ticket_bank_option'] <= 3 )) {
-            $value['purchase_counter'] = $purchase_counter - 1;
-            $this->client_model->decrement_purchase_retry($datas['pk'], $value);
-            $result['success'] = false;
-            $result['message'] = 'Selecione um periodo de tempo válido pra ganhar desconto';
-        } else {
-            //4. gerar boleto bancario
-            $this->load->model('class/user_model');
-            $query = 'SELECT * FROM plane WHERE id=' . $datas['plane_id'];
-            $plane_datas = $this->user_model->execute_sql_query($query)[0];
-            if ($datas['ticket_bank_option'] == 1) {
-                $datas['AmountInCents'] = intval($plane_datas['normal_val'] * 0.85 * 3);
-                $amount_months = 3;
-            } else
-            if ($datas['ticket_bank_option'] == 2) {
-                $datas['AmountInCents'] = intval($plane_datas['normal_val'] * 0.75 * 6);
-                $amount_months = 6;
-            } else
-            if ($datas['ticket_bank_option'] == 3) {
-                $datas['AmountInCents'] = intval($plane_datas['normal_val'] * 0.60 * 12);
-                $amount_months = 12;
-            }
-            $DocumentNumber = $GLOBALS['sistem_config']->TICKET_BANK_DOCUMENT_NUMBER;
-            $datas['DocumentNumber'] = $DocumentNumber + 1;
-            $datas['OrderReference'] = $DocumentNumber + 1;
-            $datas['user_id'] = $datas['pk'];
-            $datas['name'] = $datas['ticket_bank_client_name'];
-            //4.1 actualizar el TICKET_BANK_DOCUMENT_NUMBER con el valor em $DocumentNumber
-            $query = "UPDATE dumbu_system_config set value = " . $datas['DocumentNumber'] . " WHERE name='TICKET_BANK_DOCUMENT_NUMBER'";
-            $this->client_model->execute_sql_query_to_update($query);
-            try {
-                $response = $this->check_mundipagg_boleto($datas);
-            } catch (Exception $exc) {
-                $result['success'] = false;
-                $result['exception'] = $exc->getTraceAsString();
-                $result['message'] = 'Erro gerando o boleto bancário';
-            }
-            //5. salvar dados
-            if (!$response['success']) {
-                $result['success'] = false;
-                $result['exception'] = $exc->getTraceAsString();
-                $result['message'] = 'Erro gerando boleto bancário';
-            } else {
-                //5.1 insertar o novo boleto gerado no banco de dados
-                $ticket_url = $response['ticket_url'];
-                $ticket_order_key = $response['ticket_order_key'];
-                $ticket_datas = array(
-                    'client_id' => $datas['pk'],
-                    'name_in_ticket' => $datas['ticket_bank_client_name'],
-                    'cpf' => $datas['cpf'],
-                    'ticket_bank_option' => $datas['ticket_bank_option'],
-                    'cep' => $datas['cep'],
-                    'street_address' => $datas['street_address'],
-                    'house_number' => $datas['house_number'],
-                    'neighborhood_address' => $datas['neighborhood_address'],
-                    'municipality_address' => $datas['municipality_address'],
-                    'state_address' => $datas['state_address'],
-                    'ticket_link' => $ticket_url,
-                    'ticket_order_key' => $ticket_order_key,
-                    'amount_months' => $amount_months,
-                    'document_number' => $datas['DocumentNumber'],
-                    'generated_date' => time()
-                );
-                $this->client_model->insert_ticket_bank_generated($ticket_datas);
-                //5.2 decrementar o purchase counter em 2
-                $value['purchase_counter'] = $purchase_counter - 2;
-                $this->client_model->decrement_purchase_retry($datas['pk'], $value);
-
-                //6. enviar email com link do boleto e o link da success_purchase com access token encriptada com md5            
-                $insta_id = $client_datas['insta_id'];
-                $access_link = base_url() . 'index.php/welcome/purchase'
-                        . '?client_id=' . urlencode($this->Crypt->codify_level1($datas['pk']))
-                        . '&ticket_access_token=' . md5($datas['pk'] . '-abc-' . $insta_id . '-cba-' . '8053');
-                $username = $client_datas['login'];
-                $useremail = $client_datas['email'];
-                //6.1 salvar access token y atualizar pay_day
-                $this->client_model->update_client($client_datas['user_id'], array(
-                    'credit_card_number' => 'PAYMENT_BY_TICKET_BANK',
-                    'credit_card_name' => 'PAYMENT_BY_TICKET_BANK',
-                    'pay_day' => strtotime("+7 days", time()),
-                    'ticket_access_token' => md5($datas['pk'] . '-abc-' . $insta_id . '-cba-' . '8053')
-                ));
-                $email = $this->external_services->send_link_ticket_bank_and_access_link(
-                        $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE),
-                        $username, 
-                        $useremail, 
-                        $access_link, 
-                        $ticket_url);
-                //7. retornar response e tomar decisão no cliente
-                if ($email['success']) {
-                    $result['success'] = true;
-                } else {
-                    $result['success'] = false;
-                    $result['message'] = 'Contate nosso atendimento e aguarde as instruções. Houve problema ao enviar email com as instruções';
-                }
-            }
-        }        
-        echo json_encode($result);
-    }    
-
-    //Passo 2.2 Chequeando datos bancarios y guardando datos y estado del cliente pagamento  
-    public function check_client_data_bank($datas = NULL) {
+    
+    public function check_client_data_bank($datas = NULL) {//second steep of signature
+        //Passo 2.2 Chequeando datos bancarios y guardando datos y estado del cliente pagamento  
         $this->is_ip_hacker();
         $this->load->model('class/system_config');
         $this->load->model('class/client_model');
@@ -1112,7 +1331,172 @@ class Welcome extends CI_Controller {
         else
             return $result;
     }
+    
+    public function check_client_ticket_bank($datas = NULL) {//second steep of signature
+        //Passo 2.1 Pagamento por boleto bancario
+        //OBS: o cliente ainda continua em BEGINNER, quem ativa é a notificação da mindipagg de boleto pago
+        $this->is_ip_hacker();
+        //0. Carregar librarias e datas vindo do navegador        
+        $this->load->model('class/client_model');
+        $this->load->model('class/Crypt');
+        $this->load->model('class/system_config');
+        $this->load->library('external_services');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $origin_datas = $datas;
+        $datas = $this->input->post();
+        $datas['plane_id'] = intval($datas['plane_type']);
+        $datas['ticket_bank_option'] = intval($datas['ticket_bank_option']);
+        $client_datas = $this->client_model->get_all_data_of_client($datas['pk'])[0];
+        //1. analisar se é possivel gerar boleto para esse cliente
+        $purchase_counter = (int) $client_datas['purchase_counter'];
+        $elapsed_time = strtotime('-2 days', time());
+        $amount_unpayed_tickets = $this->client_model->get_unpayed_tickets($datas['pk'], $elapsed_time);
+        if (count($amount_unpayed_tickets) >= 2) {
+            $result['success'] = false;
+            $result['message'] = 'Tem excedido a quantidade máxima de boletos gerados';
+        } else
+        if (!$purchase_counter > 0) {
+            $result['success'] = false;
+            $result['message'] = 'Número de tentativas esgotadas. Contate nosso atendimento';
+        } else
+        //2. analisar o código de verificação recebido no passo 1 da assinatura
+        if ($datas['purchase_access_token'] != $client_datas['purchase_access_token']) {
+            $this->client_model->decrement_purchase_retry($datas['pk'], 0);
+            $result['success'] = false;
+            $result['message'] = 'Sorry!! Not possible violate our security protections.';
+        } else
+        //3. conferir los datos recebidos
+        if (!$this->validaCPF($datas['cpf'])) {
+            $value['purchase_counter'] = $purchase_counter - 1;
+            $this->client_model->decrement_purchase_retry($datas['pk'], $value);
+            $result['success'] = false;
+            $result['message'] = 'CPF incorreto';
+        } else
+        if (!( $datas['plane_id'] > 1 && $datas['plane_id'] <= 5 )) {
+            $value['purchase_counter'] = $purchase_counter - 1;
+            $this->client_model->decrement_purchase_retry($datas['pk'], $value);
+            $result['success'] = false;
+            $result['message'] = 'Plano informado incorreto';
+        } else
+        if (!( $datas['ticket_bank_option'] >= 1 && $datas['ticket_bank_option'] <= 3 )) {
+            $value['purchase_counter'] = $purchase_counter - 1;
+            $this->client_model->decrement_purchase_retry($datas['pk'], $value);
+            $result['success'] = false;
+            $result['message'] = 'Selecione um periodo de tempo válido pra ganhar desconto';
+        } else {
+            //4. gerar boleto bancario
+            $this->load->model('class/user_model');
+            $query = 'SELECT * FROM plane WHERE id=' . $datas['plane_id'];
+            $plane_datas = $this->user_model->execute_sql_query($query)[0];
+            if ($datas['ticket_bank_option'] == 1) {
+                $datas['AmountInCents'] = intval($plane_datas['normal_val'] * 0.85 * 3);
+                $amount_months = 3;
+            } else
+            if ($datas['ticket_bank_option'] == 2) {
+                $datas['AmountInCents'] = intval($plane_datas['normal_val'] * 0.75 * 6);
+                $amount_months = 6;
+            } else
+            if ($datas['ticket_bank_option'] == 3) {
+                $datas['AmountInCents'] = intval($plane_datas['normal_val'] * 0.60 * 12);
+                $amount_months = 12;
+            }
+            $DocumentNumber = $GLOBALS['sistem_config']->TICKET_BANK_DOCUMENT_NUMBER;
+            $datas['DocumentNumber'] = $DocumentNumber + 1;
+            $datas['OrderReference'] = $DocumentNumber + 1;
+            $datas['user_id'] = $datas['pk'];
+            $datas['name'] = $datas['ticket_bank_client_name'];
+            //4.1 actualizar el TICKET_BANK_DOCUMENT_NUMBER con el valor em $DocumentNumber
+            $query = "UPDATE dumbu_system_config set value = " . $datas['DocumentNumber'] . " WHERE name='TICKET_BANK_DOCUMENT_NUMBER'";
+            $this->client_model->execute_sql_query_to_update($query);
+            try {
+                $response = $this->check_mundipagg_boleto($datas);
+            } catch (Exception $exc) {
+                $result['success'] = false;
+                $result['exception'] = $exc->getTraceAsString();
+                $result['message'] = 'Erro gerando o boleto bancário';
+            }
+            //5. salvar dados
+            if (!$response['success']) {
+                $result['success'] = false;
+                $result['exception'] = $exc->getTraceAsString();
+                $result['message'] = 'Erro gerando boleto bancário';
+            } else {
+                //5.1 insertar o novo boleto gerado no banco de dados
+                $ticket_url = $response['ticket_url'];
+                $ticket_order_key = $response['ticket_order_key'];
+                $ticket_datas = array(
+                    'client_id' => $datas['pk'],
+                    'name_in_ticket' => $datas['ticket_bank_client_name'],
+                    'cpf' => $datas['cpf'],
+                    'ticket_bank_option' => $datas['ticket_bank_option'],
+                    'cep' => $datas['cep'],
+                    'street_address' => $datas['street_address'],
+                    'house_number' => $datas['house_number'],
+                    'neighborhood_address' => $datas['neighborhood_address'],
+                    'municipality_address' => $datas['municipality_address'],
+                    'state_address' => $datas['state_address'],
+                    'ticket_link' => $ticket_url,
+                    'ticket_order_key' => $ticket_order_key,
+                    'amount_months' => $amount_months,
+                    'document_number' => $datas['DocumentNumber'],
+                    'generated_date' => time()
+                );
+                $this->client_model->insert_ticket_bank_generated($ticket_datas);
+                //5.2 decrementar o purchase counter em 2
+                $value['purchase_counter'] = $purchase_counter - 2;
+                $this->client_model->decrement_purchase_retry($datas['pk'], $value);
 
+                //6. enviar email com link do boleto e o link da success_purchase com access token encriptada com md5            
+                $insta_id = $client_datas['insta_id'];
+                $access_link = base_url() . 'index.php/welcome/purchase'
+                        . '?client_id=' . urlencode($this->Crypt->codify_level1($datas['pk']))
+                        . '&ticket_access_token=' . md5($datas['pk'] . '-abc-' . $insta_id . '-cba-' . '8053');
+                $username = $client_datas['login'];
+                $useremail = $client_datas['email'];
+                //6.1 salvar access token y atualizar pay_day
+                $this->client_model->update_client($client_datas['user_id'], array(
+                    'credit_card_number' => 'PAYMENT_BY_TICKET_BANK',
+                    'credit_card_name' => 'PAYMENT_BY_TICKET_BANK',
+                    'pay_day' => strtotime("+7 days", time()),
+                    'ticket_access_token' => md5($datas['pk'] . '-abc-' . $insta_id . '-cba-' . '8053')
+                ));
+                $email = $this->external_services->send_link_ticket_bank_and_access_link(
+                        $this->T("DUMBU - Aqui está seu boleto Dumbu", array(), $GLOBALS['sistem_config']->LANGUAGE),
+                        $username, 
+                        $useremail, 
+                        $access_link, 
+                        $ticket_url);
+                //7. retornar response e tomar decisão no cliente
+                if ($email['success']) {
+                    $result['success'] = true;
+                } else {
+                    $result['success'] = false;
+                    $result['message'] = 'Contate nosso atendimento e aguarde as instruções. Houve problema ao enviar email com as instruções';
+                }
+            }
+        }        
+        echo json_encode($result);
+    }    
+
+    public function check_2nd_step_activation() {
+        $this->is_ip_hacker();
+        $this->load->model('class/client_model');
+        $this->load->model('class/Crypt');
+        $datas = $this->input->post();
+        $client_id = $this->Crypt->decodify_level1(urldecode($datas['client_id']));
+        $query = $this->client_model->get_all_data_of_client($client_id);
+
+        if (!empty($query) && $query[0]['purchase_counter'] > 0 && $query[0]['purchase_access_token'] === $datas['purchase_access_token']) {
+            $result['success'] = true;
+            $data_insta = $this->check_insta_profile($query[0]['login']);
+            $result['datas'] = json_encode($data_insta);
+        } else {
+            $result['success'] = false;
+        }
+
+        echo json_encode($result);
+    }
+    
     public function update_client_datas() {
         $this->is_ip_hacker();
         $this->load->model('class/Crypt');
@@ -1371,6 +1755,22 @@ class Welcome extends CI_Controller {
         }
     }
     
+    public function check_ticket_peixe_urbano() {
+        $this->is_ip_hacker();
+        $this->load->model('class/client_model');
+        $datas = $this->input->post();
+        if (true) {
+            $this->client_model->update_client($datas['pk'], array(
+                'ticket_peixe_urbano' => $datas['cupao_number']));
+            $result['success'] = true;
+            $result['message'] = 'CUPOM de desconto verificado corretamennte';
+        } else {
+            $result['success'] = false;
+            $result['message'] = 'CUPOM de desconto incorreto';
+        }
+        echo json_encode($result);
+    }
+    
     public function get_pay_day($pay_day) {
         $this->is_ip_hacker();
         $this->load->model('class/user_status');
@@ -1456,46 +1856,92 @@ class Welcome extends CI_Controller {
         $response = $this->external_services->delete_payment($order_key);
         return $response;
     }
-
-    public function unfollow_total() {
+    
+    public function validate_post_credit_card_datas($datas) {
         $this->is_ip_hacker();
-        $this->load->model('class/user_role');
+        //TODO: validate emial and datas of credit card using regular expresions
+        /* if (preg_match('^[0-9]{16,16}$',$datas['credit_card_number']) &&
+          preg_match('^[0-9 ]{3,3}$',$datas['credit_card_cvc']) &&
+          preg_match('^[A-Z ]{4,50}$',$datas['credit_card_name']) &&
+          preg_match('^[0-10-9]{2,2}$',$datas['credit_card_exp_month']) &&
+          preg_match('^[2-20-01-20-9]{4,4}$',$datas['credit_card_exp_year']) &&
+          preg_match('^[a-zA-Z0-9\._-]+@([a-zA-Z0-9-]{2,}[.])*[a-zA-Z]{2,4}$',$datas['client_email']))
+          return true;
+          else
+          return false; */
+        return true;
+    }
+    
+    public function check_registration_code() {
+        $this->is_ip_hacker();
         $this->load->model('class/client_model');
-        if ($this->session->userdata('role_id') == user_role::CLIENT) {
-            $datas = $this->input->post();
-            $datas['unfollow_total'] = (int) $datas['unfollow_total'];
-            ($datas['unfollow_total'] == 0) ? $ut = 'DISABLED' : $ut = 'ACTIVATED';
-            $this->load->model('class/user_model');
-            $this->user_model->insert_washdog($this->session->userdata('id'), 'TOTAL UNFOLLOW ' . $ut);
-            $this->client_model->update_client($this->session->userdata('id'), array(
-                'unfollow_total' => $datas['unfollow_total']
-            ));
-            $response['success'] = true;
-            $response['unfollow_total'] = $datas['unfollow_total'];
+        $datas = $this->input->post();
+        $query = $this->client_model->get_client_by_id($datas['pk']);
+        $retry_registration_counter = (int) $query[0]['retry_registration_counter'];
+        $result['success'] = false;
+
+        if (!empty($query)) {
+            if ($query[0]['retry_registration_counter'] > 0) {
+                if ($query[0]['purchase_access_token'] === $datas['registration_code']) {
+                    $result['registration_code'] = $datas['registration_code'];
+                    $result['success'] = true;
+                    $result['message'] = $this->T('Código do cadastro verificado corretamente!', array(), $GLOBALS['language']);
+                } else {
+                    // decrementar el retry_registration_counter en la base de datos
+                    $retry_registration_counter = $retry_registration_counter - 1;
+                    $this->client_model->update_client($datas['pk'], array('retry_registration_counter' => $retry_registration_counter));
+                    $result['message'] = $this->T('Código do cadastro inválido!', array(), $GLOBALS['language']);
+                }
+            } else {
+                $result['message'] = $this->T('Alcançou a quantidade máxima de tentativas de cadastro. Por favor, entre en contato com o atendimento.', array(), $GLOBALS['language']);
+            }
+        } else {
+            $result['message'] = $this->T('O perfil não existe no nosso sistema.', array(), $GLOBALS['language']);
         }
-        echo json_encode($response);
+        echo json_encode($result);
     }
 
-    public function autolike() {
-        $this->is_ip_hacker();
-        $this->load->model('class/user_role');
-        $this->load->model('class/client_model');
-        if ($this->session->userdata('role_id') == user_role::CLIENT) {
-            $datas = $this->input->post();
-            $al = (int) $datas['autolike'];
-            $this->client_model->update_client($this->session->userdata('id'), array(
-                'like_first' => $al
-            ));
-            ($al == 0) ? $ut = 'DISABLED' : $ut = 'ACTIVATED';
-            $this->load->model('class/user_model');
-            $this->user_model->insert_washdog($this->session->userdata('id'), 'AUTOLIKE ' . $ut);
-
+    public function get_cep_datas() {
+        $cep = $this->input->post()['cep'];
+        $datas = file_get_contents('https://viacep.com.br/ws/' . $cep . '/json/');
+        if (strpos($datas, 'erro') > 0) {
+            $response['success'] = false;
+        } else {
             $response['success'] = true;
-            $response['autolike'] = $datas['AUTOLIKE'];
         }
+        $response['datas'] = json_decode($datas);
         echo json_encode($response);
     }
+    
+    public function validaCPF($cpf = null) {
+        $this->is_ip_hacker();
+        $cpf = '06266544750';
+        if (empty($cpf))
+            return false;
+        $cpf = preg_replace('[^0-9]', '', $cpf);
+        $cpf = str_pad($cpf, 11, '0', STR_PAD_LEFT);
+        if (strlen($cpf) != 11)
+            return false;
+        else if ($cpf == '00000000000' ||
+                $cpf == '11111111111' || $cpf == '22222222222' || $cpf == '33333333333' ||
+                $cpf == '44444444444' || $cpf == '55555555555' || $cpf == '66666666666' ||
+                $cpf == '77777777777' || $cpf == '88888888888' || $cpf == '99999999999') {
+            return false;
+        } else {
+            for ($t = 9; $t < 11; $t++) {
+                for ($d = 0, $c = 0; $c < $t; $c++) {
+                    $d += $cpf{$c} * (($t + 1) - $c);
+                }
+                $d = ((10 * $d) % 11) % 10;
+                if ($cpf{$c} != $d) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 
+//===========CONTROLERS FUNCTIONS TO CLIENTS PAINEL=================================================================================    
     public function play_pause() {
         $this->is_ip_hacker();
         $this->load->model('class/user_role');
@@ -1524,222 +1970,6 @@ class Welcome extends CI_Controller {
             $response['play_pause'] = $datas['play_pause'];
         }
         echo json_encode($response);
-    }
-
-    public function client_insert_geolocalization() {
-        $this->is_ip_hacker();
-        if ($this->session->userdata('id')) {
-            $this->load->model('class/system_config');
-            $GLOBALS['sistem_config'] = $this->system_config->load();
-            $language = $this->input->get();
-            if (isset($language['language']))
-                $param['language'] = $language['language'];
-            else
-                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
-            $GLOBALS['language'] = $param['language'];
-            $this->load->model('class/client_model');
-            $this->load->model('class/user_status');
-            $profile = $this->input->post();
-            $active_profiles = $this->client_model->get_client_active_profiles($this->session->userdata('id'));
-            $N = count($active_profiles);
-            $N_geolocalization = 0;
-            $is_active_profile = false;
-            $is_active_geolocalization = false;
-            for ($i = 0; $i < $N; $i++) {
-                if ($active_profiles[$i]['type'] === '1' && $active_profiles[$i]['deleted'] === '0')
-                    $N_geolocalization = $N_geolocalization + 1;
-                if ($active_profiles[$i]['insta_name'] == $profile['geolocalization']) {
-                    if ($active_profiles[$i]['deleted'] == false)
-                        if ($active_profiles[$i]['type'] === '0')
-                            $is_active_profile = true;
-                        elseif ($active_profiles[$i]['type'] === '1')
-                            $is_active_geolocalization = true;
-                    break;
-                }
-            }
-            if (!$is_active_geolocalization) {
-                if ($N_geolocalization < $GLOBALS['sistem_config']->REFERENCE_PROFILE_AMOUNT) {
-                    $profile_datas = $this->check_insta_geolocalization($profile['geolocalization']);
-                    if ($profile_datas && $profile_datas->location->pk) {
-                        $p = $this->client_model->insert_insta_profile($this->session->userdata('id'), $profile_datas->slug, $profile_datas->location->pk, '1');
-                        $result = $this->verify_profile($p, $active_profiles, $N);
-                        $result['img_url'] = base_url() . 'assets/images/avatar_geolocalization_present.jpg';
-                        $result['profile'] = $profile['geolocalization'];
-                        $result['follows_from_profile'] = 0;
-                        $result['geolocalization_pk'] = $profile_datas->location->pk;
-                    } else {
-                        $result['success'] = false;
-                        $result['message'] = $this->T('@1 não é uma geolocalização do Instagram', array(0 => $profile['geolocalization']));
-                    }
-                } else {
-                    $result['success'] = false;
-                    $result['message'] = $this->T('Você alcançou a quantidade máxima de geolocalizações ativas', array(), $GLOBALS['language']);
-                }
-            } else {
-                $result['success'] = false;
-                if ($is_active_profile)
-                    $result['message'] = $this->T('A geolocalização informada é um perfil ativo', array(), $GLOBALS['language']);
-                else
-                    $result['message'] = $this->T('A geolocalizaçao informada ja está ativa', array(), $GLOBALS['language']);
-            }
-            if ($result['success'] == true) {
-                $this->load->model('class/user_model');
-                $this->user_model->insert_washdog($this->session->userdata('id'), 'GEOCALIZATION INSERTED');
-            }
-            echo json_encode($result);
-        }
-    }
-
-    public function client_desactive_geolocalization() {
-        $this->is_ip_hacker();
-        if ($this->session->userdata('id')) {
-            $this->load->model('class/system_config');
-            $GLOBALS['sistem_config'] = $this->system_config->load();
-            $language = $this->input->get();
-            if (isset($language['language']))
-                $param['language'] = $language['language'];
-            else
-                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
-            $GLOBALS['language'] = $param['language'];
-            $this->load->model('class/client_model');
-            $profile = $this->input->post();
-            if ($this->client_model->desactive_profiles($this->session->userdata('id'), $profile['geolocalization'])) {
-                $result['success'] = true;
-                $result['message'] = $this->T('Geolocalização eliminada', array(), $GLOBALS['language']);
-            } else {
-                $result['success'] = false;
-                $result['message'] = $this->T('Erro no sistema, tente novamente', array(), $GLOBALS['language']);
-            }
-            if ($result['success'] == true) {
-                $this->load->model('class/user_model');
-                $this->user_model->insert_washdog($this->session->userdata('id'), 'GEOCALIZATION ELIMINATED');
-            }
-            echo json_encode($result);
-        }
-    }
-
-    public function check_insta_geolocalization($profile) {
-        $this->is_ip_hacker();
-        if ($this->session->userdata('id')) {
-            $this->load->model('class/system_config');
-            $GLOBALS['sistem_config'] = $this->system_config->load();
-            $this->load->library('external_services');
-            $datas_of_profile = $this->external_services->get_insta_geolocalization_data_from_client(json_decode($this->session->userdata('cookies')), $profile);
-            if (is_object($datas_of_profile)) {
-                return $datas_of_profile;
-            } else {
-                return NULL;
-            }
-        }
-    }
-
-    public function client_insert_hashtag() {
-        $this->is_ip_hacker();
-        $id = $this->session->userdata('id');
-        if ($this->session->userdata('id')) {
-            $this->load->model('class/system_config');
-            $GLOBALS['sistem_config'] = $this->system_config->load();
-            $language = $this->input->get();
-            if (isset($language['language']))
-                $param['language'] = $language['language'];
-            else
-                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
-            $GLOBALS['language'] = $param['language'];
-            $this->load->model('class/client_model');
-            $this->load->model('class/user_status');
-            $profile = $this->input->post();
-            $active_profiles = $this->client_model->get_client_active_profiles($this->session->userdata('id'));
-            $N = count($active_profiles);
-            $N_profiles = 0;
-            $is_active_tag = false;
-            for ($i = 0; $i < $N; $i++) {
-                if ($active_profiles[$i]['type'] === '2' && $active_profiles[$i]['deleted'] === '0')
-                    $N_profiles = $N_profiles + 1;
-                if ($active_profiles[$i]['insta_name'] == $profile['hashtag']) {
-                    if ($active_profiles[$i]['deleted'] == false && $active_profiles[$i]['type'] === '2')
-                        $is_active_tag = true;
-                    break;
-                }
-            }
-            if (!$is_active_tag) {
-                if ($N_profiles < $GLOBALS['sistem_config']->REFERENCE_PROFILE_AMOUNT) {
-                    $profile_datas = $this->check_insta_tag_from_client($profile['hashtag']);
-                    if ($profile_datas) {
-                        $p = $this->client_model->insert_insta_profile($this->session->userdata('id'), $profile['hashtag'], $profile_datas->id, '2');
-                        $result = $this->verify_profile($p, $active_profiles, $N);
-                        $result['img_url'] = base_url() . 'assets/images/avatar_hashtag_present.png';
-                        ;
-                        $result['profile'] = $profile['hashtag'];
-                        $result['follows_from_profile'] = 0;
-                    } else {
-                        $result['success'] = false;
-                        $result['message'] = "#" . $profile['hashtag'] . " " . $this->T('não é um hashtag do Instagram', array(), $GLOBALS['language']);
-                    }
-                } else {
-                    $result['success'] = false;
-                    $result['message'] = $this->T('Você alcançou a quantidade máxima de perfis ativos', array(), $GLOBALS['language']);
-                }
-            } else {
-                $result['success'] = false;
-                if ($is_active_profile)
-                    $result['message'] = $this->T('O perfil informado ja está ativo', array(), $GLOBALS['language']);
-                else
-                    $result['message'] = $this->T('O perfil informado é uma hashtag ativo', array(), $GLOBALS['language']);
-            }
-            if ($result['success'] == true) {
-                $this->load->model('class/user_model');
-                $this->user_model->insert_washdog($this->session->userdata('id'), 'HASHTAG INSERTED');
-            }
-            echo json_encode($result);
-        }
-    }
-
-    public function client_desactive_hashtag() {
-        $this->is_ip_hacker();
-        if ($this->session->userdata('id')) {
-            $this->load->model('class/system_config');
-            $GLOBALS['sistem_config'] = $this->system_config->load();
-            $language = $this->input->get();
-            if (isset($language['language']))
-                $param['language'] = $language['language'];
-            else
-                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
-            $GLOBALS['language'] = $param['language'];
-            $this->load->model('class/client_model');
-            $profile = $this->input->post();
-            if ($this->client_model->desactive_profiles($this->session->userdata('id'), $profile['hashtag'])) {
-                $result['success'] = true;
-                $result['message'] = $this->T('Hashtag eliminado', array(), $GLOBALS['language']);
-            } else {
-                $result['success'] = false;
-                $result['message'] = $this->T('Erro no sistema, tente novamente', array(), $GLOBALS['language']);
-            }
-            if ($result['success'] == true) {
-                $this->load->model('class/user_model');
-                $this->user_model->insert_washdog($this->session->userdata('id'), 'HASHTAG ELIMINATED');
-            }
-            echo json_encode($result);
-        }
-    }
-
-    public function check_insta_tag_from_client($profile) {
-        $this->is_ip_hacker();
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->library('external_services');
-        $data = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $profile);
-        if (is_object($data)) {
-            return $data;
-        } else
-        if (is_string($data)) {
-            return json_decode($data);
-        } else {
-            return NULL;
-        }
     }
     
     public function client_insert_profile() {
@@ -1850,6 +2080,261 @@ class Welcome extends CI_Controller {
             return NULL;
         }
     }
+    
+    public function client_insert_geolocalization() {
+        $this->is_ip_hacker();
+        if ($this->session->userdata('id')) {
+            $this->load->model('class/system_config');
+            $GLOBALS['sistem_config'] = $this->system_config->load();
+            $language = $this->input->get();
+            if (isset($language['language']))
+                $param['language'] = $language['language'];
+            else
+                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
+            $GLOBALS['language'] = $param['language'];
+            $this->load->model('class/client_model');
+            $this->load->model('class/user_status');
+            $profile = $this->input->post();
+            $active_profiles = $this->client_model->get_client_active_profiles($this->session->userdata('id'));
+            $N = count($active_profiles);
+            $N_geolocalization = 0;
+            $is_active_profile = false;
+            $is_active_geolocalization = false;
+            for ($i = 0; $i < $N; $i++) {
+                if ($active_profiles[$i]['type'] === '1' && $active_profiles[$i]['deleted'] === '0')
+                    $N_geolocalization = $N_geolocalization + 1;
+                if ($active_profiles[$i]['insta_name'] == $profile['geolocalization']) {
+                    if ($active_profiles[$i]['deleted'] == false)
+                        if ($active_profiles[$i]['type'] === '0')
+                            $is_active_profile = true;
+                        elseif ($active_profiles[$i]['type'] === '1')
+                            $is_active_geolocalization = true;
+                    break;
+                }
+            }
+            if (!$is_active_geolocalization) {
+                if ($N_geolocalization < $GLOBALS['sistem_config']->REFERENCE_PROFILE_AMOUNT) {
+                    $profile_datas = $this->check_insta_geolocalization($profile['geolocalization']);
+                    if ($profile_datas && $profile_datas->location->pk) {
+                        $p = $this->client_model->insert_insta_profile($this->session->userdata('id'), $profile_datas->slug, $profile_datas->location->pk, '1');
+                        $result = $this->verify_profile($p, $active_profiles, $N);
+                        $result['img_url'] = base_url() . 'assets/images/avatar_geolocalization_present.jpg';
+                        $result['profile'] = $profile['geolocalization'];
+                        $result['follows_from_profile'] = 0;
+                        $result['geolocalization_pk'] = $profile_datas->location->pk;
+                    } else {
+                        $result['success'] = false;
+                        $result['message'] = $this->T('@1 não é uma geolocalização do Instagram', array(0 => $profile['geolocalization']));
+                    }
+                } else {
+                    $result['success'] = false;
+                    $result['message'] = $this->T('Você alcançou a quantidade máxima de geolocalizações ativas', array(), $GLOBALS['language']);
+                }
+            } else {
+                $result['success'] = false;
+                if ($is_active_profile)
+                    $result['message'] = $this->T('A geolocalização informada é um perfil ativo', array(), $GLOBALS['language']);
+                else
+                    $result['message'] = $this->T('A geolocalizaçao informada ja está ativa', array(), $GLOBALS['language']);
+            }
+            if ($result['success'] == true) {
+                $this->load->model('class/user_model');
+                $this->user_model->insert_washdog($this->session->userdata('id'), 'GEOCALIZATION INSERTED');
+            }
+            echo json_encode($result);
+        }
+    }
+
+    public function client_desactive_geolocalization() {
+        $this->is_ip_hacker();
+        if ($this->session->userdata('id')) {
+            $this->load->model('class/system_config');
+            $GLOBALS['sistem_config'] = $this->system_config->load();
+            $language = $this->input->get();
+            if (isset($language['language']))
+                $param['language'] = $language['language'];
+            else
+                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
+            $GLOBALS['language'] = $param['language'];
+            $this->load->model('class/client_model');
+            $profile = $this->input->post();
+            if ($this->client_model->desactive_profiles($this->session->userdata('id'), $profile['geolocalization'])) {
+                $result['success'] = true;
+                $result['message'] = $this->T('Geolocalização eliminada', array(), $GLOBALS['language']);
+            } else {
+                $result['success'] = false;
+                $result['message'] = $this->T('Erro no sistema, tente novamente', array(), $GLOBALS['language']);
+            }
+            if ($result['success'] == true) {
+                $this->load->model('class/user_model');
+                $this->user_model->insert_washdog($this->session->userdata('id'), 'GEOCALIZATION ELIMINATED');
+            }
+            echo json_encode($result);
+        }
+    }
+
+    public function check_insta_geolocalization($profile) {
+        $this->is_ip_hacker();
+        if ($this->session->userdata('id')) {
+            $this->load->model('class/system_config');
+            $GLOBALS['sistem_config'] = $this->system_config->load();
+            $this->load->library('external_services');
+            $datas_of_profile = $this->external_services->get_insta_geolocalization_data_from_client(json_decode($this->session->userdata('cookies')), $profile);
+            if (is_object($datas_of_profile)) {
+                return $datas_of_profile;
+            } else {
+                return NULL;
+            }
+        }
+    }
+    
+    public function client_insert_hashtag() {
+        $this->is_ip_hacker();
+        $id = $this->session->userdata('id');
+        if ($this->session->userdata('id')) {
+            $this->load->model('class/system_config');
+            $GLOBALS['sistem_config'] = $this->system_config->load();
+            $language = $this->input->get();
+            if (isset($language['language']))
+                $param['language'] = $language['language'];
+            else
+                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
+            $GLOBALS['language'] = $param['language'];
+            $this->load->model('class/client_model');
+            $this->load->model('class/user_status');
+            $profile = $this->input->post();
+            $active_profiles = $this->client_model->get_client_active_profiles($this->session->userdata('id'));
+            $N = count($active_profiles);
+            $N_profiles = 0;
+            $is_active_tag = false;
+            for ($i = 0; $i < $N; $i++) {
+                if ($active_profiles[$i]['type'] === '2' && $active_profiles[$i]['deleted'] === '0')
+                    $N_profiles = $N_profiles + 1;
+                if ($active_profiles[$i]['insta_name'] == $profile['hashtag']) {
+                    if ($active_profiles[$i]['deleted'] == false && $active_profiles[$i]['type'] === '2')
+                        $is_active_tag = true;
+                    break;
+                }
+            }
+            if (!$is_active_tag) {
+                if ($N_profiles < $GLOBALS['sistem_config']->REFERENCE_PROFILE_AMOUNT) {
+                    $profile_datas = $this->check_insta_tag_from_client($profile['hashtag']);
+                    if ($profile_datas) {
+                        $p = $this->client_model->insert_insta_profile($this->session->userdata('id'), $profile['hashtag'], $profile_datas->id, '2');
+                        $result = $this->verify_profile($p, $active_profiles, $N);
+                        $result['img_url'] = base_url() . 'assets/images/avatar_hashtag_present.png';
+                        ;
+                        $result['profile'] = $profile['hashtag'];
+                        $result['follows_from_profile'] = 0;
+                    } else {
+                        $result['success'] = false;
+                        $result['message'] = "#" . $profile['hashtag'] . " " . $this->T('não é um hashtag do Instagram', array(), $GLOBALS['language']);
+                    }
+                } else {
+                    $result['success'] = false;
+                    $result['message'] = $this->T('Você alcançou a quantidade máxima de perfis ativos', array(), $GLOBALS['language']);
+                }
+            } else {
+                $result['success'] = false;
+                if ($is_active_profile)
+                    $result['message'] = $this->T('O perfil informado ja está ativo', array(), $GLOBALS['language']);
+                else
+                    $result['message'] = $this->T('O perfil informado é uma hashtag ativo', array(), $GLOBALS['language']);
+            }
+            if ($result['success'] == true) {
+                $this->load->model('class/user_model');
+                $this->user_model->insert_washdog($this->session->userdata('id'), 'HASHTAG INSERTED');
+            }
+            echo json_encode($result);
+        }
+    }
+
+    public function client_desactive_hashtag() {
+        $this->is_ip_hacker();
+        if ($this->session->userdata('id')) {
+            $this->load->model('class/system_config');
+            $GLOBALS['sistem_config'] = $this->system_config->load();
+            $language = $this->input->get();
+            if (isset($language['language']))
+                $param['language'] = $language['language'];
+            else
+                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
+            $GLOBALS['language'] = $param['language'];
+            $this->load->model('class/client_model');
+            $profile = $this->input->post();
+            if ($this->client_model->desactive_profiles($this->session->userdata('id'), $profile['hashtag'])) {
+                $result['success'] = true;
+                $result['message'] = $this->T('Hashtag eliminado', array(), $GLOBALS['language']);
+            } else {
+                $result['success'] = false;
+                $result['message'] = $this->T('Erro no sistema, tente novamente', array(), $GLOBALS['language']);
+            }
+            if ($result['success'] == true) {
+                $this->load->model('class/user_model');
+                $this->user_model->insert_washdog($this->session->userdata('id'), 'HASHTAG ELIMINATED');
+            }
+            echo json_encode($result);
+        }
+    }
+
+    public function check_insta_tag_from_client($profile) {
+        $this->is_ip_hacker();
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $this->load->library('external_services');
+        $data = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $profile);
+        if (is_object($data)) {
+            return $data;
+        } else
+        if (is_string($data)) {
+            return json_decode($data);
+        } else {
+            return NULL;
+        }
+    }
+    
+    public function unfollow_total() {
+        $this->is_ip_hacker();
+        $this->load->model('class/user_role');
+        $this->load->model('class/client_model');
+        if ($this->session->userdata('role_id') == user_role::CLIENT) {
+            $datas = $this->input->post();
+            $datas['unfollow_total'] = (int) $datas['unfollow_total'];
+            ($datas['unfollow_total'] == 0) ? $ut = 'DISABLED' : $ut = 'ACTIVATED';
+            $this->load->model('class/user_model');
+            $this->user_model->insert_washdog($this->session->userdata('id'), 'TOTAL UNFOLLOW ' . $ut);
+            $this->client_model->update_client($this->session->userdata('id'), array(
+                'unfollow_total' => $datas['unfollow_total']
+            ));
+            $response['success'] = true;
+            $response['unfollow_total'] = $datas['unfollow_total'];
+        }
+        echo json_encode($response);
+    }
+
+    public function autolike() {
+        $this->is_ip_hacker();
+        $this->load->model('class/user_role');
+        $this->load->model('class/client_model');
+        if ($this->session->userdata('role_id') == user_role::CLIENT) {
+            $datas = $this->input->post();
+            $al = (int) $datas['autolike'];
+            $this->client_model->update_client($this->session->userdata('id'), array(
+                'like_first' => $al
+            ));
+            ($al == 0) ? $ut = 'DISABLED' : $ut = 'ACTIVATED';
+            $this->load->model('class/user_model');
+            $this->user_model->insert_washdog($this->session->userdata('id'), 'AUTOLIKE ' . $ut);
+
+            $response['success'] = true;
+            $response['autolike'] = $datas['AUTOLIKE'];
+        }
+        echo json_encode($response);
+    }
 
     public function check_insta_profile_from_client($profile) {
         $this->is_ip_hacker();
@@ -1866,476 +2351,7 @@ class Welcome extends CI_Controller {
             return NULL;
         }
     }
-
-    public function message() {
-        $this->is_ip_hacker();
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $language = $this->input->get();
-        if (isset($language['language']))
-            $param['language'] = $language['language'];
-        else
-            $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-        $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
-        $GLOBALS['language'] = $param['language'];
-        $datas = $this->input->post();
-        $this->load->library('external_services');
-        $result = (array)$this->external_services->send_client_contact_form(
-                $this->T("DUMBU - Contato de usuário", array(), $GLOBALS['sistem_config']->LANGUAGE),
-                $datas['name'],
-                $datas['email'],
-                $datas['message'],
-                $datas['company'],
-                $datas['telf']);
-        if ($result['success']) {
-            $result['message'] = $this->T('Mensagem enviada, agradecemos seu contato', array(), $GLOBALS['language']);
-        }
-        echo json_encode($result);
-    }
-
-    public function validate_post_credit_card_datas($datas) {
-        $this->is_ip_hacker();
-        //TODO: validate emial and datas of credit card using regular expresions
-        /* if (preg_match('^[0-9]{16,16}$',$datas['credit_card_number']) &&
-          preg_match('^[0-9 ]{3,3}$',$datas['credit_card_cvc']) &&
-          preg_match('^[A-Z ]{4,50}$',$datas['credit_card_name']) &&
-          preg_match('^[0-10-9]{2,2}$',$datas['credit_card_exp_month']) &&
-          preg_match('^[2-20-01-20-9]{4,4}$',$datas['credit_card_exp_year']) &&
-          preg_match('^[a-zA-Z0-9\._-]+@([a-zA-Z0-9-]{2,}[.])*[a-zA-Z]{2,4}$',$datas['client_email']))
-          return true;
-          else
-          return false; */
-        return true;
-    }
-
-    public function is_insta_user($client_login, $client_pass, $force_login) {
-        $this->is_ip_hacker();
-        $data_insta = NULL;
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->library('external_services');
-        $login_data = $this->external_services->bot_login($client_login, $client_pass, $force_login);
-        if (isset($login_data->json_response->status) && $login_data->json_response->status === "ok") {
-            $data_insta['status'] = $login_data->json_response->status;
-            if ($login_data->json_response->authenticated) {
-                $data_insta['authenticated'] = true;
-                $data_insta['insta_id'] = $login_data->ds_user_id;
-                $user_data = $this->external_services->get_insta_ref_prof_data_from_client($login_data, $client_login);
-                if ($data_insta && isset($user_data->follower_count))
-                    $data_insta['insta_followers_ini'] = $user_data->follower_count;
-                else
-                    $data_insta['insta_followers_ini'] = 'Access denied';
-                if ($data_insta && isset($user_data->following))
-                    $data_insta['insta_following'] = $user_data->following;
-                else
-                    $data_insta['insta_following'] = 'Access denied';
-                if ($data_insta && isset($user_data->full_name))
-                    $data_insta['insta_name'] = $user_data->full_name;
-                else
-                    $data_insta['insta_name'] = 'Access denied';
-                if (is_object($login_data))
-                    $data_insta['insta_login_response'] = $login_data;
-                else
-                    $data_insta['insta_login_response'] = NULL;
-            } else {
-                $data_insta['authenticated'] = false;
-                $data_insta['message'] = $login_data->json_response->message;
-                if ($login_data->json_response->message === "checkpoint_required") {
-                    if (strpos($login_data->json_response->verify_link, 'challenge'))
-                        $data_insta['verify_account_url'] = 'https://www.instagram.com' . $login_data->json_response->verify_link;
-                    else
-                    if (strpos($login_data->json_response->verify_link, 'integrity'))
-                        $data_insta['verify_account_url'] = $login_data->json_response->verify_link;
-                    else
-                        $data_insta['verify_account_url'] = $login_data->json_response->verify_link;
-                } else
-                if ($login_data->json_response->message === "") {
-                    if (isset($login_data->json_response->phone_verification_settings) && is_object($login_data->json_response->phone_verification_settings)) {
-                        $data_insta['message'] = 'phone_verification_settings';
-                        $data_insta['obfuscated_phone_number'] = $login_data->json_response->two_factor_info->obfuscated_phone_number;
-                    } else {
-                        $data_insta['message'] = 'empty_message';
-                        $data_insta['cause'] = 'empty_message';
-                    }
-                } else
-                if ($login_data->json_response->message !== "incorrect_password") {
-                    $data_insta['message'] = 'unknow_message';
-                    $data_insta['unknow_message'] = $login_data->json_response->message;
-                }
-            }
-        } else {
-            if (isset($login_data->json_response->status) && $login_data->json_response->status === "fail") {
-                $data_insta['status'] = $login_data->json_response->status;
-            } else
-            if (isset($login_data->json_response->status) && $login_data->json_response->status === "") {
-                ;
-            }
-        }
-        return $data_insta;
-    }
-
-    public function log_out() {
-        $this->is_ip_hacker();
-        $data['user_active'] = false;
-        $this->load->model('class/user_model');
-        $this->user_model->insert_washdog($this->session->userdata('id'), 'CLOSING SESSION');
-        $this->session->sess_destroy();
-        header('Location: ' . base_url());
-    }
-
-    public function create_profiles_datas_to_display() {
-        $this->is_ip_hacker();
-        if ($this->session->userdata('id')) {
-            $this->load->model('class/system_config');
-            $GLOBALS['sistem_config'] = $this->system_config->load();
-            $this->load->library('external_services');
-            $this->load->model('class/client_model');
-            $this->load->model('class/reference_profile_status');
-            $array_profiles = array();
-            $array_geolocalization = array();
-            $array_hashtag = array();
-            $cnt_ref_prof = 0;
-            $cnt_geolocalization = 0;
-            $cnt_hashtag = 0;
-            //1. load datas from each reference profile
-            $client_active_profiles = $this->client_model->get_client_active_profiles($this->session->userdata('id'));
-            foreach ($client_active_profiles as $profile) {
-                //1.1 Perfil de Referencia
-                if($profile['type'] === '0') {
-                    $cnt_ref_prof = $cnt_ref_prof + 1;
-                    $data = array(
-                      'login_profile' => $profile['insta_name'],
-                      'login_pk' => $profile['insta_id'],
-                      'follows_from_profile' => $profile['follows'],
-                    );
-                    switch ((int)$profile['status_id']) {
-                        case reference_profile_status::ACTIVE:
-                            $data['status_profile'] = 'active';
-                            $data['img_profile'] = '';
-                        case reference_profile_status::LOCKED:
-                            $data['status_profile'] = 'blocked';
-                            $data['img_profile'] = base_url().'assets/images/profile_privated.jpg';;                            
-                            break;
-                            break;
-                        case reference_profile_status::ENDED:
-                            $data['status_profile'] = 'ended';
-                            $data['img_profile'] = '';
-                            break;
-                        case reference_profile_status::PRIVATED:
-                            $data['status_profile'] = 'privated';
-                            $data['img_profile'] = base_url().'assets/images/profile_privated.jpg';
-                            break;
-                        case reference_profile_status::MISSING:
-                            $data['status_profile'] = 'deleted';
-                            $data['img_profile'] = base_url().'assets/images/profile_deleted.jpg';
-                            break;
-                        default:
-                            break;
-                    }
-                    array_push($array_profiles, $data);                        
-                } 
-                //1.2 é uma geolocalização
-                elseif($profile['type'] === '1') {
-                    $cnt_geolocalization = $cnt_geolocalization + 1;
-                    $data = array(
-                      'login_geolocalization' => $profile['insta_name'],
-                      'geolocalization_pk' => $profile['insta_id'],
-                      'follows_from_profile' => $profile['follows'],
-                    );
-                    switch ((int)$profile['status_id']) {
-                        case reference_profile_status::ACTIVE:
-                            $data['status_geolocalization'] = 'active';
-                            $data['img_geolocalization'] = base_url().'assets/images/avatar_geolocalization_present.jpg';
-                            break;
-                        case reference_profile_status::ENDED:
-                            $data['status_geolocalization'] = 'ended';
-                            $data['img_geolocalization'] =  base_url().'assets/images/avatar_geolocalization_deleted.jpg';
-                            break;
-                        case reference_profile_status::MISSING:
-                            $data['status_geolocalization'] = 'deleted';
-                            $data['img_geolocalization'] = base_url().'assets/images/avatar_geolocalization_deleted.jpg';
-                            break;
-                        default:
-                            break;
-                    }
-                    array_push($array_geolocalization, $data);
-                }
-                //1.3 é um hastag
-                elseif($profile['type'] === '2') { 
-                    $cnt_hashtag = $cnt_hashtag + 1;
-                    $data = array(
-                      'login_hashtag' => $profile['insta_name'],
-                      'hashtag_pk' => $profile['insta_id'],
-                      'follows_from_hashtag' => $profile['follows'],
-                    );
-                    switch ((int)$profile['status_id']) {
-                        case reference_profile_status::ACTIVE:
-                            $data['status_geolocalization'] = 'active';
-                            $data['img_geolocalization'] = base_url().'assets/images/avatar_hashtag_present.png';
-                            break;
-                        case reference_profile_status::ENDED:
-                            $data['status_geolocalization'] = 'ended';
-                            $data['img_geolocalization'] =  base_url().'assets/images/avatar_hashtag_deleted.png';
-                            break;
-                        case reference_profile_status::MISSING:
-                            $data['status_geolocalization'] = 'deleted';
-                            $data['img_geolocalization'] = base_url().'assets/images/avatar_hashtag_deleted.png';
-                            break;
-                        default:
-                            break;
-                    }
-                    array_push($array_hashtag, $data);
-                }
-            }
-            $response['array_profiles'] = $array_profiles;
-            $response['N'] = $cnt_ref_prof;
-            $response['array_geolocalization'] = $array_geolocalization;
-            $response['N_geolocalization'] = $cnt_geolocalization;
-            $response['array_hashtag'] = $array_hashtag;
-            $response['N_hashtag'] = $cnt_hashtag;
-            $response['message'] = 'Profiles loaded';
-            return json_encode($response);
-        } else {
-            $this->display_access_error();
-        }
-    }
     
-    public function create_profiles_datas_to_display_old() {
-        $this->is_ip_hacker();
-        if ($this->session->userdata('id')) {
-            $this->load->model('class/system_config');
-            $GLOBALS['sistem_config'] = $this->system_config->load();
-            $this->load->library('external_services');
-            $this->load->model('class/client_model');
-            $array_profiles = array();
-            $array_geolocalization = array();
-            $array_hashtag = array();
-            $client_active_profiles = $this->client_model->get_client_active_profiles($this->session->userdata('id'));
-            $N = count($client_active_profiles);
-            $cnt_ref_prof = 0;
-            $cnt_geolocalization = 0;
-            $cnt_hashtag = 0;
-            if ($N > 0) {
-                for ($i = 0; $i < $N; $i++) {
-                    $name_profile = $client_active_profiles[$i]['insta_name'];
-                    $id_profile = $client_active_profiles[$i]['id'];
-                    if ($client_active_profiles[$i]['type'] === '0') { //es un perfil de referencia
-                        $datas_of_profile = $this->external_services->get_insta_ref_prof_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
-                        if ($datas_of_profile != NULL) {
-                            $array_profiles[$cnt_ref_prof]['login_profile'] = $name_profile;
-                            $array_profiles[$cnt_ref_prof]['follows_from_profile'] = $datas_of_profile->follows;
-                            if (!$datas_of_profile) { //perfil existia pero fue eliminado de IG
-                                $array_profiles[$cnt_ref_prof]['status_profile'] = 'deleted';
-                                $array_profiles[$cnt_ref_prof]['img_profile'] = base_url() . 'assets/images/profile_deleted.jpg';
-                            } else
-                            if ($client_active_profiles[$i]['end_date']) { //perfil
-                                $array_profiles[$cnt_ref_prof]['status_profile'] = 'ended';
-                                $array_profiles[$cnt_ref_prof]['img_profile'] = $datas_of_profile->profile_pic_url;
-                            } else
-                            if ($datas_of_profile->is_private) { //perfil paso a ser privado
-                                $array_profiles[$cnt_ref_prof]['status_profile'] = 'privated';
-                                $array_profiles[$cnt_ref_prof]['img_profile'] = base_url() . 'assets/images/profile_privated.jpg';
-                            } else {
-                                $array_profiles[$cnt_ref_prof]['status_profile'] = 'active';
-                                $array_profiles[$cnt_ref_prof]['img_profile'] = $datas_of_profile->profile_pic_url;
-                            }
-                            $cnt_ref_prof = $cnt_ref_prof + 1;
-                        } else {
-                            $array_profiles[$cnt_ref_prof]['status_profile'] = 'blocked';
-                            $array_profiles[$cnt_ref_prof]['img_profile'] = base_url() . 'assets/images/profile_privated.jpg';
-                            $array_profiles[$cnt_ref_prof]['login_profile'] = $name_profile;
-                            $array_profiles[$cnt_ref_prof]['follows_from_profile'] = '-+-';
-                            $cnt_ref_prof = $cnt_ref_prof + 1;
-                        }
-                    } else 
-                    if ($client_active_profiles[$i]['type'] === '1') { //es una geolocalizacion      
-                        $datas_of_profile = $this->external_services->get_insta_geolocalization_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
-                        $array_geolocalization[$cnt_geolocalization]['login_geolocalization'] = $name_profile;
-                        $array_geolocalization[$cnt_geolocalization]['geolocalization_pk'] = $client_active_profiles[$i]['insta_id'];
-                        if ($datas_of_profile)
-                            $array_geolocalization[$cnt_geolocalization]['follows_from_geolocalization'] = $datas_of_profile->follows;
-                        $array_geolocalization[$cnt_geolocalization]['img_geolocalization'] = base_url() . 'assets/images/avatar_geolocalization_present.jpg';
-                        if (!$datas_of_profile) {
-                            $array_geolocalization[$cnt_geolocalization]['img_geolocalization'] = base_url() . 'assets/images/avatar_geolocalization_deleted.jpg';
-                            $array_geolocalization[$cnt_geolocalization]['status_geolocalization'] = 'deleted';
-                        } else
-                        if ($client_active_profiles[$i]['end_date']) { //perfil
-                            $array_geolocalization[$cnt_geolocalization]['status_geolocalization'] = 'ended';
-                        } else {
-                            $array_geolocalization[$cnt_geolocalization]['status_geolocalization'] = 'active';
-                        }
-                        $cnt_geolocalization = $cnt_geolocalization + 1;
-                    } else 
-                    if ($client_active_profiles[$i]['type'] === '2'){ //es un hashtag    
-                        $datas_of_profile = $this->external_services->get_insta_tag_data_from_client(json_decode($this->session->userdata('cookies')), $name_profile, $id_profile, $this->session->userdata('id'));
-
-                        $array_hashtag[$cnt_hashtag]['login_hashtag'] = $name_profile;
-                        $array_hashtag[$cnt_hashtag]['hashtag_pk'] = $client_active_profiles[$i]['insta_id'];
-                        if ($datas_of_profile)
-                            $array_hashtag[$cnt_hashtag]['follows_from_hashtag'] = $datas_of_profile->follows;
-                        $array_hashtag[$cnt_hashtag]['img_hashtag'] = base_url() . 'assets/images/avatar_hashtag_present.png';
-                        if (!$datas_of_profile) {
-                            $array_hashtag[$cnt_hashtag]['img_hashtag'] = base_url() . 'assets/images/avatar_hashtag_deleted.png';
-                            $array_hashtag[$cnt_hashtag]['status_hashtag'] = 'deleted';
-                        } else
-                        if ($client_active_profiles[$i]['end_date']) { //perfil
-                            $array_hashtag[$cnt_hashtag]['status_hashtag'] = 'ended';
-                        } else {
-                            $array_hashtag[$cnt_hashtag]['status_hashtag'] = 'active';
-                        }
-                        $cnt_hashtag = $cnt_hashtag + 1;
-                    }
-                }
-                if ($cnt_ref_prof)
-                    $response['array_profiles'] = $array_profiles;
-                else
-                    $response['array_profiles'] = array();
-                $response['N'] = $cnt_ref_prof;
-                if ($cnt_geolocalization)
-                    $response['array_geolocalization'] = $array_geolocalization;
-                else
-                    $response['array_geolocalization'] = array();
-                $response['N_geolocalization'] = $cnt_geolocalization;
-                if ($cnt_hashtag)
-                    $response['array_hashtag'] = $array_hashtag;
-                else
-                    $response['array_hashtag'] = array();
-                $response['N_hashtag'] = $cnt_hashtag;
-                $response['message'] = 'Profiles loaded';
-            } else {
-                $response['N'] = 0;
-                $response['N_geolocalization'] = 0;
-                $response['N_hashtag'] = 0;
-                $response['array_profiles'] = NULL;
-                $response['array_geolocalization'] = NULL;
-                $response['array_hashtag'] = NULL;
-                $response['message'] = 'Profiles unloaded';
-            }
-            return json_encode($response);
-        } else {
-            $this->display_access_error();
-        }
-    }
-
-    public function dicas_geoloc() {
-        $this->is_ip_hacker();
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-        $this->load->model('class/user_model');
-        $this->user_model->insert_washdog($this->session->userdata('id'), 'LOOKING AT GEOCALIZATION TIPS');
-        $this->load->view('dicas_geoloc', $param);
-    }
-
-    public function help() {
-        $this->is_ip_hacker();
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $language = $this->input->get();
-        if (isset($language['language']))
-            $param['language'] = $language['language'];
-        else
-            $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-        $this->load->view('Dicas', $param);
-    }
-
-    public function FAQ_function($language) {
-        $this->is_ip_hacker();
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $result['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
-        $language = $this->input->get();
-        if (isset($language['language']))
-            $result['language'] = $language['language'];
-        else
-            $result['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-        $this->load->model('class/client_model');
-        $cuestions = $this->client_model->geting_FAQ($result);
-        $this->load->model('class/user_model');
-        $this->user_model->insert_washdog($this->session->userdata('id'), 'LOOKING AT FAQ');
-        $result['info'] = $cuestions;
-        $this->load->view('FAQ', $result);
-    }
-
-    public function display_access_error() {
-        $this->is_ip_hacker();
-        $this->session->sess_destroy();
-        header('Location: ' . base_url() . 'index.php/welcome/');
-    }
-
-    public function client_acept_discont() {
-        $this->is_ip_hacker();
-        $this->load->model('class/client_model');
-        $this->load->model('class/user_model');
-        $values = $this->client_model->get_plane($this->session->userdata('plane_id'))[0];
-        $value = $values['normal_val'];
-        $sql = "SELECT * FROM clients WHERE clients.user_id='" . $this->session->userdata('id') . "'";
-        $client = $this->user_model->execute_sql_query($sql);
-        $recurrency_order_key = $client[0]['order_key'];
-        $result['success'] = true;
-        echo json_encode($result);
-    }
-    
-    public function admin_making_client_login() {
-        $this->is_ip_hacker();
-        $datas = $this->input->get();
-        $datas['user_pass'] = urldecode($datas['user_pass']);
-        $result = $this->user_do_login($datas);
-        if ($result['authenticated'] === true) {
-            $this->client();
-        } else
-            echo 'Esse cliente deve ter senha errada ou mudou suas credenciais no IG';
-    }
-
-    public function T($token, $array_params = NULL, $lang = NULL) {
-        $this->is_ip_hacker();
-        if (!$lang) {
-            $this->load->model('class/system_config');
-            $GLOBALS['sistem_config'] = $this->system_config->load();
-            if (isset($language['language']))
-                $param['language'] = $language['language'];
-            else
-                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
-            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
-            $GLOBALS['language'] = $param['language'];
-            $lang = $param['language'];
-        }
-        $this->load->model('class/translation_model');
-        $text = $this->translation_model->get_text_by_token($token, $lang);
-        $N = count($array_params);
-        for ($i = 0; $i < $N; $i++) {
-            $text = str_replace('@' . ($i + 1), $array_params[$i], $text);
-        }
-        return $text;
-    }
-
-    public function scielo_view() {
-        $this->is_ip_hacker();
-        $this->load->view('scielo');
-    }
-
-    public function scielo() {
-        $this->is_ip_hacker();
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $datas = $this->input->post();
-        $datas['amount_in_cents'] = 100;
-        $resp = $this->check_mundipagg_credit_card($datas);
-        if (is_object($resp) && $resp->isSuccess()) {
-            $order_key = $resp->getData()->OrderResult->OrderKey;
-            $response['success'] = true;
-            $response['message'] = "Compra relizada com sucesso! Chave da compra na mundipagg: $order_key";
-        } else if (is_object($resp)) {
-            $order_key = $resp->getData()->OrderResult->OrderKey;
-            $response['success'] = false;
-            $response['message'] = "Compra recusada! Chave da compra na mundipagg: $order_key";
-        } else {
-            $response['success'] = false;
-            $response['message'] = "Compra recusada!";
-        }
-        echo json_encode($response);
-    }
-
     public function get_daily_report($id) {
         $this->is_ip_hacker();
         if ($this->session->userdata('id')) {
@@ -2362,16 +2378,7 @@ class Welcome extends CI_Controller {
         }
     }
 
-    public function get_img_profile($profile) {
-        $this->is_ip_hacker();
-        $this->load->model('class/client_model');
-        $datas = $this->check_insta_profile($profile);
-        if ($datas)
-            return $datas->profile_pic_url;
-        else
-            return 'missing_profile';
-    }
-
+//===========CONTROLERS FUNCTIONS TO BLACK AND WHITE LIST=================================================================================        
     public function client_black_list() {
         $this->is_ip_hacker();
         if ($this->session->userdata('id')) {
@@ -2535,74 +2542,75 @@ class Welcome extends CI_Controller {
             echo json_encode($result);
         }
     }
-
-    public function security_code_request() {
+    
+//===========CONTROLERS AUXILIAR FUNCTIONS =================================================================================        
+    public function message() {
         $this->is_ip_hacker();
         $this->load->model('class/system_config');
         $GLOBALS['sistem_config'] = $this->system_config->load();
+        $language = $this->input->get();
+        if (isset($language['language']))
+            $param['language'] = $language['language'];
+        else
+            $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+        $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
+        $GLOBALS['language'] = $param['language'];
+        $datas = $this->input->post();
         $this->load->library('external_services');
-        $this->load->model('class/user_role');
-        $this->load->model('class/user_model');
-        if ($this->session->userdata('role_id') == user_role::CLIENT) {
-            try {
-                $checkpoint_data = $this->external_services->checkpoint_requested($this->session->userdata('login'), $this->session->userdata('pass'));
-            } catch (Exception $ex) {
-                $result['success'] = false;
-                $result['message'] = $this->T('Erro ao solicitar código de segurança', array(), $this->session->userdata('language'));
-                $this->user_model->insert_washdog($this->session->userdata('id'), 'ERROR #4 IN SECURITY CODE REQUEST');
-                $this->user_model->insert_washdog($this->session->userdata('id'), 'Exception message: ' . $ex->getMessage());
-                $this->user_model->insert_washdog($this->session->userdata('id'), 'Exception stack trace: ' . $ex->getTraceAsString());
-                echo json_encode($result);
-                return;
-            }
-            if ($checkpoint_data && $checkpoint_data->status == "ok") {
-                if ($checkpoint_data->type == "CHALLENGE") {
-                    $result['success'] = true;
-                    $result['message'] = $this->T('Código de segurança solicitado corretamente', array(), $this->session->userdata('language'));
-                    $this->user_model->insert_washdog($this->session->userdata('id'), 'SECURITY CODE REQUESTED');
-                } else if ($checkpoint_data->type == "CHALLENGE_REDIRECTION") {
-                    $result['success'] = false;
-                    $result['message'] = $this->T('Por favor, entre no seu Instagram e confirme FUI EU. Depois saia do seu Instagram e volte ao Passo 1 nesta página.', array(), $this->session->userdata('language'));
-                    $this->user_model->insert_washdog($this->session->userdata('id'), 'ERROR #1 IN SECURITY CODE REQUEST');
-                } else {
-                    $result['success'] = false;
-                    $result['message'] = $this->T('Erro ao solicitar código de segurança', array(), $this->session->userdata('language'));
-                    $this->user_model->insert_washdog($this->session->userdata('id'), 'ERROR #2 IN SECURITY CODE REQUEST');
-                }
-            } else {
-                $result['success'] = false;
-                $result['message'] = $this->T('Erro ao solicitar código de segurança', array(), $this->session->userdata('language'));
-                $this->user_model->insert_washdog($this->session->userdata('id'), 'ERROR #3 IN SECURITY CODE REQUEST');
-            }
-            echo json_encode($result);
-        } else {
-            $this->display_access_error();
+        $result = (array)$this->external_services->send_client_contact_form(
+                $this->T("DUMBU - Contato de usuário", array(), $GLOBALS['sistem_config']->LANGUAGE),
+                $datas['name'],
+                $datas['email'],
+                $datas['message'],
+                $datas['company'],
+                $datas['telf']);
+        if ($result['success']) {
+            $result['message'] = $this->T('Mensagem enviada, agradecemos seu contato', array(), $GLOBALS['language']);
         }
+        echo json_encode($result);
     }
 
-    public function security_code_confirmation() {
+    public function T($token, $array_params = NULL, $lang = NULL) {
         $this->is_ip_hacker();
-        $this->load->model('class/system_config');
-        $GLOBALS['sistem_config'] = $this->system_config->load();
-        $this->load->library('external_services');
-        $this->load->model('class/user_role');
-        if ($this->session->userdata('role_id') == user_role::CLIENT) {
-            $security_code = $this->input->post()['security_code'];
-            $checkpoint_data = $this->external_services->make_checkpoint($this->session->userdata('login'), $security_code);
-            $this->load->model('class/user_model');
-            if ($checkpoint_data && $checkpoint_data->json_response->status === 'ok' && $checkpoint_data->sessionid !== null && $checkpoint_data->ds_user_id !== null) {
-                $result['success'] = true;
-                $result['message'] = 'Código de segurança confirmado corretamente';
-                $this->user_model->insert_washdog($this->session->userdata('id'), 'SECURITY CODE CONFIRMATED');
-            } else {
-                $result['success'] = false;
-                $result['message'] = 'Erro ao confirmar código de segurança';
-                $this->user_model->insert_washdog($this->session->userdata('id'), 'ERROR IN SECURITY CODE CONFIRMATION');
-            }
-            echo json_encode($result);
-        } else {
-            $this->display_access_error();
+        if (!$lang) {
+            $this->load->model('class/system_config');
+            $GLOBALS['sistem_config'] = $this->system_config->load();
+            if (isset($language['language']))
+                $param['language'] = $language['language'];
+            else
+                $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+            $param['SERVER_NAME'] = $GLOBALS['sistem_config']->SERVER_NAME;
+            $GLOBALS['language'] = $param['language'];
+            $lang = $param['language'];
         }
+        $this->load->model('class/translation_model');
+        $text = $this->translation_model->get_text_by_token($token, $lang);
+        $N = count($array_params);
+        for ($i = 0; $i < $N; $i++) {
+            $text = str_replace('@' . ($i + 1), $array_params[$i], $text);
+        }
+        return $text;
+    }
+
+    public function admin_making_client_login() {
+        $this->is_ip_hacker();
+        $datas = $this->input->get();
+        $datas['user_pass'] = urldecode($datas['user_pass']);
+        $result = $this->user_do_login($datas);
+        if ($result['authenticated'] === true) {
+            $this->client();
+        } else
+            echo 'Esse cliente deve ter senha errada ou mudou suas credenciais no IG';
+    }
+
+    public function get_img_profile($profile) {
+        $this->is_ip_hacker();
+        $this->load->model('class/client_model');
+        $datas = $this->check_insta_profile($profile);
+        if ($datas)
+            return $datas->profile_pic_url;
+        else
+            return 'missing_profile';
     }
 
     public function verify_profile($profile_id, $active_profiles, $N) {
@@ -2625,53 +2633,6 @@ class Welcome extends CI_Controller {
         return $result;
     }
 
-    public function check_2nd_step_activation() {
-        $this->is_ip_hacker();
-        $this->load->model('class/client_model');
-        $this->load->model('class/Crypt');
-        $datas = $this->input->post();
-        $client_id = $this->Crypt->decodify_level1(urldecode($datas['client_id']));
-        $query = $this->client_model->get_all_data_of_client($client_id);
-
-        if (!empty($query) && $query[0]['purchase_counter'] > 0 && $query[0]['purchase_access_token'] === $datas['purchase_access_token']) {
-            $result['success'] = true;
-            $data_insta = $this->check_insta_profile($query[0]['login']);
-            $result['datas'] = json_encode($data_insta);
-        } else {
-            $result['success'] = false;
-        }
-
-        echo json_encode($result);
-    }
-
-    public function validaCPF($cpf = null) {
-        $this->is_ip_hacker();
-        $cpf = '06266544750';
-        if (empty($cpf))
-            return false;
-        $cpf = preg_replace('[^0-9]', '', $cpf);
-        $cpf = str_pad($cpf, 11, '0', STR_PAD_LEFT);
-        if (strlen($cpf) != 11)
-            return false;
-        else if ($cpf == '00000000000' ||
-                $cpf == '11111111111' || $cpf == '22222222222' || $cpf == '33333333333' ||
-                $cpf == '44444444444' || $cpf == '55555555555' || $cpf == '66666666666' ||
-                $cpf == '77777777777' || $cpf == '88888888888' || $cpf == '99999999999') {
-            return false;
-        } else {
-            for ($t = 9; $t < 11; $t++) {
-                for ($d = 0, $c = 0; $c < $t; $c++) {
-                    $d += $cpf{$c} * (($t + 1) - $c);
-                }
-                $d = ((10 * $d) % 11) % 10;
-                if ($cpf{$c} != $d) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-
     public function is_ip_hacker() {
         $IP_hackers = array(
             '191.176.169.242', '138.0.85.75', '138.0.85.95', '177.235.130.16', '191.176.171.14', '200.149.30.108', '177.235.130.212', '66.85.185.69',
@@ -2687,48 +2648,57 @@ class Welcome extends CI_Controller {
         }
     }
 
-    public function check_registration_code() {
+//===========DEPRECATED FUNCTIONS =================================================================================                
+    public function client_acept_discont() {
         $this->is_ip_hacker();
         $this->load->model('class/client_model');
-        $datas = $this->input->post();
-        $query = $this->client_model->get_client_by_id($datas['pk']);
-        $retry_registration_counter = (int) $query[0]['retry_registration_counter'];
-        $result['success'] = false;
-
-        if (!empty($query)) {
-            if ($query[0]['retry_registration_counter'] > 0) {
-                if ($query[0]['purchase_access_token'] === $datas['registration_code']) {
-                    $result['registration_code'] = $datas['registration_code'];
-                    $result['success'] = true;
-                    $result['message'] = $this->T('Código do cadastro verificado corretamente!', array(), $GLOBALS['language']);
-                } else {
-                    // decrementar el retry_registration_counter en la base de datos
-                    $retry_registration_counter = $retry_registration_counter - 1;
-                    $this->client_model->update_client($datas['pk'], array('retry_registration_counter' => $retry_registration_counter));
-                    $result['message'] = $this->T('Código do cadastro inválido!', array(), $GLOBALS['language']);
-                }
-            } else {
-                $result['message'] = $this->T('Alcançou a quantidade máxima de tentativas de cadastro. Por favor, entre en contato com o atendimento.', array(), $GLOBALS['language']);
-            }
-        } else {
-            $result['message'] = $this->T('O perfil não existe no nosso sistema.', array(), $GLOBALS['language']);
-        }
+        $this->load->model('class/user_model');
+        $values = $this->client_model->get_plane($this->session->userdata('plane_id'))[0];
+        $value = $values['normal_val'];
+        $sql = "SELECT * FROM clients WHERE clients.user_id='" . $this->session->userdata('id') . "'";
+        $client = $this->user_model->execute_sql_query($sql);
+        $recurrency_order_key = $client[0]['order_key'];
+        $result['success'] = true;
         echo json_encode($result);
     }
+    
+    public function language() {
+        $this->is_ip_hacker();
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $param['language'] = $GLOBALS['sistem_config']->LANGUAGE;
+        $this->load->view('user_view', $param);
+    }
+        
+    public function scielo_view() {
+        $this->is_ip_hacker();
+        $this->load->view('scielo');
+    }
 
-    public function get_cep_datas() {
-        $cep = $this->input->post()['cep'];
-        $datas = file_get_contents('https://viacep.com.br/ws/' . $cep . '/json/');
-        if (strpos($datas, 'erro') > 0) {
-            $response['success'] = false;
-        } else {
+    public function scielo() {
+        $this->is_ip_hacker();
+        $this->load->model('class/system_config');
+        $GLOBALS['sistem_config'] = $this->system_config->load();
+        $datas = $this->input->post();
+        $datas['amount_in_cents'] = 100;
+        $resp = $this->check_mundipagg_credit_card($datas);
+        if (is_object($resp) && $resp->isSuccess()) {
+            $order_key = $resp->getData()->OrderResult->OrderKey;
             $response['success'] = true;
+            $response['message'] = "Compra relizada com sucesso! Chave da compra na mundipagg: $order_key";
+        } else if (is_object($resp)) {
+            $order_key = $resp->getData()->OrderResult->OrderKey;
+            $response['success'] = false;
+            $response['message'] = "Compra recusada! Chave da compra na mundipagg: $order_key";
+        } else {
+            $response['success'] = false;
+            $response['message'] = "Compra recusada!";
         }
-        $response['datas'] = json_decode($datas);
         echo json_encode($response);
     }
-    
-    //DEVELOPERS, ADD NEW FUNCTION OS SYSTEM HERE ...
+
+
+//DEVELOPERS==> ADD YOUR NEW FUNCTIONS HERE \...
     
     
     
