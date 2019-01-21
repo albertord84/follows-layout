@@ -18,6 +18,7 @@ class Admin extends CI_Controller {
         $this->load->model('class/user_model');
         $this->load->model('class/user_status');
         $this->load->model('class/user_role');
+        // Esto es una mierda, hay que cambiarlo
         $query = 'SELECT * FROM users'.
                 ' WHERE login="' . $datas['user_login'] . '" AND pass="' . md5($datas['user_pass']) .
                 '" AND role_id=' . user_role::ADMIN . ' AND status_id=' . user_status::ACTIVE;
